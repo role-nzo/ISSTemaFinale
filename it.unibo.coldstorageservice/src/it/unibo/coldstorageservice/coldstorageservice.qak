@@ -1,0 +1,87 @@
+System coldstorageservice
+
+Request engage        : engage(ARG)
+Reply   engagedone    : engagedone(ARG)
+Reply   engagerefused : engagerefused(ARG)
+
+Dispatch disengage : disengage(ARG)
+
+Request  doplan   : doplan( PATH, OWNER, STEPTIME )
+Reply doplandone  : doplandone( ARG )
+Reply doplanfailed  : doplanfailed( PLANDONE, PLANTODO )
+
+
+Request moverobot    :  moverobot(TARGETX, TARGETY)
+Reply moverobotdone  :  moverobotok(ARG)
+Reply moverobotfailed:  moverobotfailed(ARG)
+
+Dispatch guiupdate : guiupdate(ARG)
+
+
+/*
+ * TODO
+ * Messaggi in out rasp
+ * Messaggi in out transportTrolley
+ * 
+ */
+
+//Fridge Truck
+Request  ticketrequest  : ticketrequest( ARG )
+Reply ticketaccepted  : ticketaccepted( ARG )
+Reply ticketrefused  : ticketrefused( ARG )
+
+Request showticketrequest  : showticketrequest( ARG )
+Reply showticketvalid  : showticketvalid( ARG )
+Reply showticketinvalid  : showticketinvalid( ARG )
+Dispatch chargetaken : chargetaken(ARG)
+
+
+Context ctxbasicrobot ip [host="127.0.0.1" port=8020]
+Context ctxcoldstorageservice ip [host="localhost" port=8022]
+Context ctxrasp ip[host="IPRASP" port=1111]
+Context ctxfridgetruck ip [host="127.0.0.1" port=8023]
+
+ExternalQActor basicrobot context ctxbasicrobot
+ExternalQActor led context ctxrasp
+ExternalQActor sonar context ctxrasp
+
+QActor transporttrolley context ctxcoldstorageservice{
+	State s0 initial{
+		println("Transporttrolley starts") color magenta
+	}
+}
+
+QActor serviceaccessgui context ctxcoldstorageservice{
+	State s0 initial{
+		println("Serviceaccessgui starts") color red
+	}
+}
+
+QActor coldroom context ctxcoldstorageservice{
+	State s0 initial{
+		println("Coldroom starts") color blue
+		//eventi: consegna roba, prelevata roba
+	}
+}
+
+QActor ticketservice context ctxcoldstorageservice{ //Registrata a coldRoom
+	State s0 initial{
+		println("ticketservice starts") color green
+	}
+}
+
+QActor servicestatusgui context ctxcoldstorageservice{ //Registrata a coldRoom
+	State s0 initial{
+		println("servicestatusgui starts") color red
+	}
+}
+
+QActor fridgetruck context ctxfridgetruck{
+	State s0 initial{
+		println("fridgetruck starts") color red
+	}
+}
+
+
+
+
