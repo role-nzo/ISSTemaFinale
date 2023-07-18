@@ -86,6 +86,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					}	 	 
 					 transition(edgeName="t03",targetState="planFinish",cond=whenReply("doplandone"))
 					transition(edgeName="t04",targetState="stopped",cond=whenEvent("alarm"))
+					transition(edgeName="t05",targetState="resumed",cond=whenEvent("resume"))
 				}	 
 				state("elabGoToIndoor") { //this:State
 					action { //it:State
@@ -130,8 +131,8 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t05",targetState="endok",cond=whenReply("doplandone"))
-					transition(edgeName="t06",targetState="endko",cond=whenReply("doplanfailed"))
+					 transition(edgeName="t06",targetState="endok",cond=whenReply("doplandone"))
+					transition(edgeName="t07",targetState="endko",cond=whenReply("doplanfailed"))
 				}	 
 				state("endok") { //this:State
 					action { //it:State
@@ -171,8 +172,17 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					sysaction { //it:State
 					}	 	 
 				}	 
+				state("resumed") { //this:State
+					action { //it:State
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+				}	 
 				state("planFinish") { //this:State
 					action { //it:State
+						forward("deposit", "deposit(arg)" ,"coldroom" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

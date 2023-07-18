@@ -21,9 +21,16 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
+						subscribeToLocalActor("coldroom") 
 						CommUtils.outgreen("coldstorageservice starts")
 						forward("domove", "domove(home)" ,"transporttrolley" ) 
 						forward("domove", "domove(indoor)" ,"transporttrolley" ) 
+						answer("showticketrequest", "showticketvalid", "showticketvalid(arg)"   )  
+						answer("showticketrequest", "showticketinvalid", "showticketinvalid(arg)"   )  
+						answer("showticketrequest", "ticketrequestaccepted", "ticketrequestaccepted(arg)"   )  
+						answer("showticketrequest", "ticketrequestrefused", "ticketrequestrefused(arg)"   )  
+						forward("chargetaken", "chargetaken(arg)" ,"serviceaccessgui" ) 
+						forward("guiupdate", "guiupdate(arg)" ,"servicestatusgui" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

@@ -46,28 +46,8 @@ Context ctxrasp ip[host="IPRASP" port=1111]
 Context ctxfridgetruck ip [host="127.0.0.1" port=8023] //Eliminare -> funziona solo con 3 contesti
 
 ExternalQActor basicrobot context ctxbasicrobot
-//ExternalQActor led context ctxrasp
-//ExternalQActor sonar context ctxrasp
-
-
-QActor sonar context ctxrasp{
-	State s0 initial{
-		println("transporttrolley starts") color blue
-		
-		emit alarm:alarm(arg)
-		emit resume:resume(arg)
-    	
-	}
-}
-
-QActor led context ctxrasp{
-	State s0 initial{
-		println("transporttrolley starts") color blue
-		
-		
-    	
-	}
-}
+ExternalQActor led context ctxrasp
+ExternalQActor sonar context ctxrasp
 
 QActor transporttrolley context ctxcoldstorageservice{
 	
