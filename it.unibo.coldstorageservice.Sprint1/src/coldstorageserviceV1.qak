@@ -55,7 +55,7 @@ ExternalQActor basicrobot context ctxbasicrobot
  *  - Struttura ticket: idTruck,
  *  -  Perchè coldRoom come POJO e non Attore
  *  - Come abbiamo risolto problema del load time lungo
- * 
+ *  - Problema carico maggiore rispetto al peso trasportabile
  * 
  */
 
@@ -99,7 +99,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	  
 	}
 	Transition t0 whenMsg domove  -> elabMove
-	
+	 
 	State elabMove{
 		
 		onMsg( domove : domove(ARG) ){
@@ -195,6 +195,12 @@ QActor transporttrolley context ctxcoldstorageservice{
 
 
 QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
+	[# val ticketList = listOf<Ticket>() 
+	   val currentWeight = 0 
+	   val maxWeight = 100
+	#]
+	//currentWeight rappresenta il peso virtuale corrente della coldRoom che considera anche i ticket ancora in coda
+	
 	State s0 initial{
 		
 		
@@ -229,17 +235,58 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 				  whenRequest storefood -> elabStoreFood
 	
 	State elabTicketRequest{
+		[#  val ticket = it.unibo.coldstorageservice.Ticket("aaa",Instant.now().epochSecond,3)
+			
+		#]
+		//Verifica id univoco, il ticket verrà aggiunto ad una lista di ticket
+		replyTo ticketrequest with ticketrequestaccepted:ticketrequestaccepted("aaa")
+		
 		
 	}
 	Goto waitclientrequest
 	
 	State elabShowTicketRequest{
 		
+		onMsg( showticketrequest : showticketrequest( TICKET, FW )){
+	    	[# val currentTime = Instant.now().epochSecond 
+		   	   val idTicket = payloadArg(0)
+		   	   
+		   	   for (ticket in ticketList){
+		   	   	  //ciclo for per trovare il biglietto del driver nella lista
+		   	   }
+		   	   
+		   	   val ticketValid = (currentTime - ticket.creationTime) > TIMEMAX
+		   	   if(ticketValid){
+		   	   	
+		   	   
+			#]
+			
+			replyTo showticketrequest with showticketvalid  : showticketvalid("valid")
+			
+			[# } 
+			   else{
+			   	
+			   	
+			#] 
+			
+			replyTo showticketrequest with showticketinvalid  : showticketinvalid("invalid")
+			[# } #] 
+			 
+			    					
+	  	}
+		
+		
 	}
 	Goto waitclientrequest
 	
 	State elabStoreFood{
-		
+		//gestione del caso in cui il peso da depositare del truck è maggiore rispetto alla capacità massima di peso trasportabile dal trolley
+		onMsg( storefood : storefood(FW)){
+			[# val foodWeight = payloadArg()
+					
+			#]
+			forward transporttrolley -m domove:domove(indoor)
+		}
 	}
 	Transition t2 whenTime 2500 -> moveRobotHome
 				  whenRequest storefood -> elabStoreFood
