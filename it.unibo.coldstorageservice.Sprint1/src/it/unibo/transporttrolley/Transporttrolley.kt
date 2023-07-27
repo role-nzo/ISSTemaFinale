@@ -44,7 +44,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				state("waitrobotfree") { //this:State
 					action { //it:State
 						CommUtils.outred("transporttrolley engage refused")
-						request("moverobot", "moverobot(1,5)" ,"basicrobot" )  
+						request("moverobot", "moverobot(1,1)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

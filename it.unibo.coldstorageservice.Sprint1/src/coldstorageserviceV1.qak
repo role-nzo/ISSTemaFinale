@@ -88,7 +88,7 @@ QActor transporttrolley context ctxcoldstorageservice{
                   
     State waitrobotfree{
 		println("transporttrolley engage refused") color red
-        request basicrobot -m moverobot : moverobot(1,5)	
+        request basicrobot -m moverobot : moverobot(1,1)	
 	}
 	
 	State init{
