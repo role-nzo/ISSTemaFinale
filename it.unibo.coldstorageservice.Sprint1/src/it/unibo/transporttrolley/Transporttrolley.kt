@@ -30,6 +30,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
+						discardMessages = false
 						CommUtils.outblue("transporttrolley starts")
 						request("engage", "engage($MyName)" ,"basicrobot" )  
 						//genTimer( actor, state )
@@ -42,6 +43,8 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("waitrobotfree") { //this:State
 					action { //it:State
+						CommUtils.outred("transporttrolley engage refused")
+						request("moverobot", "moverobot(1,5)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -50,6 +53,10 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("init") { //this:State
 					action { //it:State
+						
+						           Plan = planner.planForGoal(""+1,""+6).toString()
+						           Plan = planner.planCompacted(Plan) //Ottengo la stringa delle mosse da fare in forma compatta 
+						request("doplan", "doplan($Plan,worker,$StepTime)" ,"basicrobot" )  
 						 planner.initAI() //Per prendere il planner
 							    planner.loadRoomMap(MapName) //Chiedo al planner di caricare la mappa
 							    planner.showMap() //Chiedo al planner di visualizzare la mappa

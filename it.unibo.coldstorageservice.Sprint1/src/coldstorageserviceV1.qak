@@ -20,25 +20,25 @@ Dispatch domove : domove(TARGET) //FATTO
 
 
 //Ottenimento del ticket
-Request  ticketrequest  : ticketrequest( FW )
-Reply ticketrequestaccepted  : ticketrequestaccepted( TICKET )
-Reply ticketrequestrefused  : ticketrequestrefused( REASON )
+Request newticket		: newticket( FW )
+Reply newticketaccepted : newticketaccepted( TICKET )
+Reply newticketrefused  : newticketrefused( REASON )
 
 
 //Show ticket per rilascio merce
-Request showticketrequest  : showticketrequest( TICKET, FW )
-Reply showticketvalid  : showticketvalid( MESSAGE )
-Reply showticketinvalid  : showticketinvalid( REASON )
+Request ticketrequest : ticketrequest( TICKET, FW )
+Reply ticketaccepted  : ticketaccepted( MESSAGE )
+Reply ticketrejected  : ticketrejected( REASON )
 
 
-Request storefood : storefood(FW)
-Reply chargetaken : chargetaken(MESSAGE)
+Request loaddone	: loaddone(FW)
+Reply chargetaken	: chargetaken(MESSAGE)
 Reply chargefailure : chargefailure(REASON)
 
 
-Context ctxbasicrobot ip [host="127.0.0.1" port=8020]
+Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020]
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
-Context ctxfridgetruck ip [host="127.0.0.1" port=8023] //Eliminare -> funziona solo con 3 contesti
+//Context ctxfridgetruck 		  ip [host="192.168.10.122" port=8023] //Eliminare -> funziona solo con 3 contesti
 
 ExternalQActor basicrobot context ctxbasicrobot
 
@@ -49,7 +49,9 @@ ExternalQActor basicrobot context ctxbasicrobot
  * Problema del load-time lungo -> perchè abbiamo scelto più messaggi per la showTicketRequest
  * 
  * PROBLEMA DRIVER MALEVOLO: come riconoscere il truck
+ * 		--> non necessario
  * PROBLEMA CODA SHOW TICKET: come gestire il caso di più show ticket request
+ * 		--> da testare
  * 
  * Nell'analisi del problema indicare:
  *  - Struttura ticket: idTruck,
@@ -74,6 +76,8 @@ QActor transporttrolley context ctxcoldstorageservice{
 #]
 	
 	State s0 initial{
+		discardMsg Off //We want store the non-handled messages
+		
 		println("transporttrolley starts") color blue
 		//Acquisizione del basicrobot
     	request basicrobot -m engage : engage( $MyName )
@@ -83,10 +87,19 @@ QActor transporttrolley context ctxcoldstorageservice{
                   whenReply engagerefused -> waitrobotfree
                   
     State waitrobotfree{
-	
+		println("transporttrolley engage refused") color red
+        request basicrobot -m moverobot : moverobot(1,5)	
 	}
 	
 	State init{
+		[#
+           Plan = planner.planForGoal(""+1,""+6).toString()
+           Plan = planner.planCompacted(Plan) //Ottengo la stringa delle mosse da fare in forma compatta 
+        #]
+        request basicrobot -m doplan : doplan($Plan, worker, $StepTime)	
+		
+		
+			
 		[# planner.initAI() //Per prendere il planner
 	    planner.loadRoomMap(MapName) //Chiedo al planner di caricare la mappa
 	    planner.showMap() //Chiedo al planner di visualizzare la mappa
@@ -208,19 +221,6 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		
 		println("coldstorageservice starts") color green
 		
-		forward transporttrolley -m domove:domove(home)
-		
-		forward transporttrolley -m domove:domove(indoor)
-		
-		replyTo showticketrequest with showticketvalid:showticketvalid(arg)
-		
-		replyTo showticketrequest with showticketinvalid:showticketinvalid(arg)
-		
-		replyTo showticketrequest with ticketrequestaccepted:ticketrequestaccepted(arg)
-		
-		replyTo showticketrequest with ticketrequestrefused:ticketrequestrefused(arg)
-		
-		
 	}
 	Goto waitclientrequest
 	
@@ -230,38 +230,38 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	  println("$name | waiting the client request...")
 	  
 	}
-	Transition t0 whenRequest ticketrequest  -> elabTicketRequest
-				  whenRequest showticketrequest  -> elabShowTicketRequest
-				  whenRequest storefood -> elabStoreFood
+	Transition t0 whenRequest newticket -> elabNewTicket
+				  whenRequest ticketrequest  -> elabTicketRequest
+				  whenRequest loaddone -> elabLoadDone
 	
-	State elabTicketRequest{
-		[#  val ticket = it.unibo.coldstorageservice.Ticket("aaa",Instant.now().epochSecond,3)
-			
+	State elabNewTicket{
+		[#
+			val ticket = Ticket("aaa", java.time.Instant.now().epochSecond, 3)
 		#]
 		//Verifica id univoco, il ticket verrà aggiunto ad una lista di ticket
-		replyTo ticketrequest with ticketrequestaccepted:ticketrequestaccepted("aaa")
+		replyTo newticket with newticketaccepted:newticketaccepted(aaa)
 		
 		
 	}
 	Goto waitclientrequest
 	
-	State elabShowTicketRequest{
+	State elabTicketRequest{
 		
-		onMsg( showticketrequest : showticketrequest( TICKET, FW )){
-	    	[# val currentTime = Instant.now().epochSecond 
+		onMsg( ticketrequest : ticketrequest( TICKET, FW )){
+	    	[# val currentTime = java.time.Instant.now().epochSecond 
 		   	   val idTicket = payloadArg(0)
 		   	   
 		   	   for (ticket in ticketList){
 		   	   	  //ciclo for per trovare il biglietto del driver nella lista
 		   	   }
 		   	   
-		   	   val ticketValid = (currentTime - ticket.creationTime) > TIMEMAX
-		   	   if(ticketValid){
+		   	   //val ticketValid = (currentTime - ticket.creationTime) > TIMEMAX
+		   	   if(true /*ticketValid*/){
 		   	   	
 		   	   
 			#]
 			
-			replyTo showticketrequest with showticketvalid  : showticketvalid("valid")
+			replyTo ticketrequest with ticketaccepted  : ticketaccepted(valid)
 			
 			[# } 
 			   else{
@@ -269,7 +269,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 			   	
 			#] 
 			
-			replyTo showticketrequest with showticketinvalid  : showticketinvalid("invalid")
+			replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)
 			[# } #] 
 			 
 			    					
@@ -279,17 +279,17 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	}
 	Goto waitclientrequest
 	
-	State elabStoreFood{
+	State elabLoadDone{
 		//gestione del caso in cui il peso da depositare del truck è maggiore rispetto alla capacità massima di peso trasportabile dal trolley
-		onMsg( storefood : storefood(FW)){
-			[# val foodWeight = payloadArg()
+		onMsg( loaddone : loaddone(FW)){
+			[# val foodWeight = payloadArg(0)
 					
 			#]
 			forward transporttrolley -m domove:domove(indoor)
 		}
 	}
 	Transition t2 whenTime 2500 -> moveRobotHome
-				  whenRequest storefood -> elabStoreFood
+				  whenRequest loaddone -> elabLoadDone
 	
 	State moveRobotHome{
 		
@@ -302,11 +302,11 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 
 
 
-QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
+/*QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	State s0 initial{
 		println("fridgetruck starts") color red
 	}
-}
+}*/
 
 
 

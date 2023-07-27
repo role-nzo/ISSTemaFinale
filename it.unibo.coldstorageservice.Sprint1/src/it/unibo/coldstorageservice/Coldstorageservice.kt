@@ -18,16 +18,13 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		val interruptedStateTransitions = mutableListOf<Transition>()
+		 val ticketList = listOf<Ticket>() 
+			   val currentWeight = 0 
+			   val maxWeight = 100
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outgreen("coldstorageservice starts")
-						forward("domove", "domove(home)" ,"transporttrolley" ) 
-						forward("domove", "domove(indoor)" ,"transporttrolley" ) 
-						answer("showticketrequest", "showticketvalid", "showticketvalid(arg)"   )  
-						answer("showticketrequest", "showticketinvalid", "showticketinvalid(arg)"   )  
-						answer("showticketrequest", "ticketrequestaccepted", "ticketrequestaccepted(arg)"   )  
-						answer("showticketrequest", "ticketrequestrefused", "ticketrequestrefused(arg)"   )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -43,12 +40,45 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t06",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
-					transition(edgeName="t07",targetState="elabShowTicketRequest",cond=whenRequest("showticketrequest"))
-					transition(edgeName="t08",targetState="elabStoreFood",cond=whenRequest("storefood"))
+					 transition(edgeName="t06",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					transition(edgeName="t07",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					transition(edgeName="t08",targetState="elabLoadDone",cond=whenRequest("loaddone"))
+				}	 
+				state("elabNewTicket") { //this:State
+					action { //it:State
+						
+									val ticket = Ticket("aaa", java.time.Instant.now().epochSecond, 3)
+						answer("newticket", "newticketaccepted", "newticketaccepted(aaa)"   )  
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="waitclientrequest", cond=doswitch() )
 				}	 
 				state("elabTicketRequest") { //this:State
 					action { //it:State
+						if( checkMsgContent( Term.createTerm("ticketrequest(TICKET,FW)"), Term.createTerm("ticketrequest(TICKET,FW)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 val currentTime = java.time.Instant.now().epochSecond 
+										   	   val idTicket = payloadArg(0)
+										   	   
+										   	   for (ticket in ticketList){
+										   	   	  //ciclo for per trovare il biglietto del driver nella lista
+										   	   }
+										   	   
+										   	   //val ticketValid = (currentTime - ticket.creationTime) > TIMEMAX
+										   	   if(true /*ticketValid*/){
+										   	   	
+										   	   
+								answer("ticketrequest", "ticketaccepted", "ticketaccepted(valid)"   )  
+								 } 
+											   else{
+											   	
+											   	
+								answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
+								 }  
+						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -56,26 +86,23 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					}	 	 
 					 transition( edgeName="goto",targetState="waitclientrequest", cond=doswitch() )
 				}	 
-				state("elabShowTicketRequest") { //this:State
+				state("elabLoadDone") { //this:State
 					action { //it:State
+						if( checkMsgContent( Term.createTerm("loaddone(FW)"), Term.createTerm("loaddone(FW)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 val foodWeight = payloadArg(0)
+													
+								forward("domove", "domove(indoor)" ,"transporttrolley" ) 
+						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
+				 	 		stateTimer = TimerActor("timer_elabLoadDone", 
+				 	 					  scope, context!!, "local_tout_coldstorageservice_elabLoadDone", 2500.toLong() )
 					}	 	 
-					 transition( edgeName="goto",targetState="waitclientrequest", cond=doswitch() )
-				}	 
-				state("elabStoreFood") { //this:State
-					action { //it:State
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-				 	 		stateTimer = TimerActor("timer_elabStoreFood", 
-				 	 					  scope, context!!, "local_tout_coldstorageservice_elabStoreFood", 2500.toLong() )
-					}	 	 
-					 transition(edgeName="t29",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabStoreFood"))   
-					transition(edgeName="t210",targetState="elabStoreFood",cond=whenRequest("storefood"))
+					 transition(edgeName="t29",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabLoadDone"))   
+					transition(edgeName="t210",targetState="elabLoadDone",cond=whenRequest("loaddone"))
 				}	 
 				state("moveRobotHome") { //this:State
 					action { //it:State
