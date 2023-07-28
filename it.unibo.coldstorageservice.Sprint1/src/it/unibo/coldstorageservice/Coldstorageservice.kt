@@ -25,12 +25,17 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outgreen("coldstorageservice starts")
+						forward("goMoveToIndoor", "goMoveToIndoor(0)" ,"transporttrolley" ) 
+						forward("goMoveToColdRoom", "goMoveToColdRoom(0)" ,"transporttrolley" ) 
+						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
+						forward("goMoveToIndoor", "goMoveToIndoor(0)" ,"transporttrolley" ) 
+						forward("goMoveToColdRoom", "goMoveToColdRoom(0)" ,"transporttrolley" ) 
+						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="waitclientrequest", cond=doswitch() )
 				}	 
 				state("waitclientrequest") { //this:State
 					action { //it:State
@@ -40,9 +45,9 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t06",targetState="elabNewTicket",cond=whenRequest("newticket"))
-					transition(edgeName="t07",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
-					transition(edgeName="t08",targetState="elabLoadDone",cond=whenRequest("loaddone"))
+					 transition(edgeName="t011",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					transition(edgeName="t012",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					transition(edgeName="t013",targetState="elabLoadDone",cond=whenRequest("loaddone"))
 				}	 
 				state("elabNewTicket") { //this:State
 					action { //it:State
@@ -92,7 +97,6 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 val foodWeight = payloadArg(0)
 													
-								forward("domove", "domove(indoor)" ,"transporttrolley" ) 
 						}
 						//genTimer( actor, state )
 					}
@@ -101,8 +105,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				 	 		stateTimer = TimerActor("timer_elabLoadDone", 
 				 	 					  scope, context!!, "local_tout_coldstorageservice_elabLoadDone", 2500.toLong() )
 					}	 	 
-					 transition(edgeName="t29",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabLoadDone"))   
-					transition(edgeName="t210",targetState="elabLoadDone",cond=whenRequest("loaddone"))
+					 transition(edgeName="t214",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabLoadDone"))   
+					transition(edgeName="t215",targetState="elabLoadDone",cond=whenRequest("loaddone"))
 				}	 
 				state("moveRobotHome") { //this:State
 					action { //it:State

@@ -1,10 +1,13 @@
 System coldstorageservice
 
-Request engage        : engage(ARG) //FATTO
+Request engage        : engage(OWNER) //FATTO
 Reply   engagedone    : engagedone(ARG) //FATTO
 Reply   engagerefused : engagerefused(ARG) //FATTO
 
-Dispatch disengage : disengage(ARG) //FATTO
+Dispatch disengage    : disengage(ARG) //FATTO
+
+Dispatch setrobotstate: setpos(X,Y,D)
+Dispatch setdirection : dir( D )  //D =up|down!left|right
 
 Request  doplan   : doplan( PATH, OWNER, STEPTIME )
 Reply doplandone  : doplandone( ARG )
@@ -16,7 +19,9 @@ Reply moverobotdone  :  moverobotok(ARG)
 Reply moverobotfailed:  moverobotfailed(ARG)
 
 
-Dispatch domove : domove(TARGET) //FATTO
+Dispatch goMoveToIndoor   : goMoveToIndoor(_) //FATTO
+Dispatch goMoveToColdRoom : goMoveToColdRoom(_) //FATTO
+Dispatch goMoveToHome     : goMoveToHome(_) //FATTO
 
 
 //Ottenimento del ticket
@@ -63,146 +68,83 @@ ExternalQActor basicrobot context ctxbasicrobot
 
 
 QActor transporttrolley context ctxcoldstorageservice{
+	//TODO: gestire il move failed 
 	
-	[#  val planner = unibo.planner23.Planner23Util()
-    val MyName    = name //upcase var
-    //val MapName   = "mapEmpty23"
-    val MapName = "mapCompleteWithObst23ok"
-    val StepTime  = 200 //Era 345
-    var Plan      = ""
-    var TargetX   = ""
-    var TargetY   = ""
-    var Position = "" //Sapere posizione del robot da modificare su doMove (necessario sapere verso che direzione si muove il robot)
-#]
-	
-	State s0 initial{
-		discardMsg Off //We want store the non-handled messages
-		
+	State s0 initial {
 		println("transporttrolley starts") color blue
 		//Acquisizione del basicrobot
-    	request basicrobot -m engage : engage( $MyName )
+    	request basicrobot -m engage : engage(transporttrolley)	
 	}
-	
 	Transition t0 whenReply engagedone    -> init
                   whenReply engagerefused -> waitrobotfree
                   
     State waitrobotfree{
 		println("transporttrolley engage refused") color red
-        request basicrobot -m moverobot : moverobot(1,1)	
 	}
 	
 	State init{
-		[#
-           Plan = planner.planForGoal(""+1,""+6).toString()
-           Plan = planner.planCompacted(Plan) //Ottengo la stringa delle mosse da fare in forma compatta 
-        #]
-        request basicrobot -m doplan : doplan($Plan, worker, $StepTime)	
-		
-		
-			
-		[# planner.initAI() //Per prendere il planner
-	    planner.loadRoomMap(MapName) //Chiedo al planner di caricare la mappa
-	    planner.showMap() //Chiedo al planner di visualizzare la mappa
-	  #]
-	} Goto waitclientrequest
+		println("transporttrolley init") color red
+	} Goto waitcoldstorageservicerequest
 	
-	State waitclientrequest{
-	  
+	
+	State waitcoldstorageservicerequest {
 	  println("$name | waiting the client request...")
-	  
 	}
-	Transition t0 whenMsg domove  -> elabMove
+	Transition t0 whenMsg goMoveToIndoor   -> elabMoveIndoor
+				  whenMsg goMoveToColdRoom -> elabMoveColdRoom
+				  whenMsg goMoveToHome     -> elabMoveHome
 	 
-	State elabMove{
+	State elabMoveIndoor {	
+		printCurrentMessage color blue	
 		
-		onMsg( domove : domove(ARG) ){
-		    [# val dest = payloadArg(0)
-		    	//TODO 	
-		    	
-		  	#]
-		  	println("${dest}")
-		    
-		    /*
-		    [#   Plan = planner.planForGoal(""+0,""+0).toString()
-               Plan = planner.planCompacted(Plan) //Ottengo la stringa delle mosse da fare in forma compatta 
-		
-		    #]  */
-		    //request basicrobot -m doplan : doplan($Plan, worker, $StepTime)
-		  }
-		
-		
+		request basicrobot -m moverobot	: moverobot(0, 4)
 	}
-	Transition t0 whenReply doplandone  -> planFinish
-				 
+	Transition t0 whenReply moverobotdone -> planFinishIndoor
+				  whenReply moverobotfailed -> waitcoldstorageservicerequest
 	
-	State elabGoToIndoor{
-		println("moveTheRobot to Indoor")
+	State elabMoveColdRoom {
 		printCurrentMessage color blue
-            [#
-               Plan = planner.planForGoal(""+1,""+6).toString()
-               Plan = planner.planCompacted(Plan) //Ottengo la stringa delle mosse da fare in forma compatta 
-            #]
-        request basicrobot -m doplan : doplan($Plan, worker, $StepTime)	
+        
+        request basicrobot -m moverobot	: moverobot(4, 3)	
 	}
+	Transition t0 whenReply moverobotdone -> planFinishColdRoom
+				  whenReply moverobotfailed -> waitcoldstorageservicerequest
 	
-	
-	
-	State elabClientRequest{
-	  onMsg( moverobot : moverobot(X,Y)){
-	    [# TargetX = payloadArg(0)
-	      TargetY = payloadArg(1)
-	      #]
-	  }
-	}
-	Goto planTheRobotmoves
-	
-	State planTheRobotmoves{
-		println("moveTheRobot to $TargetX $TargetY")
+	State elabMoveHome {
 		printCurrentMessage color blue
-            [#
-               Plan = planner.planForGoal(""+TargetX,""+TargetY).toString()
-               Plan = planner.planCompacted(Plan) //Ottengo la stringa delle mosse da fare in forma compatta 
-            #]
-        request basicrobot -m doplan : doplan($Plan, worker, $StepTime)
+
+        request basicrobot -m moverobot	: moverobot(0, 0)		
 	}
-	Transition t0 whenReply doplandone   -> endok
-              	  whenReply doplanfailed -> endko
-              	  
-    State endok{
-	  //Aggiorno la posizone del robot sulla mappa
-	  [# planner.doPathOnMap(Plan) #]
-	  [# planner.showCurrentRobotState(); #]
-	  replyTo moverobot with moverobotdone : moverobotdone(ok)
-	}
+	Transition t0 whenReply moverobotdone -> planFinishHome
+				  whenReply moverobotfailed -> waitcoldstorageservicerequest
+
 	
-	State endko{
-		onMsg( doplanfailed : doplanfailed(ARG) ){
-		    [# val PathTodo = payloadArg(0) #]
-		    println("pos NOT reached - PathTodo = ${PathTodo} vs. $Plan") color red
-		    println("${Plan.substring(0, Plan.lastIndexOf(PathTodo))}") color blue
-		    [#   val PathDone = Plan.substring(0, Plan.lastIndexOf(PathTodo))
-		
-		    #]
-		    [# planner.doPathOnMap(PathDone) #]
-		    [# planner.showCurrentRobotState(); #]
-		    replyTo moverobot with moverobotfailed : moverobotfailed($PathDone,$PathTodo)
-		  }
-	}
-	
-	State stopped{
+	State stopped {
 		
 	}
 	
-	State resumed{
+	State resumed {
 		
 	}
 	
-	State planFinish{
-		//Position = coldRoom invia deposit
-		//home si gira faccia in basso
-		//indoor invia charge taken	
+	State planFinishIndoor {
+		//prendere il carico
+	} Goto waitcoldstorageservicerequest
+	
+	State planFinishColdRoom {
+		//depositare il carico
+	} Goto waitcoldstorageservicerequest
+	
+	State planFinishHome {
+		println("$name | at home")
+		delay 1000
 		
-	}
+		//NON FUNZIONA
+		//forward basicrobot -m setdirection : dir(down)
+	    
+	    
+		//aspettare altre richieste
+	} Goto waitcoldstorageservicerequest
 		
 }
 
@@ -215,14 +157,17 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	//currentWeight rappresenta il peso virtuale corrente della coldRoom che considera anche i ticket ancora in coda
 	
 	State s0 initial{
-		
-		
-		
-		
 		println("coldstorageservice starts") color green
 		
+		forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0) 
+		forward transporttrolley -m goMoveToColdRoom : goMoveToColdRoom(0) 
+		forward transporttrolley -m goMoveToHome     : goMoveToHome(0) 
+		
+		forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0) 
+		forward transporttrolley -m goMoveToColdRoom : goMoveToColdRoom(0) 
+		forward transporttrolley -m goMoveToHome     : goMoveToHome(0) 
 	}
-	Goto waitclientrequest
+	//Goto waitclientrequest
 	
 	
 	State waitclientrequest{
@@ -285,7 +230,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 			[# val foodWeight = payloadArg(0)
 					
 			#]
-			forward transporttrolley -m domove:domove(indoor)
+			//forward transporttrolley -m domove:domove(indoor)
 		}
 	}
 	Transition t2 whenTime 2500 -> moveRobotHome

@@ -1,1 +1,3 @@
-{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitclientrequest", "nextstate":"elabMove", "msgId":"domove"}
+{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveIndoor", "msgId":"goMoveToIndoor"}
+{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveColdRoom", "msgId":"goMoveToColdRoom"}
+{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveHome", "msgId":"goMoveToHome"}
