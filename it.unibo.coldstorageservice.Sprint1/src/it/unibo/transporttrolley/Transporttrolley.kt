@@ -119,6 +119,9 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("planFinishIndoor") { //this:State
 					action { //it:State
+						CommUtils.outblack("$name | at Indoor")
+						delay(3000) 
+						answer("waitLoad", "waitLoadDone", "waitLoadDone(valid)"   )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -128,6 +131,8 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("planFinishColdRoom") { //this:State
 					action { //it:State
+						CommUtils.outblack("$name | at CooldRoom")
+						delay(3000) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

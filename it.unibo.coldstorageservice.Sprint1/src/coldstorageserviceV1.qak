@@ -41,9 +41,15 @@ Reply chargetaken	: chargetaken(MESSAGE)
 Reply chargefailure : chargefailure(REASON)
 
 
+Request waitLoad : waitLoad(_)
+Reply waitLoadDone : waitLoadDone(_)
+
+Dispatch deposit : depost(_)
+
+
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020]
-Context ctxcoldstorageservice ip [host="localhost" port=8022]
-//Context ctxfridgetruck 		  ip [host="192.168.10.122" port=8023] //Eliminare -> funziona solo con 3 contesti
+Context ctxcoldstorageservice ip [host="127.0.0.1" port=8022]
+Context ctxfridgetruck 		  ip [host="localhost" port=8023] //Eliminare -> funziona solo con 3 contesti
 
 ExternalQActor basicrobot context ctxbasicrobot
 
@@ -129,13 +135,23 @@ QActor transporttrolley context ctxcoldstorageservice{
 	
 	State planFinishIndoor {
 		//prendere il carico
+		
+		println("$name | at Indoor")
+		delay 3000
+		replyTo waitLoad with waitLoadDone  : waitLoadDone(valid)
+		
 	} Goto waitcoldstorageservicerequest
 	
 	State planFinishColdRoom {
 		//depositare il carico
+		
+		println("$name | at CooldRoom")
+		delay 3000
+		
 	} Goto waitcoldstorageservicerequest
 	
 	State planFinishHome {
+		
 		println("$name | at home")
 		delay 1000
 		
@@ -150,24 +166,33 @@ QActor transporttrolley context ctxcoldstorageservice{
 
 
 QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
-	[# val ticketList = listOf<Ticket>() 
-	   val currentWeight = 0 
-	   val maxWeight = 100
+	[# var ticketList = mutableListOf<Ticket>() 
+	   var currentWeightVirtual = 0 
+	   var maxWeight = 100
+	   var TimeMax = 300
+	   var CurrentTicketFW = 0
+	   var TicketValid = false
+	   
+	   
+	   
 	#]
 	//currentWeight rappresenta il peso virtuale corrente della coldRoom che considera anche i ticket ancora in coda
 	
 	State s0 initial{
 		println("coldstorageservice starts") color green
 		
+		/*
 		forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0) 
 		forward transporttrolley -m goMoveToColdRoom : goMoveToColdRoom(0) 
 		forward transporttrolley -m goMoveToHome     : goMoveToHome(0) 
 		
 		forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0) 
 		forward transporttrolley -m goMoveToColdRoom : goMoveToColdRoom(0) 
-		forward transporttrolley -m goMoveToHome     : goMoveToHome(0) 
+		forward transporttrolley -m goMoveToHome     : goMoveToHome(0)
+		*/
+		
 	}
-	//Goto waitclientrequest
+	Goto waitclientrequest
 	
 	
 	State waitclientrequest{
@@ -177,14 +202,55 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	}
 	Transition t0 whenRequest newticket -> elabNewTicket
 				  whenRequest ticketrequest  -> elabTicketRequest
-				  whenRequest loaddone -> elabLoadDone
+				  
 	
 	State elabNewTicket{
-		[#
-			val ticket = Ticket("aaa", java.time.Instant.now().epochSecond, 3)
-		#]
+		
+		println("$name | elab new ticket")
+		
+		onMsg( newticket : newticket( FW )){
+			
+			[#
+			
+			var fw = payloadArg(0).toInt()
+			if(currentWeightVirtual + fw <= maxWeight){
+				currentWeightVirtual+=fw
+				var Id = Ticket.getRandomId() 
+				var found = false
+				while(found){
+				found = false
+				
+					for (t in ticketList){
+						if(t.id==Id){
+							Id = Ticket.getRandomId()
+							found = true
+							break
+						}
+					}
+				}
+				
+				var ticket = Ticket(Id, java.time.Instant.now().epochSecond, fw)
+				
+				ticketList.add(ticket)
+				
+				println(ticket)
+				
+			
+			#]
+			
+			
+			
+			replyTo newticket with newticketaccepted:newticketaccepted( $Id )
+			[#
+				} else
+			#]
+			replyTo newticket with newticketrefused:newticketrefused( Peso )
+			
+		}
+		
+		
 		//Verifica id univoco, il ticket verrà aggiunto ad una lista di ticket
-		replyTo newticket with newticketaccepted:newticketaccepted(aaa)
+		
 		
 		
 	}
@@ -192,51 +258,104 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	State elabTicketRequest{
 		
+		println("$name | elab ticket request")
+		
 		onMsg( ticketrequest : ticketrequest( TICKET, FW )){
 	    	[# val currentTime = java.time.Instant.now().epochSecond 
 		   	   val idTicket = payloadArg(0)
+		   	   val foodWeight = payloadArg(1).toInt()
 		   	   
-		   	   for (ticket in ticketList){
+		   	   var ticket : Ticket? = null
+		   	   
+		   	   for (t in ticketList){
 		   	   	  //ciclo for per trovare il biglietto del driver nella lista
+		   	   	  if(t.id == idTicket){
+		   	   	  	
+		   	   	  	ticket = t
+		   	   	  	break
+		   	   	  }
 		   	   }
 		   	   
-		   	   //val ticketValid = (currentTime - ticket.creationTime) > TIMEMAX
-		   	   if(true /*ticketValid*/){
+		   	   if(ticket==null){ 
+		   	   	TicketValid = false
+		   	   	println("Not found")
+		   	   	#]
+		   	   	replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)
+		   	   [#} 	   
+			   	  
+			   	  if(foodWeight<ticket!!.fw){
+			   	   		currentWeightVirtual -= (ticket!!.fw-foodWeight)
+			   	   }
+			   	   
+			   	   ticketList.remove(ticket)
+			   	   
+			   	   println(currentTime - ticket!!.creationTime)
+			   	   
+			   	   if((currentTime - ticket!!.creationTime) < TimeMax){	
+			   	   	
+			   	   	TicketValid = true
+			   	   	println("ticket valid")	
 		   	   	
 		   	   
 			#]
 			
-			replyTo ticketrequest with ticketaccepted  : ticketaccepted(valid)
+				replyTo ticketrequest with ticketaccepted  : ticketaccepted(valid)
 			
-			[# } 
-			   else{
-			   	
-			   	
-			#] 
-			
-			replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)
-			[# } #] 
-			 
+			[# 	} else{
+					
+					currentWeightVirtual -= ticket!!.fw
+			   		TicketValid = false
+				
+				#]
+				replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)		 
 			    					
-	  	}
-		
+	  	[# } #]
+	  	
+	  	}		
 		
 	}
-	Goto waitclientrequest
+	Goto waitclientrequest if[# !TicketValid #] else waitLoadDoneRequest
+	
+	State waitLoadDoneRequest{
+		println("$name | wait load request")
+		
+	}
+	Transition t1 whenRequest loaddone -> elabLoadDone
 	
 	State elabLoadDone{
+		
+		println("$name | elab load done")
+		
 		//gestione del caso in cui il peso da depositare del truck è maggiore rispetto alla capacità massima di peso trasportabile dal trolley
 		onMsg( loaddone : loaddone(FW)){
-			[# val foodWeight = payloadArg(0)
-					
+			[# 
+					CurrentTicketFW = payloadArg(0).toInt()
 			#]
-			//forward transporttrolley -m domove:domove(indoor)
+			forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0)
+			request transporttrolley -m waitLoad : waitLoad(0)
+			//TODO: transportrolley deve andare da solo in coldRoom dopo essere andato in Indoor e prelevato
+			
+			
 		}
 	}
-	Transition t2 whenTime 2500 -> moveRobotHome
-				  whenRequest loaddone -> elabLoadDone
+	Transition t2 whenReply waitLoadDone -> elabWaitLoad
+	 
+	
+	State elabWaitLoad{
+		//Invio charge taken fridge truck 
+	}
+	Transition t3 whenMsg deposit -> elabDeposit
+	
+	State elabDeposit{
+		
+		
+		
+	}
+	Transition t4 whenTime 2500 -> moveRobotHome
+				  whenRequest ticketrequest  -> elabTicketRequest
 	
 	State moveRobotHome{
+		forward transporttrolley -m goMoveToHome     : goMoveToHome(0)
 		
 	}
 	Goto waitclientrequest
@@ -247,11 +366,32 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 
 
 
-/*QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
+QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	State s0 initial{
 		println("fridgetruck starts") color red
+		request coldstorageservice -m newticket		: newticket( 3 )
 	}
-}*/
+	Transition t0 whenReply newticketaccepted -> elabTicketAccepted
+	
+	State elabTicketAccepted{
+		
+		println("QUI")
+		
+		onMsg( newticketaccepted : newticketaccepted(TICKET)){
+			[# 
+					var CurrentTicketId = payloadArg(0)
+					println(CurrentTicketId)
+			#]
+			
+			request coldstorageservice -m ticketrequest : ticketrequest($CurrentTicketId, 3)
+			
+			
+			
+		}
+	}
+	
+	
+}
 
 
 
