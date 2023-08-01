@@ -46,8 +46,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t011",targetState="elabNewTicket",cond=whenRequest("newticket"))
-					transition(edgeName="t012",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					 transition(edgeName="t012",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					transition(edgeName="t013",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
 				}	 
 				state("elabNewTicket") { //this:State
 					action { //it:State
@@ -82,8 +82,10 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 											
 								answer("newticket", "newticketaccepted", "newticketaccepted($Id)"   )  
 								
-												} else
+												} else {
 								answer("newticket", "newticketrefused", "newticketrefused(Peso)"   )  
+								
+												}
 						}
 						//genTimer( actor, state )
 					}
@@ -97,49 +99,49 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						CommUtils.outblack("$name | elab ticket request")
 						if( checkMsgContent( Term.createTerm("ticketrequest(TICKET,FW)"), Term.createTerm("ticketrequest(TICKET,FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								 val currentTime = java.time.Instant.now().epochSecond 
-										   	   val idTicket = payloadArg(0)
-										   	   val foodWeight = payloadArg(1).toInt()
+								
+												val currentTime = java.time.Instant.now().epochSecond 
+										   	   	val idTicket = payloadArg(0)
+										   	   	val foodWeight = payloadArg(1).toInt()
 										   	   
-										   	   var ticket : Ticket? = null
+										   	   	var ticket : Ticket? = null
 										   	   
-										   	   for (t in ticketList){
-										   	   	  //ciclo for per trovare il biglietto del driver nella lista
-										   	   	  if(t.id == idTicket){
+										   	   	for (t in ticketList) {
+													//ciclo for per trovare il biglietto del driver nella lista
+										   	   	  	if(t.id == idTicket) {
 										   	   	  	
-										   	   	  	ticket = t
-										   	   	  	break
-										   	   	  }
-										   	   }
+										   	   	  		ticket = t
+										   	   	  		break
+										   	   	  	}
+										   	   	}
 										   	   
-										   	   if(ticket==null){ 
-										   	   	TicketValid = false
-										   	   	println("Not found")
+										   	   	if(ticket==null) { 
+										   	   		TicketValid = false
+										   	   		println("Not found")
 								answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
-								} 	   
+								
+										   	   	} 	   
 											   	  
-											   	  if(foodWeight<ticket!!.fw){
-											   	   		currentWeightVirtual -= (ticket!!.fw-foodWeight)
-											   	   }
+											   	if(foodWeight<ticket!!.fw){
+													currentWeightVirtual -= (ticket!!.fw-foodWeight)
+											   	}
 											   	   
-											   	   ticketList.remove(ticket)
+												ticketList.remove(ticket)
 											   	   
-											   	   println(currentTime - ticket!!.creationTime)
+												println(currentTime - ticket!!.creationTime)
 											   	   
-											   	   if((currentTime - ticket!!.creationTime) < TimeMax){	
+												if((currentTime - ticket!!.creationTime) < TimeMax) {	
 											   	   	
-											   	   	TicketValid = true
+													TicketValid = true
 											   	   	println("ticket valid")	
-										   	   	
-										   	   
 								answer("ticketrequest", "ticketaccepted", "ticketaccepted(valid)"   )  
-								 	} else{
-													
+								
+												} else{
 													currentWeightVirtual -= ticket!!.fw
 											   		TicketValid = false
-												
 								answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
-								 }  
+								
+										  		}
 						}
 						//genTimer( actor, state )
 					}
@@ -159,7 +161,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t113",targetState="elabLoadDone",cond=whenRequest("loaddone"))
+					 transition(edgeName="t114",targetState="elabLoadDone",cond=whenRequest("loaddone"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -176,19 +178,22 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t214",targetState="elabWaitLoad",cond=whenReply("waitLoadDone"))
+					 transition(edgeName="t215",targetState="elabWaitDeposit",cond=whenReply("waitLoadDone"))
 				}	 
-				state("elabWaitLoad") { //this:State
+				state("elabWaitDeposit") { //this:State
 					action { //it:State
+						CommUtils.outblack("$name | elab wait load done")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t315",targetState="elabDeposit",cond=whenDispatch("deposit"))
+					 transition(edgeName="t316",targetState="elabDeposit",cond=whenDispatch("deposit"))
 				}	 
 				state("elabDeposit") { //this:State
 					action { //it:State
+						CommUtils.outblack("$name | elab deposit")
+						answer("loaddone", "chargetaken", "chargetaken(0)"   )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -196,8 +201,9 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				 	 		stateTimer = TimerActor("timer_elabDeposit", 
 				 	 					  scope, context!!, "local_tout_coldstorageservice_elabDeposit", 2500.toLong() )
 					}	 	 
-					 transition(edgeName="t416",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabDeposit"))   
-					transition(edgeName="t417",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					 transition(edgeName="t417",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabDeposit"))   
+					transition(edgeName="t418",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					transition(edgeName="t419",targetState="elabNewTicket",cond=whenRequest("newticket"))
 				}	 
 				state("moveRobotHome") { //this:State
 					action { //it:State
