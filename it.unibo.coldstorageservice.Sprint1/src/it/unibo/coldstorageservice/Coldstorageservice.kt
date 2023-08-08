@@ -18,20 +18,13 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		val interruptedStateTransitions = mutableListOf<Transition>()
-		 var ticketList = mutableListOf<Ticket>() 
-			   var currentWeightVirtual = 0 
-			   var currentWeightReal = 0
-			   var maxWeight = 100
-			   var TimeMax = 300
+		 var currentWeightReal = 0
 			   var CurrentTicketFW = 0
-			   var TicketValid = false
-			   
-			   
-			   
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outgreen("coldstorageservice starts")
+						delegate("newticket", "ticketservice") 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -42,117 +35,51 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				state("waitclientrequest") { //this:State
 					action { //it:State
 						CommUtils.outblack("$name | waiting the client request...")
+						updateResourceRep( "ciao"  
+						)
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t013",targetState="elabNewTicket",cond=whenRequest("newticket"))
-					transition(edgeName="t014",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					 transition(edgeName="t015",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
 				}	 
-				state("elabNewTicket") { //this:State
+				state("elabTicketRequest") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name | elab new ticket")
-						if( checkMsgContent( Term.createTerm("newticket(FW)"), Term.createTerm("newticket(FW)"), 
+						if( checkMsgContent( Term.createTerm("ticketrequest(TICKET,FW)"), Term.createTerm("ticketrequest(TICKET,FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								
-											
-											var fw = payloadArg(0).toInt()
-											if(currentWeightVirtual + fw <= maxWeight){
-												currentWeightVirtual += fw
-												var Id = Ticket.getRandomId() 
-												var found = false
-												while(found){
-												found = false
-												
-													for (t in ticketList){
-														if(t.id==Id){
-															Id = Ticket.getRandomId()
-															found = true
-															break
-														}
-													}
-												}
-												
-												var ticket = Ticket(Id, java.time.Instant.now().epochSecond, fw)
-												
-												ticketList.add(ticket)
-												
-												println(ticket)
-												
-											
-								answer("newticket", "newticketaccepted", "newticketaccepted($Id)"   )  
-								
-												} else {
-								answer("newticket", "newticketrefused", "newticketrefused(Peso)"   )  
-								
-												}
+								 
+										   	   	val IDTicket = payloadArg(0)
+										   	   	val FoodWeight = payloadArg(1)   	
+								request("ticketrequest", "ticketrequest($IDTicket,$FoodWeight)" ,"ticketservice" )  
 						}
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t116",targetState="elabTicketAccepted",cond=whenReply("ticketaccepted"))
+					transition(edgeName="t117",targetState="elabTicketRejected",cond=whenReply("ticketrejected"))
+				}	 
+				state("elabTicketAccepted") { //this:State
+					action { //it:State
+						answer("ticketrequest", "ticketaccepted", "ticketaccepted(valid)"   )  
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="waitLoadDoneRequest", cond=doswitch() )
+				}	 
+				state("elabTicketRejected") { //this:State
+					action { //it:State
+						answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
 					 transition( edgeName="goto",targetState="waitclientrequest", cond=doswitch() )
-				}	 
-				state("elabTicketRequest") { //this:State
-					action { //it:State
-						CommUtils.outblack("$name | elab ticket request")
-						if( checkMsgContent( Term.createTerm("ticketrequest(TICKET,FW)"), Term.createTerm("ticketrequest(TICKET,FW)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								
-												val currentTime = java.time.Instant.now().epochSecond 
-										   	   	val idTicket = payloadArg(0)
-										   	   	val foodWeight = payloadArg(1).toInt()
-										   	   
-										   	   	var ticket : Ticket? = null
-										   	   
-										   	   	for (t in ticketList) {
-													//ciclo for per trovare il biglietto del driver nella lista
-										   	   	  	if(t.id == idTicket) {
-										   	   	  	
-										   	   	  		ticket = t
-										   	   	  		break
-										   	   	  	}
-										   	   	}
-										   	   
-										   	   	if(ticket==null) { 
-										   	   		TicketValid = false
-										   	   		println("Not found")
-								answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
-								
-										   	   	} 	   
-											   	  
-											   	if(foodWeight<ticket!!.fw){
-													currentWeightVirtual -= (ticket!!.fw-foodWeight)
-											   	}
-											   	   
-												ticketList.remove(ticket)
-											   	   
-												println(currentTime - ticket!!.creationTime)
-											   	   
-												if((currentTime - ticket!!.creationTime) < TimeMax) {	
-											   	   	
-													TicketValid = true
-											   	   	println("ticket valid")	
-								answer("ticketrequest", "ticketaccepted", "ticketaccepted(valid)"   )  
-								
-												} else{
-													currentWeightVirtual -= ticket!!.fw
-											   		TicketValid = false
-								answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
-								
-										  		}
-						}
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition( edgeName="goto",targetState="waitclientrequest", cond=doswitchGuarded({ !TicketValid  
-					}) )
-					transition( edgeName="goto",targetState="waitLoadDoneRequest", cond=doswitchGuarded({! ( !TicketValid  
-					) }) )
 				}	 
 				state("waitLoadDoneRequest") { //this:State
 					action { //it:State
@@ -162,7 +89,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t115",targetState="elabLoadDone",cond=whenRequest("loaddone"))
+					 transition(edgeName="t218",targetState="elabLoadDone",cond=whenRequest("loaddone"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -179,7 +106,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t216",targetState="elabWaitDeposit",cond=whenReply("waitLoadDone"))
+					 transition(edgeName="t319",targetState="elabWaitDeposit",cond=whenReply("waitLoadDone"))
 				}	 
 				state("elabWaitDeposit") { //this:State
 					action { //it:State
@@ -189,7 +116,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t317",targetState="elabDeposit",cond=whenDispatch("deposit"))
+					 transition(edgeName="t420",targetState="elabDeposit",cond=whenDispatch("deposit"))
 				}	 
 				state("elabDeposit") { //this:State
 					action { //it:State
@@ -205,8 +132,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				 	 		stateTimer = TimerActor("timer_elabDeposit", 
 				 	 					  scope, context!!, "local_tout_coldstorageservice_elabDeposit", 2500.toLong() )
 					}	 	 
-					 transition(edgeName="t418",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabDeposit"))   
-					transition(edgeName="t419",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					 transition(edgeName="t521",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabDeposit"))   
+					transition(edgeName="t522",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
 				}	 
 				state("moveRobotHome") { //this:State
 					action { //it:State

@@ -22,13 +22,14 @@ class Fridgetrucktemp ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( 
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outred("fridgetruck starts")
+						delay(3000) 
 						request("newticket", "newticket(97)" ,"coldstorageservice" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t023",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
+					 transition(edgeName="t026",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
 				}	 
 				state("elabTicketAccepted") { //this:State
 					action { //it:State
@@ -45,7 +46,7 @@ class Fridgetrucktemp ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t124",targetState="elabLoadDone",cond=whenReply("ticketaccepted"))
+					 transition(edgeName="t127",targetState="elabLoadDone",cond=whenReply("ticketaccepted"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -55,7 +56,7 @@ class Fridgetrucktemp ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t125",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
+					 transition(edgeName="t128",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
 				}	 
 				state("elabChargeTaken") { //this:State
 					action { //it:State

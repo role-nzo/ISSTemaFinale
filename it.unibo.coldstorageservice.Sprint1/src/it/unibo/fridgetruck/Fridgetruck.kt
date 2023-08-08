@@ -28,7 +28,7 @@ class Fridgetruck ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t020",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
+					 transition(edgeName="t023",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
 				}	 
 				state("elabTicketAccepted") { //this:State
 					action { //it:State
@@ -45,7 +45,7 @@ class Fridgetruck ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t121",targetState="elabLoadDone",cond=whenReply("ticketaccepted"))
+					 transition(edgeName="t124",targetState="elabLoadDone",cond=whenReply("ticketaccepted"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -55,7 +55,7 @@ class Fridgetruck ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t122",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
+					 transition(edgeName="t125",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
 				}	 
 				state("elabChargeTaken") { //this:State
 					action { //it:State

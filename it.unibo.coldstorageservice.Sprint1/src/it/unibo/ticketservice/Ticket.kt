@@ -1,4 +1,4 @@
-package it.unibo.coldstorageservice
+package it.unibo.ticketservice
 
 data class Ticket(val id: String, val creationTime: Long, val fw: Int) {
 
