@@ -20,6 +20,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 		val interruptedStateTransitions = mutableListOf<Transition>()
 		 var ticketList = mutableListOf<Ticket>() 
 			   var currentWeightVirtual = 0 
+			   var currentWeightReal = 0
 			   var maxWeight = 100
 			   var TimeMax = 300
 			   var CurrentTicketFW = 0
@@ -46,8 +47,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t012",targetState="elabNewTicket",cond=whenRequest("newticket"))
-					transition(edgeName="t013",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					 transition(edgeName="t013",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					transition(edgeName="t014",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
 				}	 
 				state("elabNewTicket") { //this:State
 					action { //it:State
@@ -58,7 +59,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 											
 											var fw = payloadArg(0).toInt()
 											if(currentWeightVirtual + fw <= maxWeight){
-												currentWeightVirtual+=fw
+												currentWeightVirtual += fw
 												var Id = Ticket.getRandomId() 
 												var found = false
 												while(found){
@@ -161,7 +162,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t114",targetState="elabLoadDone",cond=whenRequest("loaddone"))
+					 transition(edgeName="t115",targetState="elabLoadDone",cond=whenRequest("loaddone"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -178,7 +179,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t215",targetState="elabWaitDeposit",cond=whenReply("waitLoadDone"))
+					 transition(edgeName="t216",targetState="elabWaitDeposit",cond=whenReply("waitLoadDone"))
 				}	 
 				state("elabWaitDeposit") { //this:State
 					action { //it:State
@@ -188,11 +189,14 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t316",targetState="elabDeposit",cond=whenDispatch("deposit"))
+					 transition(edgeName="t317",targetState="elabDeposit",cond=whenDispatch("deposit"))
 				}	 
 				state("elabDeposit") { //this:State
 					action { //it:State
 						CommUtils.outblack("$name | elab deposit")
+						
+									currentWeightReal += CurrentTicketFW	
+						CommUtils.outblack("Deposit - Current weight real: $currentWeightReal")
 						answer("loaddone", "chargetaken", "chargetaken(0)"   )  
 						//genTimer( actor, state )
 					}
@@ -201,9 +205,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				 	 		stateTimer = TimerActor("timer_elabDeposit", 
 				 	 					  scope, context!!, "local_tout_coldstorageservice_elabDeposit", 2500.toLong() )
 					}	 	 
-					 transition(edgeName="t417",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabDeposit"))   
-					transition(edgeName="t418",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
-					transition(edgeName="t419",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					 transition(edgeName="t418",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabDeposit"))   
+					transition(edgeName="t419",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
 				}	 
 				state("moveRobotHome") { //this:State
 					action { //it:State

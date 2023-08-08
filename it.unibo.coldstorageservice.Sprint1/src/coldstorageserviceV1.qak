@@ -47,9 +47,10 @@ Reply waitLoadDone : waitLoadDone(_)
 Dispatch deposit : depost(_)
 
 
-Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020]
-Context ctxcoldstorageservice ip [host="localhost" port=8022]
+Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
+Context ctxcoldstorageservice ip [host="127.0.0.1" port=8022]
 Context ctxfridgetruck 		  ip [host="127.0.0.1" port=8023] //Eliminare -> funziona solo con 3 contesti
+Context ctxfridgetrucktemp 	  ip [host="localhost" port=8024] //Eliminare -> funziona solo con 3 contesti
 
 ExternalQActor basicrobot context ctxbasicrobot
 
@@ -77,7 +78,15 @@ ExternalQActor basicrobot context ctxbasicrobot
  * 
  * PROBLEMA FRIDGE TRUCK:
  * TcpMsgHandler  | ERROR: A term starting with 0-9 cannot be parsed as a number
- * potrebbe dipendere da un ticket che comincia con un intero?
+ * dipende dal ticket che comincia con un intero
+ * 		
+ */
+ 
+ 
+/*
+ * TODO:
+ * 1. gestione svuotamento periodico cold room
+ * 2. gestione elaborazione ticket: 
  */
 
 QActor transporttrolley context ctxcoldstorageservice{
@@ -147,6 +156,13 @@ QActor transporttrolley context ctxcoldstorageservice{
 		delay 3000
 	} Transition t1 whenRequest waitLoad -> elabWaitLoad
 	
+	State planFailedIndoor {
+		//prendere il carico
+		
+		println("$name | at Indoor")
+		delay 3000
+	} Transition t1 whenRequest waitLoad -> elabWaitLoad
+	
 	State elabWaitLoad {
 		replyTo waitLoad with waitLoadDone  : waitLoadDone(valid)
 	} Goto elabMoveColdRoom
@@ -178,6 +194,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	[# var ticketList = mutableListOf<Ticket>() 
 	   var currentWeightVirtual = 0 
+	   var currentWeightReal = 0
 	   var maxWeight = 100
 	   var TimeMax = 300
 	   var CurrentTicketFW = 0
@@ -222,7 +239,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 			
 			var fw = payloadArg(0).toInt()
 			if(currentWeightVirtual + fw <= maxWeight){
-				currentWeightVirtual+=fw
+				currentWeightVirtual += fw
 				var Id = Ticket.getRandomId() 
 				var found = false
 				while(found){
@@ -351,13 +368,17 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	State elabDeposit {
 		println("$name | elab deposit")
+		
+		[#
+			currentWeightReal += CurrentTicketFW	
+		#]
+		
+		println("Deposit - Current weight real: $currentWeightReal")
+		
 		replyTo loaddone with chargetaken : chargetaken(0) 
 	}
 	Transition t4 whenTime 2500 -> moveRobotHome
 				  whenRequest ticketrequest  -> elabTicketRequest
-				  whenRequest newticket-> elabNewTicket
-				  //TODO: con l'esempio corrente se il ticket non è già stato creato il robot torna sempre alla home
-				  //	aggiungendo l'ultima riga sopra quando il robot è in COLD ROOM può accettare nuovi ticket
 				  
 	
 	State moveRobotHome {
@@ -404,7 +425,42 @@ QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	
 	State elabChargeTaken {
 		
-	} Goto s0
+	}
+	
+}
+
+QActor fridgetrucktemp context ctxfridgetrucktemp{ //SCOMPARE
+	
+	State s0 initial {
+		println("fridgetruck starts") color red
+		request coldstorageservice -m newticket		: newticket( 97 )
+	}
+	Transition t0 whenReply newticketaccepted -> elabTicketAccepted
+	
+	State elabTicketAccepted {
+		
+		println("QUI")
+		
+		onMsg( newticketaccepted : newticketaccepted(TICKET)){
+			[# 
+				var CurrentTicketId = payloadArg(0)
+				println(CurrentTicketId)
+			#]
+			
+			request coldstorageservice -m ticketrequest : ticketrequest($CurrentTicketId, 97)
+		}
+	}
+	Transition t1 whenReply ticketaccepted -> elabLoadDone
+				  //whenReply ticketrejected -> s0
+	
+	State elabLoadDone {
+		request coldstorageservice -m loaddone : loaddone( 97 )
+	}
+	Transition t1 whenReply chargetaken -> elabChargeTaken
+	
+	State elabChargeTaken {
+		
+	}
 	
 }
 

@@ -128,6 +128,17 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					}	 	 
 					 transition(edgeName="t111",targetState="elabWaitLoad",cond=whenRequest("waitLoad"))
 				}	 
+				state("planFailedIndoor") { //this:State
+					action { //it:State
+						CommUtils.outblack("$name | at Indoor")
+						delay(3000) 
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t112",targetState="elabWaitLoad",cond=whenRequest("waitLoad"))
+				}	 
 				state("elabWaitLoad") { //this:State
 					action { //it:State
 						answer("waitLoad", "waitLoadDone", "waitLoadDone(valid)"   )  

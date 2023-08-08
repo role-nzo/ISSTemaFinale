@@ -6,7 +6,7 @@ data class Ticket(val id: String, val creationTime: Long, val fw: Int) {
         @JvmStatic
         fun getRandomId() : String {
             val length = 5
-            val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+            val allowedChars = ('A'..'Z') + ('a'..'z')
             return (1..length)
                 .map { allowedChars.random() }
                 .joinToString("")
