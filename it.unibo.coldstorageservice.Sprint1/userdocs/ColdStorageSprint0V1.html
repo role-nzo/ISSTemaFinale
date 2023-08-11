@@ -202,16 +202,22 @@
 
 <head>
     
-    <title>ColdStorageSprint0V1</title></head>
+    <title>ColdStorageSprint1V1</title></head>
     
     <body>
         <div id="top">
-            <h1>ColdStorageSprint0V1</h1>
+            <h1>ColdStorageSprint1V1</h1>
         </div>  
         
         <div class="body"> 
             <h2>Introduction</h2>
-            <div class="remark"></div>
+            <div class="remark">
+                Lo sprint0 ha prodotto la seguente architettura:
+                <br>
+                <img src="../it.unibo.coldstorageservice/coldstorageservicearch.png" width="50%">
+                <br>
+
+            </div>
             
             <h2>Requirements</h2>
             <div class="remark">
@@ -219,16 +225,16 @@
                 <br><br>
                 <b>Goal di questo sprint:</b>
                 <ul>
-                    <li>individuare un architettura logica iniziale che definisca le macro-entità del sistema e le loro interazioni</li>
-                    <li>definire un piano di lavoro iniziale</li>
+                    <li>sviluppo del core business del sistema: coldstorageservice, transporttrolley, coldroom</li>
+                    <li>testing dei componenti sviluppati</li>
                 </ul>
             </div>
             
             <h2>Requirement analysis</h2>
             <div class="remark">
-                Dai requisiti possiamo evincere che:
+                <b>KEY POINT</b>: Dai requisiti possiamo evincere che: 
                 <ul>
-                    <li><i>ColdStorageService</i> è il sistema che si intende sviluppare composto dagli elementi sotto elencati.</li>
+                    <li>Le richieste di emissione ticket devono poter essere elaborate in parallelo alle azioni di carico e scarico del TransportTrolley</li>
                     
                     <li>
                         <i>Service area</i> è l'area di lavoro del sistema e si assume sia rettangolare e in piano.
@@ -283,7 +289,68 @@
                         <li>Il processo di scarico della <i>ColdRoom</i> sarebbe da realizzare mediante un attore apposito. Tale realizzazione non è d'interesse in questo processo ma può essere implementato in uno sviluppo futuro.</li>
                     </ul>
                 </div>
+
+                <h2>Analisi del Problema</h2>
+                <div class="remark">
+                    coldroom come pojo, peso virtuale e peso reale FATTO
+                    gestione svuotamento coldroom (attore dedicato) DA FARE
+                    driver distratto, carico minore o uguale a quello dichiarato DA FARE
+                    driver malevolo, come riconoscere il truck DA FARE
+                    struttura ticket FATTO
+                    ticketservice FATTO
+
+                    <b>Problema load-time lungo</b>, quando il fridge truck invia il ticket come messaggio di showticket non riceve alcuna risposta fino a quando il robot completa l'operazione di carico. 
+                    In questo modo il truck è in grado di capire se il suo ticket è valido solamente quando riceve un messaggio di chargeTaken, quindi nel caso in cui il suo ticket
+                    sia stato rifiutato non riceverebbe nessun messaggio e continuerebbe a rimanere in attesa. Quindi per affrontare questo problema è stato pensato di impostare
+                    un'interazione a DUE-FASI tra driver e ColdStorageService:
+                    <ul>
+                        <li><b>FASE 1</b>: il driver invia il ticket e attenda una risposta (immediata) come ad esempio ticketaccepted/ticketrejected </li>
+                        <li><b>FASE 2</b>: il driver invia la richiesta loaddone e attenda la risposta (chargeTaken o fallimento per cause legate al servizio)</li>
+                    </ul> 
+                    <br>
+                    <b>ColdRoom</b>, è stato deciso di rappresentarla mediante due variabili, <pre>CurrentWeightReal</pre> e <pre>CurrentWeightVirtual</pre>.
+                    <pre>CurrentWeightReal</pre> rappresenta il peso effettivo contenuto all'interno della ColdRoom.
+                    <pre>CurrentWeightVirtual</pre> rappresenta il peso effettivo contenuto all'interno della ColdRoom sommato al peso totale dato dai ticket emessi ma non ancora elaborati.
+                    <pre>CurrentWeightReal</pre> viene gestito dalla ColdStorageService mentre <pre>CurrentWeightVirtual</pre> viene gestito dal TicketService.
+                    <br>
+
+                    <b>Struttura Ticket:</b><br>
+                    <pre>
+                        data class Ticket(val id: String, val creationTime: Long, val fw: Int) {
+
+                            companion object{
+                                @JvmStatic
+                                fun getRandomId() : String {
+                                    val length = 5
+                                    val allowedChars = ('A'..'Z') + ('a'..'z')
+                                    return (1..length)
+                                        .map { allowedChars.random() }
+                                        .joinToString("")
+                                }
+                            }
+                        }
+                    </pre>
+                    <br>
+                    I parametri per la creazione di un Ticket sono i seguenti:
+                    <ul>
+                        <li><i>Id</i>: consiste in una stringa, contenente caratteri alfabetici, generata casualmente.</li>
+                        <li><i>creationTime</i>: equivale all'istante di tempo in cui viene creato il ticket. Questo campo verrà utilizzato per verificarne la validità</li>
+                        <li><i>fw</i>: riguarda l'informazione relativa al peso del carico, in modo da poter gestire il problema del driver distratto che verrà affrontato in seguito.</li>
+                    </ul>
+                    <br>
+                    <b>TicketService</b>, viene modellato come attore per permettere all'applicazione di essere in grado di rispondere sempre alle richieste di nuovi ticket, per quindi consentire un'elaborazione in parallelo 
+                    delle operazioni di emissione ticket e azioni di carico e scarico del TransportTrolley. Per fare ciò si è scelto di delegare a tale attore i messaggi newticket in ingresso.
+                    Inoltre si occupa di verificare la validità di un ticket presentato da un fridge truck, e verifica che il CurrentWeightVirtual non ecceda il limite imposto dalla capacità della ColdRoom.
+                    <br>
+                    <b></b>
+                   
                 
+
+
+
+                    
+                </div>
+
                 <h2>Architettura logica</h2>
                 <div class="remark">
                     <img src="../it.unibo.coldstorageservice/coldstorageservicearch.png" width="100%">

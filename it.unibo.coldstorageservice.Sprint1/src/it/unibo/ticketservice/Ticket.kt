@@ -11,9 +11,5 @@ data class Ticket(val id: String, val creationTime: Long, val fw: Int) {
                 .map { allowedChars.random() }
                 .joinToString("")
         }
-
     }
-
-
-
 }
