@@ -44,15 +44,12 @@ Reply chargefailure : chargefailure(REASON)
 Request waitLoad : waitLoad(_)
 Reply waitLoadDone : waitLoadDone(_)
 
-Dispatch deposit : depost(_)
+Dispatch deposit : deposit(_)
+Dispatch updatevirtualweight : updatevirtualweight(FW)
 
+Request clearColdRoom : clearColdRoom(_)
+Reply coldRoomCleared : coldRoomCleared(_)
 
-
-
-
-
-
-Dispatch coapUpdate: coapUpdate(RESOURCE, VALUE)
 
 
 
@@ -104,6 +101,11 @@ ExternalQActor basicrobot context ctxbasicrobot
   * scrivere motivazioni per l'implementazione dell'attore "ticketservice"
   * 	es: sempre disponibile per la creazione di nuovi ticket
   */
+  /*TODO:
+   * abbiamo introdotto un peso virtuale in modo da distinguere il peso effettivo all'interno della ColdRoom dal peso totale delle richieste di ticket
+   *
+   * 
+   */
 
 QActor transporttrolley context ctxcoldstorageservice{
 	//TODO: gestire il move failed 
@@ -117,16 +119,16 @@ QActor transporttrolley context ctxcoldstorageservice{
                   whenReply engagerefused -> waitrobotfree
                   
     State waitrobotfree{
-		println("transporttrolley engage refused") color red
+		println("transporttrolley engage refused") color blue
 	}
 	
 	State init{
-		println("transporttrolley init") color red
+		println("transporttrolley init") color blue
 	} Goto waitcoldstorageservicerequest
 	
 	
 	State waitcoldstorageservicerequest {
-	  println("$name | waiting the client request...")
+	  println("$name | waiting the client request...") color blue
 	}
 	Transition t0 whenMsg goMoveToIndoor   -> elabMoveIndoor
 				  whenMsg goMoveToColdRoom -> elabMoveColdRoom
@@ -168,14 +170,14 @@ QActor transporttrolley context ctxcoldstorageservice{
 	State planFinishIndoor {
 		//prendere il carico
 		
-		println("$name | at Indoor")
+		println("$name | at Indoor") color blue
 		delay 3000
 	} Transition t1 whenRequest waitLoad -> elabWaitLoad
 	
 	State planFailedIndoor {
 		//prendere il carico
 		
-		println("$name | at Indoor")
+		println("$name | at Indoor") color blue
 		delay 3000
 	} Transition t1 whenRequest waitLoad -> elabWaitLoad
 	
@@ -186,7 +188,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	State planFinishColdRoom {
 		//depositare il carico
 		
-		println("$name | at ColdRoom")
+		println("$name | at ColdRoom") color blue
 		delay 3000
 		forward coldstorageservice -m deposit : deposit(0)
 		
@@ -194,7 +196,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	
 	State planFinishHome {
 		
-		println("$name | at home")
+		println("$name | at home") color blue
 		delay 1000
 		
 		//NON FUNZIONA
@@ -203,6 +205,16 @@ QActor transporttrolley context ctxcoldstorageservice{
 	    
 		//aspettare altre richieste
 	} Goto waitcoldstorageservicerequest
+		
+}
+
+QActor emptycoldroom context ctxcoldstorageservice{
+	
+	State s0 initial{
+		request coldstorageservice -m clearColdRoom : clearColdRoom(0)
+		println("$name | richiesta svuotamento coldroom")
+		delay 7000
+	}Goto s0
 		
 }
 
@@ -215,15 +227,16 @@ QActor ticketservice context ctxcoldstorageservice {
 	#]
 	
 	State s0 initial{
-		println("$name | wait for request")
+		println("$name | wait for request") color yellow
 	}
 	Transition t0 whenRequest newticket -> elabNewTicket
 				  whenRequest ticketrequest  -> elabTicketRequest
+				  whenMsg updatevirtualweight -> elabUpdateVirtualWeight
 	
 
 	State elabNewTicket{
 		
-		println("$name | elab new ticket")
+		println("$name | elab new ticket") color yellow
 		
 		onMsg( newticket : newticket( FW )){
 			
@@ -268,9 +281,20 @@ QActor ticketservice context ctxcoldstorageservice {
 	}
 	Goto s0
 	
+	State elabUpdateVirtualWeight{
+			println("$name | virtual weight update") color yellow
+			
+			onMsg( updatevirtualweight : updatevirtualweight(FW)){
+				[#
+					currentWeightVirtual = currentWeightVirtual - payloadArg(0).toInt()
+				#]
+			}
+			println("$name | current virtual weight: $currentWeightVirtual") color yellow
+	}Goto s0
+	
 	State elabTicketRequest{
 		
-		println("$name | elab ticket request")
+		println("$name | elab ticket request") color yellow
 		
 		onMsg( ticketrequest : ticketrequest( TICKET, FW )) {
 			[#
@@ -326,7 +350,7 @@ QActor ticketservice context ctxcoldstorageservice {
 
 QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
-	[# var currentWeightReal = 0
+	[# var CurrentWeightReal = 0
 	   var CurrentTicketFW = 0
 	#]
 
@@ -336,26 +360,17 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		println("coldstorageservice starts") color green
 		
 		delegate "newticket" to ticketservice
-		
-		/*
-		forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0) 
-		forward transporttrolley -m goMoveToColdRoom : goMoveToColdRoom(0) 
-		forward transporttrolley -m goMoveToHome     : goMoveToHome(0) 
-		
-		forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0) 
-		forward transporttrolley -m goMoveToColdRoom : goMoveToColdRoom(0) 
-		forward transporttrolley -m goMoveToHome     : goMoveToHome(0)
-		*/
-		
+				
 	}
 	Goto waitclientrequest
 	
 	
 	State waitclientrequest{
-	  println("$name | waiting the client request...")
-	  updateResource [# "ciao" #]
+	  println("$name | waiting the client request...") color green
+	 
 	}
 	Transition t0 whenRequest ticketrequest  -> elabTicketRequest
+				  whenRequest clearColdRoom  -> elabClearColdRoom
 	
 	State elabTicketRequest {
 		onMsg( ticketrequest : ticketrequest( TICKET, FW )) {
@@ -379,120 +394,16 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)		
 	} Goto waitclientrequest
 	
-	/*State elabNewTicket{
-		
-		println("$name | elab new ticket")
-		
-		onMsg( newticket : newticket( FW )){
-			
-			[#
-			
-			var fw = payloadArg(0).toInt()
-			if(currentWeightVirtual + fw <= maxWeight){
-				currentWeightVirtual += fw
-				var Id = Ticket.getRandomId() 
-				var found = false
-				while(found){
-				found = false
-				
-					for (t in ticketList){
-						if(t.id==Id){
-							Id = Ticket.getRandomId()
-							found = true
-							break
-						}
-					}
-				}
-				
-				var ticket = Ticket(Id, java.time.Instant.now().epochSecond, fw)
-				
-				ticketList.add(ticket)
-				
-				println(ticket)
-				
-			
-				#] replyTo newticket with newticketaccepted:newticketaccepted( $Id ) [#
-				} else {
-				#] replyTo newticket with newticketrefused:newticketrefused( Peso ) [#
-				}
-			#]
-		}
-		
-		
-		//Verifica id univoco, il ticket verrà aggiunto ad una lista di ticket
-		
-		
-		
-	}
-	Goto waitclientrequest
 	
-	State elabTicketRequest{
-		
-		println("$name | elab ticket request")
-		
-		onMsg( ticketrequest : ticketrequest( TICKET, FW )) {
-			[#
-				val currentTime = java.time.Instant.now().epochSecond 
-		   	   	val idTicket = payloadArg(0)
-		   	   	val foodWeight = payloadArg(1).toInt()
-		   	   
-		   	   	var ticket : Ticket? = null
-		   	   
-		   	   	for (t in ticketList) {
-					//ciclo for per trovare il biglietto del driver nella lista
-		   	   	  	if(t.id == idTicket) {
-		   	   	  	
-		   	   	  		ticket = t
-		   	   	  		break
-		   	   	  	}
-		   	   	}
-		   	   
-		   	   	if(ticket==null) { 
-		   	   		TicketValid = false
-		   	   		println("Not found")
-	   	   			#]
-		   	   		replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)
-		   	   		[#
-		   	   	} 	   
-			   	  
-			   	if(foodWeight<ticket!!.fw){
-					currentWeightVirtual -= (ticket!!.fw-foodWeight)
-			   	}
-			   	   
-				ticketList.remove(ticket)
-			   	   
-				println(currentTime - ticket!!.creationTime)
-			   	   
-				if((currentTime - ticket!!.creationTime) < TimeMax) {	
-			   	   	
-					TicketValid = true
-			   	   	println("ticket valid")	
-		   	   		#]
-					replyTo ticketrequest with ticketaccepted  : ticketaccepted(valid)
-					[#
-				} else{
-					currentWeightVirtual -= ticket!!.fw
-			   		TicketValid = false
-					#]
-					replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)		 
-		  			[#
-		  		}
-  			#]	  	
-		}		
-	}
-	Goto waitclientrequest if[# !TicketValid #] else waitLoadDoneRequest*/
-	
-	//aspetta che il truck invii loaddone per procedere
-	// corretto? dovrebbe comunque partire altrimenti deadlock se il truck non invia nulla
 	State waitLoadDoneRequest{
-		println("$name | wait load request")
+		println("$name | wait load request") color green
 		
 	}
 	Transition t2 whenRequest loaddone -> elabLoadDone
 	
 	State elabLoadDone {
 		
-		println("$name | elab load done")
+		println("$name | elab load done") color green
 		
 		//gestione del caso in cui il peso da depositare del truck è maggiore rispetto alla capacità massima di peso trasportabile dal trolley
 		onMsg( loaddone : loaddone(FW)) {
@@ -511,19 +422,19 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	State elabWaitDeposit {
 		//Invio charge taken fridge truck 
-		println("$name | elab wait load done")
+		println("$name | elab wait load done") color green
 	}
 	Transition t4 whenMsg deposit -> elabDeposit
 	
 	
 	State elabDeposit {
-		println("$name | elab deposit")
+		println("$name | elab deposit") color green
 		
 		[#
-			currentWeightReal += CurrentTicketFW	
+			CurrentWeightReal += CurrentTicketFW	
 		#]
 		
-		println("Deposit - Current weight real: $currentWeightReal")
+		println("Deposit - Current weight real: $CurrentWeightReal") color green
 		
 		replyTo loaddone with chargetaken : chargetaken(0) 
 	}
@@ -538,6 +449,18 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	}
 	Goto waitclientrequest
 	
+	State elabClearColdRoom{
+		println("$name | empty coldRoom") color green
+		
+		forward ticketservice -m updatevirtualweight : updatevirtualweight($CurrentWeightReal)
+		
+		[#
+			CurrentWeightReal = 0	
+		#]
+		println("$name | coldRoom cleared - current weight real: $CurrentWeightReal") color green
+		replyTo clearColdRoom with coldRoomCleared : coldRoomCleared(0)
+	
+	}Goto waitclientrequest
 	
 	
 }
@@ -554,7 +477,6 @@ QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	
 	State elabTicketAccepted {
 		
-		println("QUI")
 		
 		onMsg( newticketaccepted : newticketaccepted(TICKET)){
 			[# 
@@ -589,8 +511,6 @@ QActor fridgetrucktemp context ctxfridgetrucktemp{ //SCOMPARE
 	Transition t0 whenReply newticketaccepted -> elabTicketAccepted
 	
 	State elabTicketAccepted {
-		
-		println("QUI")
 		
 		onMsg( newticketaccepted : newticketaccepted(TICKET)){
 			[# 

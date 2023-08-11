@@ -29,11 +29,10 @@ class Fridgetrucktemp ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t026",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
+					 transition(edgeName="t028",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
 				}	 
 				state("elabTicketAccepted") { //this:State
 					action { //it:State
-						CommUtils.outblack("QUI")
 						if( checkMsgContent( Term.createTerm("newticketaccepted(TICKET)"), Term.createTerm("newticketaccepted(TICKET)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 
@@ -46,7 +45,7 @@ class Fridgetrucktemp ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t127",targetState="elabLoadDone",cond=whenReply("ticketaccepted"))
+					 transition(edgeName="t129",targetState="elabLoadDone",cond=whenReply("ticketaccepted"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -56,7 +55,7 @@ class Fridgetrucktemp ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t128",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
+					 transition(edgeName="t130",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
 				}	 
 				state("elabChargeTaken") { //this:State
 					action { //it:State

@@ -33,7 +33,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("waitrobotfree") { //this:State
 					action { //it:State
-						CommUtils.outred("transporttrolley engage refused")
+						CommUtils.outblue("transporttrolley engage refused")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -42,7 +42,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("init") { //this:State
 					action { //it:State
-						CommUtils.outred("transporttrolley init")
+						CommUtils.outblue("transporttrolley init")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -52,7 +52,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("waitcoldstorageservicerequest") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name | waiting the client request...")
+						CommUtils.outblue("$name | waiting the client request...")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -119,7 +119,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("planFinishIndoor") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name | at Indoor")
+						CommUtils.outblue("$name | at Indoor")
 						delay(3000) 
 						//genTimer( actor, state )
 					}
@@ -130,7 +130,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("planFailedIndoor") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name | at Indoor")
+						CommUtils.outblue("$name | at Indoor")
 						delay(3000) 
 						//genTimer( actor, state )
 					}
@@ -151,7 +151,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("planFinishColdRoom") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name | at ColdRoom")
+						CommUtils.outblue("$name | at ColdRoom")
 						delay(3000) 
 						forward("deposit", "deposit(0)" ,"coldstorageservice" ) 
 						//genTimer( actor, state )
@@ -163,7 +163,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 				state("planFinishHome") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name | at home")
+						CommUtils.outblue("$name | at home")
 						delay(1000) 
 						//genTimer( actor, state )
 					}

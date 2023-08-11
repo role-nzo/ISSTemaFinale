@@ -25,7 +25,7 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name | wait for request")
+						CommUtils.outyellow("$name | wait for request")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -33,10 +33,11 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 					}	 	 
 					 transition(edgeName="t013",targetState="elabNewTicket",cond=whenRequest("newticket"))
 					transition(edgeName="t014",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					transition(edgeName="t015",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
 				}	 
 				state("elabNewTicket") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name | elab new ticket")
+						CommUtils.outyellow("$name | elab new ticket")
 						if( checkMsgContent( Term.createTerm("newticket(FW)"), Term.createTerm("newticket(FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								
@@ -79,9 +80,25 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 					}	 	 
 					 transition( edgeName="goto",targetState="s0", cond=doswitch() )
 				}	 
+				state("elabUpdateVirtualWeight") { //this:State
+					action { //it:State
+						CommUtils.outyellow("$name | virtual weight update")
+						if( checkMsgContent( Term.createTerm("updatevirtualweight(FW)"), Term.createTerm("updatevirtualweight(FW)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								
+													currentWeightVirtual = currentWeightVirtual - payloadArg(0).toInt()
+						}
+						CommUtils.outyellow("$name | current virtual weight: $currentWeightVirtual")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="s0", cond=doswitch() )
+				}	 
 				state("elabTicketRequest") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name | elab ticket request")
+						CommUtils.outyellow("$name | elab ticket request")
 						if( checkMsgContent( Term.createTerm("ticketrequest(TICKET,FW)"), Term.createTerm("ticketrequest(TICKET,FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								

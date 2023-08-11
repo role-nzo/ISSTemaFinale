@@ -7,6 +7,7 @@ context(ctxfridgetruck, "127.0.0.1",  "TCP", "8023").
 context(ctxfridgetrucktemp, "localhost",  "TCP", "8024").
  qactor( basicrobot, ctxbasicrobot, "external").
   qactor( transporttrolley, ctxcoldstorageservice, "it.unibo.transporttrolley.Transporttrolley").
+  qactor( emptycoldroom, ctxcoldstorageservice, "it.unibo.emptycoldroom.Emptycoldroom").
   qactor( ticketservice, ctxcoldstorageservice, "it.unibo.ticketservice.Ticketservice").
   qactor( coldstorageservice, ctxcoldstorageservice, "it.unibo.coldstorageservice.Coldstorageservice").
   qactor( fridgetruck, ctxfridgetruck, "it.unibo.fridgetruck.Fridgetruck").
