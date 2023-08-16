@@ -11,4 +11,3 @@ context(ctxfridgetrucktemp, "localhost",  "TCP", "8024").
   qactor( ticketservice, ctxcoldstorageservice, "it.unibo.ticketservice.Ticketservice").
   qactor( coldstorageservice, ctxcoldstorageservice, "it.unibo.coldstorageservice.Coldstorageservice").
   qactor( fridgetruck, ctxfridgetruck, "it.unibo.fridgetruck.Fridgetruck").
-  qactor( fridgetrucktemp, ctxfridgetrucktemp, "it.unibo.fridgetrucktemp.Fridgetrucktemp").

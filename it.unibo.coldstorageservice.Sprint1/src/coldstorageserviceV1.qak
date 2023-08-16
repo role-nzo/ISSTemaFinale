@@ -501,40 +501,5 @@ QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	
 }
 
-QActor fridgetrucktemp context ctxfridgetrucktemp{ //SCOMPARE
-	
-	State s0 initial {
-		println("fridgetruck starts") color red
-		delay 3000
-		request coldstorageservice -m newticket		: newticket( 97 )
-	}
-	Transition t0 whenReply newticketaccepted -> elabTicketAccepted
-	
-	State elabTicketAccepted {
-		
-		onMsg( newticketaccepted : newticketaccepted(TICKET)){
-			[# 
-				var CurrentTicketId = payloadArg(0)
-				println(CurrentTicketId)
-			#]
-			
-			request coldstorageservice -m ticketrequest : ticketrequest($CurrentTicketId, 97)
-		}
-	}
-	Transition t1 whenReply ticketaccepted -> elabLoadDone
-				  //whenReply ticketrejected -> s0
-	
-	State elabLoadDone {
-		request coldstorageservice -m loaddone : loaddone( 97 )
-	}
-	Transition t1 whenReply chargetaken -> elabChargeTaken
-	
-	State elabChargeTaken {
-		
-	}
-	
-}
-
-
 
 
