@@ -1,6 +1,7 @@
 package it.unibo.ctxcoldstorageservice;
 
 import org.junit.Test;
+import unibo.basicomm23.utils.CommUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,9 +25,9 @@ public class CtxColdStorageServiceTest {
 
             String fw = "10";
             //invio messaggio
-            out.write("msg(newticket,Request,tester,coldstorageservice,newticket("+fw+"),12)\n");
+            out.write("msg(newticket,request,tester,coldstorageservice,newticket("+fw+"),12)\n");
             out.flush();
-            System.out.println("msg(newticket,Request,tester,coldstorageservice,newticket");
+            System.out.println("msg(newticket,request,tester,coldstorageservice,newticket");
             //attesa risposta
             String response = in.readLine();
             System.out.println(response);
