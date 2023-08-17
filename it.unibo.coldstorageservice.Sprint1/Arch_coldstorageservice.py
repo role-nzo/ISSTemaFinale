@@ -26,18 +26,12 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
           emptycoldroom=Custom('emptycoldroom','./qakicons/symActorSmall.png')
           ticketservice=Custom('ticketservice','./qakicons/symActorSmall.png')
           coldstorageservice=Custom('coldstorageservice','./qakicons/symActorSmall.png')
-     with Cluster('ctxfridgetruck', graph_attr=nodeattr):
-          fridgetruck=Custom('fridgetruck','./qakicons/symActorSmall.png')
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='engage', fontcolor='magenta') >> basicrobot
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='moverobot', fontcolor='magenta') >> basicrobot
      transporttrolley >> Edge(color='blue', style='solid', xlabel='deposit', fontcolor='blue') >> coldstorageservice
-     emptycoldroom >> Edge(color='magenta', style='solid', xlabel='clearColdRoom', fontcolor='magenta') >> coldstorageservice
      coldstorageservice >> Edge(color='magenta', style='solid', xlabel='ticketrequest', fontcolor='magenta') >> ticketservice
      coldstorageservice >> Edge(color='blue', style='solid', xlabel='goMoveToIndoor', fontcolor='blue') >> transporttrolley
      coldstorageservice >> Edge(color='magenta', style='solid', xlabel='waitLoad', fontcolor='magenta') >> transporttrolley
      coldstorageservice >> Edge(color='blue', style='solid', xlabel='goMoveToHome', fontcolor='blue') >> transporttrolley
      coldstorageservice >> Edge(color='blue', style='solid', xlabel='updatevirtualweight', fontcolor='blue') >> ticketservice
-     fridgetruck >> Edge(color='magenta', style='solid', xlabel='newticket', fontcolor='magenta') >> coldstorageservice
-     fridgetruck >> Edge(color='magenta', style='solid', xlabel='ticketrequest', fontcolor='magenta') >> coldstorageservice
-     fridgetruck >> Edge(color='magenta', style='solid', xlabel='loaddone', fontcolor='magenta') >> coldstorageservice
 diag

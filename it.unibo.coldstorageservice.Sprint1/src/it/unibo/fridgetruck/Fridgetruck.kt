@@ -32,6 +32,8 @@ class Fridgetruck ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name
 				}	 
 				state("elabTicketAccepted") { //this:State
 					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						if( checkMsgContent( Term.createTerm("newticketaccepted(TICKET)"), Term.createTerm("newticketaccepted(TICKET)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 
@@ -58,6 +60,8 @@ class Fridgetruck ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name
 				}	 
 				state("elabChargeTaken") { //this:State
 					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

@@ -26,6 +26,8 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outyellow("$name | wait for request")
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -38,10 +40,18 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				state("elabNewTicket") { //this:State
 					action { //it:State
 						CommUtils.outyellow("$name | elab new ticket")
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						if( checkMsgContent( Term.createTerm("newticket(FW)"), Term.createTerm("newticket(FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								
-											
+											val currentTime = java.time.Instant.now().epochSecond 
+											for( t in ticketList){
+												if((currentTime - t.creationTime) > TimeMax){
+													currentWeightVirtual -= t.fw
+													ticketList.remove(t)
+												}
+											}
 											var fw = payloadArg(0).toInt()
 											if(currentWeightVirtual + fw <= maxWeight){
 												currentWeightVirtual += fw
@@ -83,6 +93,8 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				state("elabUpdateVirtualWeight") { //this:State
 					action { //it:State
 						CommUtils.outyellow("$name | virtual weight update")
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						if( checkMsgContent( Term.createTerm("updatevirtualweight(FW)"), Term.createTerm("updatevirtualweight(FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								
@@ -99,6 +111,8 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				state("elabTicketRequest") { //this:State
 					action { //it:State
 						CommUtils.outyellow("$name | elab ticket request")
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						if( checkMsgContent( Term.createTerm("ticketrequest(TICKET,FW)"), Term.createTerm("ticketrequest(TICKET,FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								

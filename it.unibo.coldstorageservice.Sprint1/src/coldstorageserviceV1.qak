@@ -55,10 +55,12 @@ Reply coldRoomCleared : coldRoomCleared(_)
 
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
-Context ctxcoldstorageservice ip [host="127.0.0.1" port=8022]
-Context ctxfridgetruck 		  ip [host="127.0.0.1" port=8023] //Eliminare -> funziona solo con 3 contesti
-Context ctxfridgetrucktemp 	  ip [host="localhost" port=8024] //Eliminare -> funziona solo con 3 contesti
+Context ctxcoldstorageservice ip [host="localhost" port=8022]
+//Context ctxtester 			  ip [host="127.0.0.1" port=8023] 
+//Context ctxfridgetruck 		  ip [host="localhost" port=8023] //Eliminare -> funziona solo con 3 contesti
+//Context ctxfridgetrucktemp 	  ip [host="127.0.0.1" port=8024] //Eliminare -> funziona solo con 3 contesti
 
+//ExternalQActor tester context ctxtester
 ExternalQActor basicrobot context ctxbasicrobot
 
 /*
@@ -211,7 +213,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 QActor emptycoldroom context ctxcoldstorageservice{
 	
 	State s0 initial{
-		request coldstorageservice -m clearColdRoom : clearColdRoom(0)
+		/*request coldstorageservice -m clearColdRoom : clearColdRoom(0)*/
 		println("$name | richiesta svuotamento coldroom")
 		delay 7000
 	}Goto s0
@@ -228,6 +230,7 @@ QActor ticketservice context ctxcoldstorageservice {
 	
 	State s0 initial{
 		println("$name | wait for request") color yellow
+		printCurrentMessage
 	}
 	Transition t0 whenRequest newticket -> elabNewTicket
 				  whenRequest ticketrequest  -> elabTicketRequest
@@ -237,11 +240,17 @@ QActor ticketservice context ctxcoldstorageservice {
 	State elabNewTicket{
 		
 		println("$name | elab new ticket") color yellow
-		
+		printCurrentMessage
 		onMsg( newticket : newticket( FW )){
 			
 			[#
-			
+			val currentTime = java.time.Instant.now().epochSecond 
+			for( t in ticketList){
+				if((currentTime - t.creationTime) > TimeMax){
+					currentWeightVirtual -= t.fw
+					ticketList.remove(t)
+				}
+			}
 			var fw = payloadArg(0).toInt()
 			if(currentWeightVirtual + fw <= maxWeight){
 				currentWeightVirtual += fw
@@ -283,7 +292,7 @@ QActor ticketservice context ctxcoldstorageservice {
 	
 	State elabUpdateVirtualWeight{
 			println("$name | virtual weight update") color yellow
-			
+			printCurrentMessage
 			onMsg( updatevirtualweight : updatevirtualweight(FW)){
 				[#
 					currentWeightVirtual = currentWeightVirtual - payloadArg(0).toInt()
@@ -295,7 +304,7 @@ QActor ticketservice context ctxcoldstorageservice {
 	State elabTicketRequest{
 		
 		println("$name | elab ticket request") color yellow
-		
+		printCurrentMessage
 		onMsg( ticketrequest : ticketrequest( TICKET, FW )) {
 			[#
 				val currentTime = java.time.Instant.now().epochSecond 
@@ -367,12 +376,13 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	State waitclientrequest{
 	  println("$name | waiting the client request...") color green
-	 
+	  
 	}
 	Transition t0 whenRequest ticketrequest  -> elabTicketRequest
 				  whenRequest clearColdRoom  -> elabClearColdRoom
 	
 	State elabTicketRequest {
+		printCurrentMessage
 		onMsg( ticketrequest : ticketrequest( TICKET, FW )) {
 			[# 
 		   	   	val IDTicket = payloadArg(0)
@@ -387,10 +397,12 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 				  
 	
 	State elabTicketAccepted {
+		printCurrentMessage
 		replyTo ticketrequest with ticketaccepted  : ticketaccepted(valid)
 	} Goto waitLoadDoneRequest
 	
 	State elabTicketRejected {
+		printCurrentMessage
 		replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)		
 	} Goto waitclientrequest
 	
@@ -402,7 +414,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	Transition t2 whenRequest loaddone -> elabLoadDone
 	
 	State elabLoadDone {
-		
+		printCurrentMessage
 		println("$name | elab load done") color green
 		
 		//gestione del caso in cui il peso da depositare del truck è maggiore rispetto alla capacità massima di peso trasportabile dal trolley
@@ -429,7 +441,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	State elabDeposit {
 		println("$name | elab deposit") color green
-		
+		printCurrentMessage
 		[#
 			CurrentWeightReal += CurrentTicketFW	
 		#]
@@ -451,7 +463,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	State elabClearColdRoom{
 		println("$name | empty coldRoom") color green
-		
+		printCurrentMessage
 		forward ticketservice -m updatevirtualweight : updatevirtualweight($CurrentWeightReal)
 		
 		[#
@@ -466,7 +478,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 }
 
 
-
+/* 
 QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	
 	State s0 initial {
@@ -477,7 +489,7 @@ QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	
 	State elabTicketAccepted {
 		
-		
+		printCurrentMessage
 		onMsg( newticketaccepted : newticketaccepted(TICKET)){
 			[# 
 				var CurrentTicketId = payloadArg(0)
@@ -496,10 +508,10 @@ QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	Transition t1 whenReply chargetaken -> elabChargeTaken
 	
 	State elabChargeTaken {
-		
+		printCurrentMessage
 	}
 	
-}
+}*/
 
 
 

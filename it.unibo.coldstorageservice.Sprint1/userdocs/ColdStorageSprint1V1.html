@@ -312,37 +312,37 @@
                     </ul> 
                     <br>
                     <!-- Dire perchè coldroom non attore ma pojo-->
-                    <b>ColdRoom</b>, è stato deciso di rappresentarla mediante due variabili, <pre>CurrentWeightReal</pre> e <pre>CurrentWeightVirtual</pre>.
-                    <pre>CurrentWeightReal</pre> rappresenta il peso effettivo contenuto all'interno della ColdRoom.
-                    <pre>CurrentWeightVirtual</pre> rappresenta il peso effettivo contenuto all'interno della ColdRoom sommato al peso totale dato dai ticket emessi ma non ancora elaborati.
-                    <pre>CurrentWeightReal</pre> viene gestito dalla ColdStorageService mentre <pre>CurrentWeightVirtual</pre> viene gestito dal TicketService.
+                    <b>ColdRoom</b>, è stato deciso di rappresentarla mediante due variabili e non come attore poichè non dovrà ricevere o inviare alcun tipo di messaggio.
+                    Le due variabili rappresenteranno il peso effettivo contenuto all'interno della ColdRoom (peso reale) e il peso effettivo della ColdRoom sommato al peso totale dato dai ticket emessi ma non ancora elaborati (peso virtuale).
+                    <b>Svuotamento ColdRoom</b>, per gestire lo svuotamento della ColdRoom abbiamo modellato un attore apposito (EmpytColdRoom) che ad intervalli di tempo regolari invia un richiesta
+                    al coldstorageservice. Abbiamo deciso di modellarlo come attore per rappresentare un operatore che si occupa dello svuotamento.
                     <br>
 
                     <b>Struttura Ticket:</b><br>
-                    <!-- DA METTERE DOPO -->
-                    
+                    Il Ticket viene modellato come un POJO e contiene al suo interno un identificativo univoco e casuale che per ragioni di sicurezza deve essere conosciuto solamente dal Fridge Truck driver che 
+                    ha richiesto il Ticket.
+
                     <br>
                     <b>TicketService</b>, viene modellato come attore per permettere all'applicazione di essere in grado di rispondere sempre alle richieste di nuovi ticket, per quindi consentire un'elaborazione in parallelo 
                     delle operazioni di emissione ticket e azioni di carico e scarico del TransportTrolley. Per fare ciò si è scelto di delegare a tale attore i messaggi newticket in ingresso.
-                    Inoltre si occupa di verificare la validità di un ticket presentato da un fridge truck, e verifica che il CurrentWeightVirtual non ecceda il limite imposto dalla capacità della ColdRoom.
+                    Inoltre si occupa di verificare la validità di un ticket presentato da un fridge truck, e verifica che il peso virtuale non ecceda il limite imposto dalla capacità della ColdRoom.
+                    Alla richiesta di un nuovo Ticket verifica che tutti i Ticket scaduti ma non ancora utilizzati siano eliminati e quindi esclusi dal calcolo del peso virtuale della ColdRoom.
                     <br>
                     <b></b>
-                    <b>Svuotamento ColdRoom</b>, per gestire lo svuotamento della ColdRoom abbiamo modellato un attore apposito (EmpytColdRoom) che ad intervalli di tempo regolari invia un richiesta
-                    al coldstorageservice. Abbiamo deciso di modellarlo come attore per rappresentare un operatore che si occupa dello svuotamento.
                     <b id="driver-distratto">Driver distratto</b>
                     Questo problema ha indotto il committente ad affermare che:
                     quando un agente esterno (driver) invia il ticket per indurre il servizio a scaricare il truck, si SUPPPONE GARANTITO che il carico del truck sia UGUALE (o al più MINORE) del carico indicato nella prenotazione.
                     Al momento della presentazione del ticket viene fornito dal truck driver il peso effettivo della consegna. Questo valore viene confrontato con il peso dichiarato nella fase di richiesta del ticket. Se tale valore è
                     inferiore al peso dichiarato, il CurrentWeightVirtual viene decrementato della differenza dei due valori.
                     <b>Problema del driver malevolo</b>
-                    Questo problema ha indotto il committente ad affermare che si fa l’ipotesi che nessun driver cerchi di imbrogliare (rubando ticket, etc.)
+                    Questo problema ha indotto il committente ad affermare che si fa l'ipotesi che nessun driver cerchi di imbrogliare (rubando ticket, etc.)
 
                     
                 </div>
 
                 <h2>Architettura logica</h2>
                 <div class="remark">
-                    <img src="../it.unibo.coldstorageservice/coldstorageservicearch.png" width="100%">
+                    <img src="../coldstorageservicearch.png" width="100%">
                     <br>
                     Dall'architettua logica possiamo evidenziare i seguenti componenti:
                     <ul>
@@ -352,19 +352,10 @@
                         <li>TransportTrolley: invia al BasicRobot i messaggi necessari per eseguire la deposit action</li>
                         <li>TicketService: si occupa di gestire le richieste per l'emissione di nuovi ticket e di verificarne la validità nel momento in cui viene presentato dal fridge truck </li>
                         <li>EmpytColdRoom: si occupa di svuotare periodicamento la coldroom inviato un apposito messaggio al ColdStorageService</li>
-                        <li>FridgeTruck: invia le richieste per l'emissione di un nuovo ticket</li>
+                        <li>FridgeTruck: invia le richieste per l'emissione di un nuovo ticket e viene introdotto solamente per simulare un eventuale utente finale</li>
                         <li>BasicRobot: esegue i comandi ricevuti dal TransportTrolley</li>
                     </ul>
-                    <!--
-                    <ul>
-                        <li>Il sistema è distribuito su almeno 3 nodi computazionali diversi: BasicRobot, RaspberryPi e ColdStorageService.</li>
-                        <li>Saremo chiamati a sviluppare i macro-componenti <pre style="margin: 0; display: inline-block">coldstorageservice</pre>, <pre style="margin: 0; display: inline-block">coldroom</pre>, <pre style="margin: 0; display: inline-block">transporttrolley</pre>, <pre style="margin: 0; display: inline-block">sonar</pre>, <pre style="margin: 0; display: inline-block">led</pre>, <pre style="margin: 0; display: inline-block">serviceaccessgui</pre>, <pre style="margin: 0; display: inline-block">servicestatusgui</pre>.</li>
-                        <li>Le interazioni fra <pre style="margin: 0; display: inline-block">serviceaccessgui</pre> e <pre style="margin: 0; display: inline-block">coldstorageservice</pre> sono di tipo <u>request-response</u> ed sono implicate dal testo dei requsiti.</li>
-                        <li>L'interazione fra <pre style="margin: 0; display: inline-block">sonar</pre> e <pre style="margin: 0; display: inline-block">transporttrolley</pre> è modellata come <u>evento</u>.</li>
-                        <li>Si può notare che il <pre style="margin: 0; display: inline-block">coldstorageservice</pre> non interagisce direttamente col <pre style="margin: 0; display: inline-block">basicrobot</pre> ma solamente mediante il <pre style="margin: 0; display: inline-block">transporttrolley</pre>.</li>
-                        <li>Il Fridge truck è un operatore umano che non fa parte del sistema. Fanno invece parte del sistema i messaggi che questo genera interagendo con la ServiceAccessGUI.</li>
-                    </ul>
-                    -->
+                   
                 </div>
 
                 <h2>Progettazione</h2>

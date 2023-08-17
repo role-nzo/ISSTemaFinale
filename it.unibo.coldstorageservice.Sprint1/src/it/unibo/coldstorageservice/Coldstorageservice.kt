@@ -45,6 +45,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				}	 
 				state("elabTicketRequest") { //this:State
 					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						if( checkMsgContent( Term.createTerm("ticketrequest(TICKET,FW)"), Term.createTerm("ticketrequest(TICKET,FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 
@@ -62,6 +64,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				}	 
 				state("elabTicketAccepted") { //this:State
 					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						answer("ticketrequest", "ticketaccepted", "ticketaccepted(valid)"   )  
 						//genTimer( actor, state )
 					}
@@ -72,6 +76,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				}	 
 				state("elabTicketRejected") { //this:State
 					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
 						//genTimer( actor, state )
 					}
@@ -92,6 +98,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						CommUtils.outgreen("$name | elab load done")
 						if( checkMsgContent( Term.createTerm("loaddone(FW)"), Term.createTerm("loaddone(FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
@@ -120,6 +128,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				state("elabDeposit") { //this:State
 					action { //it:State
 						CommUtils.outgreen("$name | elab deposit")
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						
 									CurrentWeightReal += CurrentTicketFW	
 						CommUtils.outgreen("Deposit - Current weight real: $CurrentWeightReal")
@@ -147,6 +157,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				state("elabClearColdRoom") { //this:State
 					action { //it:State
 						CommUtils.outgreen("$name | empty coldRoom")
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						forward("updatevirtualweight", "updatevirtualweight($CurrentWeightReal)" ,"ticketservice" ) 
 						
 									CurrentWeightReal = 0	
