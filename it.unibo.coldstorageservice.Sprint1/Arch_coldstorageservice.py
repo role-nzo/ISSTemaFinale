@@ -26,6 +26,8 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
           emptycoldroom=Custom('emptycoldroom','./qakicons/symActorSmall.png')
           ticketservice=Custom('ticketservice','./qakicons/symActorSmall.png')
           coldstorageservice=Custom('coldstorageservice','./qakicons/symActorSmall.png')
+     with Cluster('ctxfridgetruck', graph_attr=nodeattr):
+          fridgetruck=Custom('fridgetruck','./qakicons/symActorSmall.png')
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='engage', fontcolor='magenta') >> basicrobot
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='moverobot', fontcolor='magenta') >> basicrobot
 diag

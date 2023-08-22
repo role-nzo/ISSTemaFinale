@@ -57,7 +57,7 @@ Reply coldRoomCleared : coldRoomCleared(_)
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
 //Context ctxtester 			  ip [host="127.0.0.1" port=8023] 
-//Context ctxfridgetruck 		  ip [host="localhost" port=8023] //Eliminare -> funziona solo con 3 contesti
+Context ctxfridgetruck 		  ip [host="localhost" port=8023] //Eliminare -> funziona solo con 3 contesti
 //Context ctxfridgetrucktemp 	  ip [host="127.0.0.1" port=8024] //Eliminare -> funziona solo con 3 contesti
 
 //ExternalQActor tester context ctxtester
@@ -483,12 +483,12 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 }
 
 
-/* 
+
 QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	
 	State s0 initial {
 		println("fridgetruck starts") color red
-		request coldstorageservice -m newticket		: newticket( 3 )
+		//request coldstorageservice -m newticket		: newticket( 3 )
 	}
 	Transition t0 whenReply newticketaccepted -> elabTicketAccepted
 	
@@ -501,14 +501,14 @@ QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 				println(CurrentTicketId)
 			#]
 			
-			request coldstorageservice -m ticketrequest : ticketrequest($CurrentTicketId, 3)
+			//request coldstorageservice -m ticketrequest : ticketrequest($CurrentTicketId, 3)
 		}
 	}
 	Transition t1 whenReply ticketaccepted -> elabLoadDone
 				  //whenReply ticketrejected -> s0
 	
 	State elabLoadDone {
-		request coldstorageservice -m loaddone : loaddone( 3 )
+		//request coldstorageservice -m loaddone : loaddone( 3 )
 	}
 	Transition t1 whenReply chargetaken -> elabChargeTaken
 	
@@ -516,7 +516,7 @@ QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 		printCurrentMessage
 	}
 	
-}*/
+}
 
 
 
