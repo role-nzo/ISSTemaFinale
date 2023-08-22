@@ -214,15 +214,30 @@
             <div class="remark">
                 Lo sprint0 ha prodotto la seguente architettura:
                 <br>
-                <img src="../it.unibo.coldstorageservice/coldstorageservicearch.png" width="50%">
+                <img src="./images/coldstorageservicearchsprint0.png" width="50%">
                 <br>
 
             </div>
             
             <h2>Requirements</h2>
             <div class="remark">
-                I requisiti sono scritti dal committente TemaFinale23.
-                <br><br>
+                
+                [...] The transport trolley is used to perform a deposit action that consists in the following phases:
+                <ol>
+                    <li>pick up a food-load from a Fridge truck located on the INDOOR</li>
+                    <li>go from the INDOOR to the PORT of the ColdRoom</li>
+                    <li>deposit the food-load in the ColdRoom</li>
+                </ol>
+
+                <br>
+                The story of the ColdStorageService can be summarized as follows:
+                <ol>
+                    <li>A Fridge truck driver uses the ServiceAcessGUI to send a request to store its load of FW kg. If the request is accepted, the driver drives its truck to the INDOOR of the service, before the ticket exipration time TICKETTIME.</li>
+                    <li>When the truck is at the INDOOR of the service, the driver uses the ServiceAcessGUI to enter the ticket number and waits until the message charge taken (sent by the ColdStorageService) appears on the ServiceAcessGUI. At this point, the truck should leave the INDOOR.</li>
+                    <li>When the service accepts a ticket, the transport trolley reaches the INDOOR, picks up the food, sends the charge taken message and then goes to the ColdRoom to store the food.</li>
+                    <li>When the deposit action is terminated, the transport trolley accepts another ticket (if any) or returns to HOME.</li>
+                </ol>
+                <br>
                 <b>Goal di questo sprint:</b>
                 <ul>
                     <li>sviluppo del core business del sistema: coldstorageservice, transporttrolley, coldroom</li>
@@ -232,77 +247,18 @@
             
             <h2>Requirement analysis</h2>
             <div class="remark">
-                <b>KEY POINT</b>: Dai requisiti possiamo evincere che: 
+                <h3>KEY POINT</h3>
+                Dai requisiti possiamo evincere che: 
                 <ul>
                     <li>Le richieste di emissione ticket devono poter essere elaborate in parallelo alle azioni di carico e scarico del TransportTrolley</li>
-                    
-                    <li>
-                        <i>Service area</i> è l'area di lavoro del sistema e si assume sia rettangolare e in piano.
-                        L'area viene modellata come suddivisa in una griglia di celle quadrate di dimensione costante pari a RD, pari alla dimensione del DDR robot.
-                        <br>
-                        <img src="./images/map.png" width="50%">
-                        <br>
-                        È composta da:
-                        <ul>
-                            <li><u>INDOOR:</u> rappresenta il punto di arrivo dei <i>Fridge truck</i> per la consegna del carico di peso <b>FW</b>.</li>
-                            <li><u>ColdRoom:</u> container dove viene deposistato il carico dal <i>trasport trolley</i> ed ha una capacità massima pari a <b>MAXW</b>.</li>
-                            <li><u>Home:</u> indica la posizione di partenza del <i>trasport trolley</i> e il punto di attesa dello stesso in caso non ci siano richieste da elaborare.</li>
-                        </ul>
-                    </li>
-                    
-                    <li>
-                        <i>Transport trolley</i> è l'attore che si occupa di impartire comandi al basicrobot.
-                        L'implementazione di quest'ultimo è fornita dal committente e modella il concetto di DDR robot.
-                        Le interazioni utili per la comunicazione tra <i>transport trolley</i> e basicrobot sono:
-                        <ul>
-                            <li><pre style="margin: 0">Request moverobot : moverobot(TARGETX, TARGETY)</pre></li>
-                            <!--<li><pre style="margin: 0">Reply moverobotdone : moverobotok(ARG)</pre></li>
-                                <li><pre style="margin: 0">Reply moverobotfailed: moverobotfailed(ARG)</pre></li>-->
-                                <li><pre style="margin: 0">Request doplan    : doplan(PATH, OWNER, STEPTIME)</pre></li>
-                            </ul>
-                        </li>
-                        
-                        <!--<li>
-                            <i>Deposit action</i> è una sequenza di azioni mediante il quale il <i>transport trolley</i> preleva il carico dai <i>fridge truck</i> (posizione <u>INDOOR</u>) per poi depositarlo presso al <i>ColdRoom</i>.
-                            <br>
-                            Formalmente può essere definita come:
-                            <ol>
-                                <li>Prelievo del carico presso la posizione <u>INDOOR</u>.</li>
-                                <li>Movimento del <i>transport trolley</i> verso la <i>ColdRoom</i>.</li>
-                                <li>Deposito del carico presso la <i>ColdRoom</i>.</li>
-                            </ol> 
-                            Durante l'esecuzione della <i>Deposit Action</i> gli alarm requirements devono essere soddisfatti: il <i>transport trolley</i> deve quindi essere in grado di fermarsi nel caso in cui venga ricevuto un messaggio di alarm dal componente <i>Sonar</i>.
-                        </li>-->
-                        
-                        <li><i>Fridge truck</i> sono soggetti esterni all'applicazione in grado di interagire con la <i>ServiceAccessGUI</i>.</li>
-                        
-                        <li><i>ServiceAccessGUI</i> è rappresentata nell'architettura come un attore che si interpone tra l'utente (<i>fridge truck</i>) e il <i>ColdStorageService</i>.</li>
-                        
-                        <li><i>ServiceStatusGUI</i> è anch'essa modellata come attore ed ha la responsabilità di mostrare un riepilogo dello stato del sistema al <i>Service-manager</i>.</li>
-                        
-                        <li><i>Sonar</i> e <i>Led</i> sono componenti realizzati come attori appartenenti ad un diverso contesto (RaspberryPi).</li>
-                        
-                    </ul>
-                    
-                    <h3>Dialogo col committente</h3>
-                    <ul>
-                        <li>Il processo di scarico della <i>ColdRoom</i> sarebbe da realizzare mediante un attore apposito. Tale realizzazione non è d'interesse in questo processo ma può essere implementato in uno sviluppo futuro.</li>
-                    </ul>
-                </div>
+                </ul>
+            </div>
 
-                <h2>Analisi del Problema</h2>
-
-                <b>Fare giovedi 17: sistemare analisi del problema -> coldroom, ticket, aggiungere del fridge truck per simulare utente </b>
+            <h2>Analisi del Problema</h2>
 
                 <div class="remark">
-                    coldroom come pojo, peso virtuale e peso reale FATTO
-                    gestione svuotamento coldroom (attore dedicato) DA FARE
-                    driver distratto, carico minore o uguale a quello dichiarato DA FARE
-                    driver malevolo, come riconoscere il truck DA FARE
-                    struttura ticket FATTO
-                    ticketservice FATTO
-
-                    <b id="load-time-lungo">Problema load-time lungo</b>, quando il fridge truck invia il ticket come messaggio di showticket non riceve alcuna risposta fino a quando il robot completa l'operazione di carico. 
+                    <h3 id="load-time-lungo">Problema load-time lungo</h3>
+                    Quando il fridge truck invia il ticket come messaggio di showticket non riceve alcuna risposta fino a quando il robot completa l'operazione di carico. 
                     In questo modo il truck è in grado di capire se il suo ticket è valido solamente quando riceve un messaggio di chargeTaken, quindi nel caso in cui il suo ticket
                     sia stato rifiutato non riceverebbe nessun messaggio e continuerebbe a rimanere in attesa. Quindi per affrontare questo problema è stato pensato di impostare
                     un'interazione a DUE-FASI tra driver e ColdStorageService:
@@ -310,31 +266,33 @@
                         <li><b>FASE 1</b>: il driver invia il ticket e attenda una risposta (immediata) come ad esempio ticketaccepted/ticketrejected </li>
                         <li><b>FASE 2</b>: il driver invia la richiesta loaddone e attenda la risposta (chargeTaken o fallimento per cause legate al servizio)</li>
                     </ul> 
-                    <br>
                     <!-- Dire perchè coldroom non attore ma pojo-->
-                    <b>ColdRoom</b>, è stato deciso di rappresentarla mediante due variabili e non come attore poichè non dovrà ricevere o inviare alcun tipo di messaggio.
+                    <h3>ColdRoom</h3>
+                    È stato deciso di rappresentarla mediante due variabili e non come attore poichè non dovrà ricevere o inviare alcun tipo di messaggio.
                     Le due variabili rappresenteranno il peso effettivo contenuto all'interno della ColdRoom (peso reale) e il peso effettivo della ColdRoom sommato al peso totale dato dai ticket emessi ma non ancora elaborati (peso virtuale).
-                    <b>Svuotamento ColdRoom</b>, per gestire lo svuotamento della ColdRoom abbiamo modellato un attore apposito (EmpytColdRoom) che ad intervalli di tempo regolari invia un richiesta
+                    <h3>Svuotamento ColdRoom</h3>
+                    Per gestire lo svuotamento della ColdRoom abbiamo modellato un attore apposito (EmpytColdRoom) che ad intervalli di tempo regolari invia un richiesta
                     al coldstorageservice. Abbiamo deciso di modellarlo come attore per rappresentare un operatore che si occupa dello svuotamento.
                     <br>
 
-                    <b>Struttura Ticket:</b><br>
+                    <h3>Struttura Ticket</h3>
                     Il Ticket viene modellato come un POJO e contiene al suo interno un identificativo univoco e casuale che per ragioni di sicurezza deve essere conosciuto solamente dal Fridge Truck driver che 
                     ha richiesto il Ticket.
 
                     <br>
-                    <b>TicketService</b>, viene modellato come attore per permettere all'applicazione di essere in grado di rispondere sempre alle richieste di nuovi ticket, per quindi consentire un'elaborazione in parallelo 
-                    delle operazioni di emissione ticket e azioni di carico e scarico del TransportTrolley. Per fare ciò si è scelto di delegare a tale attore i messaggi newticket in ingresso.
+                    <h3>TicketService</h3>
+                    Viene modellato come attore per permettere all'applicazione di essere in grado di rispondere sempre alle richieste di nuovi ticket, per quindi consentire un'elaborazione in parallelo 
+                    delle operazioni di emissione ticket e azioni di carico e scarico del TransportTrolley. Per fare ciò si è scelto di delegare a tale attore i messaggi di richiesta di un nuovo ticket in ingresso.
                     Inoltre si occupa di verificare la validità di un ticket presentato da un fridge truck, e verifica che il peso virtuale non ecceda il limite imposto dalla capacità della ColdRoom.
                     Alla richiesta di un nuovo Ticket verifica che tutti i Ticket scaduti ma non ancora utilizzati siano eliminati e quindi esclusi dal calcolo del peso virtuale della ColdRoom.
                     <br>
-                    <b></b>
-                    <b id="driver-distratto">Driver distratto</b>
+                    
+                    <h3 id="driver-distratto">Driver distratto</h3>
                     Questo problema ha indotto il committente ad affermare che:
                     quando un agente esterno (driver) invia il ticket per indurre il servizio a scaricare il truck, si SUPPPONE GARANTITO che il carico del truck sia UGUALE (o al più MINORE) del carico indicato nella prenotazione.
                     Al momento della presentazione del ticket viene fornito dal truck driver il peso effettivo della consegna. Questo valore viene confrontato con il peso dichiarato nella fase di richiesta del ticket. Se tale valore è
-                    inferiore al peso dichiarato, il CurrentWeightVirtual viene decrementato della differenza dei due valori.
-                    <b>Problema del driver malevolo</b>
+                    inferiore al peso dichiarato, il peso virtuale viene decrementato della differenza dei due valori.
+                    <h3>Problema del driver malevolo</h3>
                     Questo problema ha indotto il committente ad affermare che si fa l'ipotesi che nessun driver cerchi di imbrogliare (rubando ticket, etc.)
 
                     
@@ -360,21 +318,22 @@
 
                 <h2>Progettazione</h2>
                 <div class="remark">
-                    <b>Struttura ticket</b>, abbiamo deciso di modellare l'entità ticket nel seguente modo:
+                    <h3>Struttura ticket</h3>
+                    L'entità ticket è stata modellata nel seguente modo:
                     <pre>
-                        data class Ticket(val id: String, val creationTime: Long, val fw: Int) {
+data class Ticket(val id: String, val creationTime: Long, val fw: Int) {
 
-                            companion object{
-                                @JvmStatic
-                                fun getRandomId() : String {
-                                    val length = 5
-                                    val allowedChars = ('A'..'Z') + ('a'..'z')
-                                    return (1..length)
-                                        .map { allowedChars.random() }
-                                        .joinToString("")
-                                }
-                            }
-                        }
+    companion object{
+        @JvmStatic
+        fun getRandomId() : String {
+            val length = 5
+            val allowedChars = ('A'..'Z') + ('a'..'z')
+            return (1..length)
+                .map { allowedChars.random() }
+                .joinToString("")
+        }
+    }
+}
                     </pre>
                     <br>
                     I parametri per la creazione di un Ticket sono i seguenti:
@@ -385,16 +344,16 @@
                     </ul>
                     La funzione getRandomId() è una funzione statica che permette di generare casualmente l'id del ticket. <br>
                     
-                    <b>Problema load-time lungo:</b>
+                    <h3>Problema load-time lungo</h3>
                     Tale problema, <a href="#load-time-lungo">descritto in precedenza</a>, viene risolto con le due seguenti request-response:
                     <pre>
-                        Request ticketrequest : ticketrequest( TICKET, FW )
-                        Reply ticketaccepted  : ticketaccepted( MESSAGE )
-                        Reply ticketrejected  : ticketrejected( REASON )
+Request ticketrequest : ticketrequest( TICKET, FW )
+Reply ticketaccepted  : ticketaccepted( MESSAGE )
+Reply ticketrejected  : ticketrejected( REASON )
 
-                        Request loaddone	: loaddone(FW)
-                        Reply chargetaken	: chargetaken(MESSAGE)
-                        Reply chargefailure : chargefailure(REASON)
+Request loaddone	: loaddone(FW)
+Reply chargetaken	: chargetaken(MESSAGE)
+Reply chargefailure : chargefailure(REASON)
                     </pre>
                     <ul>
                         <li>ticketrequest è la richiesta con cui si presenta il ticket per poter successivamente eseguire l'operazione di scarico. Ticket rappresenta l'id fornito in precedenza
@@ -406,12 +365,12 @@
 
                     </ul>
                 
-                    <b>Implementazione TicketService:</b>
+                    <h3>Implementazione TicketService</h3>
                     L'attore resta in uno stato di attesa in cui attende uno di questi messaggi:
                     <pre>
-                        Request newticket		: newticket( FW )
-                        Request ticketrequest : ticketrequest( TICKET, FW )
-                        Dispatch updatevirtualweight : updatevirtualweight(FW)
+Request newticket		: newticket( FW )
+Request ticketrequest : ticketrequest( TICKET, FW )
+Dispatch updatevirtualweight : updatevirtualweight(FW)
                     </pre>
                     <ul>
                         <li>newticket è la richiesta con cui si richiede la creazione di un nuovo ticket. FW rappresenta la quantità di peso per cui si richiede il ticket.</li>
@@ -420,26 +379,26 @@
                         </li>
                     </ul>
                     
-                    <b>Implementazione EmptyColdRoom:</b>
+                    <h3>Implementazione EmptyColdRoom</h3>
                     L'attore rimane in uno stato nel quale periodicamente invia il seguente messaggio:
                     <pre>
-                        Request clearColdRoom : clearColdRoom(_)
+Request clearColdRoom : clearColdRoom(_)
                     </pre>
                     Tale messaggio (senza parametri) viene inviato alla ColdStorageService.
                     <br>
-                    <b>Implementazione FridgeTruck:</b>
+                    <h3>Implementazione FridgeTruck</h3>
                     Questo attore simula l'utente finale. Tale attore, come l'utente finale, interagisce con il sistema inviando i seguenti messaggi:
                     <pre>
-                        Request newticket		: newticket( FW )
-                        Request ticketrequest : ticketrequest( TICKET, FW )
-                        Request loaddone	: loaddone(FW)
+Request newticket		: newticket( FW )
+Request ticketrequest : ticketrequest( TICKET, FW )
+Request loaddone	: loaddone(FW)
                     </pre>
                     
-                    <b>Implementazione ColdRoom:</b>
+                    <h3>Implementazione ColdRoom</h3>
                     è stato deciso di rappresentarla mediante due variabili:
                     <pre>
-                    var CurrentWeightReal;
-                    var CurrentWeightVirtual;
+var CurrentWeightReal;
+var CurrentWeightVirtual;
                     </pre>
                     <ul>
                         <li>CurrentWeightReal rappresenta il peso effettivo contenuto all'interno della ColdRoom, e viene gestito dalla ColdStorageService</li>
@@ -447,14 +406,14 @@
                             e viene gestito dal TicketService.</li>
                     </ul>
 
-                    <b>Implementazione ColdStorageService:</b>
+                    <h3>Implementazione ColdStorageService</h3>
                     L'attore gestisce i seguenti messaggi:
                     <pre>
-                        Request ticketrequest : ticketrequest( TICKET, FW )
-                        Request clearColdRoom : clearColdRoom(_)
-                        Dispatch goMoveToIndoor   : goMoveToIndoor(_)
-                        Dispatch goMoveToHome     : goMoveToHome(_) 
-                        Dispatch deposit : deposit(_)
+Request ticketrequest : ticketrequest( TICKET, FW )
+Request clearColdRoom : clearColdRoom(_)
+Dispatch goMoveToIndoor   : goMoveToIndoor(_)
+Dispatch goMoveToHome     : goMoveToHome(_) 
+Dispatch deposit : deposit(_)
                     </pre>
                     <ul>
                         <li>goMoveToIndoor viene inviato al transporttrolley per iniziare la deposit action</li>
@@ -463,12 +422,12 @@
 
                     </ul>
 
-                    <b>Problema driver distratto</b>
+                    <h3>Problema driver distratto</h3>
                     Tale problema, <a href="#driver-distratto">descritto in precedenza</a>, viene risolto con il seguente controllo:
                     <pre>
-                        if(foodWeight < ticket!!.fw) {
-                            currentWeightVirtual -= (ticket!!.fw-foodWeight)
-                           }
+if(foodWeight < ticket!!.fw) {
+    currentWeightVirtual -= (ticket!!.fw-foodWeight)
+}
                     </pre>
                     <ul>
                         <li>foodWeight è il peso effettivo dall'utente</li>
@@ -479,130 +438,60 @@
                 </div>
 
                 <h2>Test</h2>
-                
-                <h2>Piano di lavoro</h2>
                 <div class="remark">
-                    <table style="width:100%" border="1">
-                        <tr>
-                            <th width="15%">Sprint</th>
-                            <th width="35%">Goal</th>
-                            <th width="15%">Tempo stimato</th>
-                            <th width="35%">Note</th>
-                        </tr>
-                        <tr>
-                            <td>
-                                Sprint 1
-                            </td>
-                            <td>
-                                realizzazione dei prototipi dei componenti ColdRoom e ColdStorageService
-                            </td>
-                            <td>
-                                3 giorni
-                            </td>
-                            <td>
-                                
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                
-                            </td>
-                            <td>
-                                testing
-                            </td>
-                            <td>
-                                4 ore
-                            </td>
-                            <td>
-                                il testing non prevederà l'interazione diretta con il basicrobot in quanto il TransportTrolley non sarà ancora interamente realizzato
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Sprint 2
-                            </td>
-                            <td>
-                                realizzazione del TrasportTrolley
-                            </td>
-                            <td>
-                                2 giorni
-                            </td>
-                            <td>
-                                
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                
-                            </td>
-                            <td>
-                                testing
-                            </td>
-                            <td>
-                                3 ore
-                            </td>
-                            <td>
-                                il testing verrà effettuato utilzanndo il simulatore fridge truck in quanto le GUI non saranno ancora sviluppate 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Sprint 3
-                            </td>
-                            <td>
-                                realizzazione delle GUI
-                            </td>
-                            <td>
-                                1 giorno
-                            </td>
-                            <td>
-                                lo sviluppo delle due GUI può essere eseguito in parallelo in quanto non sono interagenti tra loro
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                
-                            </td>
-                            <td>
-                                testing
-                            </td>
-                            <td>
-                                2 ore
-                            </td>
-                            <td>
-                                
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Sprint 4
-                            </td>
-                            <td>
-                                realizzazione degli Alarm Requirements (componenti Sonar e Led)
-                            </td>
-                            <td>
-                                1 giorno
-                            </td>
-                            <td>
-                                
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                
-                            </td>
-                            <td>
-                                testing
-                            </td>
-                            <td>
-                                1 ora
-                            </td>
-                            <td>
-                                il testing verterà su tutti i componenti del sistema
-                            </td>
-                        </tr>
-                    </table>
-                    Lo sprint 3 e lo sprint 4 possono essere eseguiti il parallelo.
+                    I test sviluppati prevedono:<br>
+                    <ol>
+                        <li>il controllo del flusso di esecuzione del fridge truck, dalla richiesta del ticket al deposito</li>
+                        <li>svuotamento cold room</li>
+                    </ol>
+                    <h3>Fridge truck</h3>
+                    <pre>
+@Test
+public void mainUseCaseFridgeTruckTest() throws IOException, InterruptedException {
+
+    String fw = "10";
+
+    //invio messaggio
+    out.write("msg(newticket,request,tester,coldstorageservice,newticket("+fw+"),12)\n");
+    out.flush();
+
+    //attesa risposta
+    String response = in.readLine();
+    assertTrue(response.contains("newticketaccepted"));
+    String ticket= response.split(",")[4].split("\\(")[1].split("\\)")[0];
+    //String secret= response.split(",")[5].split("\\)")[0];
+
+    //invio elabTicketRequest
+    out.write("msg(ticketrequest,request,tester,coldstorageservice,ticketrequest("+ticket+","+fw+"),13)\n");
+    out.flush();
+
+    //verifica ticket accepted
+    response = in.readLine();
+    assertTrue(response.contains("ticketaccepted"));
+
+    //invio loadDone
+    out.write("msg(loaddone,request,tester,coldstorageservice,loaddone("+fw+"),14)\n");
+    out.flush();
+
+    //risposta chargetaken
+    response = in.readLine();
+    assertTrue(response.contains("chargetaken"));
+
+}
+                    </pre>
+                    <h3>Svuotamento cold room</h3>
+                    <pre>
+@Test
+public void emptyColdRoom() throws IOException {
+    //invio messaggio
+    out.write("msg(clearColdRoom,request,tester,coldstorageservice,clearColdRoom(0),12)\n");
+    out.flush();
+
+    //attesa risposta
+    String response = in.readLine();
+    assertTrue(response.contains("coldRoomCleared"));
+}
+                    </pre>
                 </div>
             </div>  
             

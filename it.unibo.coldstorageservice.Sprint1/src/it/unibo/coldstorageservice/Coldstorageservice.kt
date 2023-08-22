@@ -52,7 +52,6 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 								 
 										   	   	val IDTicket = payloadArg(0)
 										   	   	val FoodWeight = payloadArg(1)   	
-								request("ticketrequest", "ticketrequest($IDTicket,$FoodWeight)" ,"ticketservice" )  
 						}
 						//genTimer( actor, state )
 					}
@@ -105,15 +104,26 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 
 													CurrentTicketFW = payloadArg(0).toInt()
-								forward("goMoveToIndoor", "goMoveToIndoor(0)" ,"transporttrolley" ) 
-								request("waitLoad", "waitLoad(0)" ,"transporttrolley" )  
 						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t321",targetState="elabWaitDeposit",cond=whenReply("waitLoadDone"))
+					 transition(edgeName="t321",targetState="elabChargeTaken",cond=whenReply("waitLoadDone"))
+				}	 
+				state("elabChargeTaken") { //this:State
+					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
+						CommUtils.outgreen("$name | elab charge taken")
+						answer("loaddone", "chargetaken", "chargetaken(0)"   )  
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="elabWaitDeposit", cond=doswitch() )
 				}	 
 				state("elabWaitDeposit") { //this:State
 					action { //it:State
@@ -133,7 +143,6 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						
 									CurrentWeightReal += CurrentTicketFW	
 						CommUtils.outgreen("Deposit - Current weight real: $CurrentWeightReal")
-						answer("loaddone", "chargetaken", "chargetaken(0)"   )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -146,7 +155,6 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				}	 
 				state("moveRobotHome") { //this:State
 					action { //it:State
-						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -159,7 +167,6 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						CommUtils.outgreen("$name | empty coldRoom")
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						forward("updatevirtualweight", "updatevirtualweight($CurrentWeightReal)" ,"ticketservice" ) 
 						
 									CurrentWeightReal = 0	
 						CommUtils.outgreen("$name | coldRoom cleared - current weight real: $CurrentWeightReal")

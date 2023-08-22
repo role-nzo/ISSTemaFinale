@@ -28,10 +28,4 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
           coldstorageservice=Custom('coldstorageservice','./qakicons/symActorSmall.png')
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='engage', fontcolor='magenta') >> basicrobot
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='moverobot', fontcolor='magenta') >> basicrobot
-     transporttrolley >> Edge(color='blue', style='solid', xlabel='deposit', fontcolor='blue') >> coldstorageservice
-     coldstorageservice >> Edge(color='magenta', style='solid', xlabel='ticketrequest', fontcolor='magenta') >> ticketservice
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='goMoveToIndoor', fontcolor='blue') >> transporttrolley
-     coldstorageservice >> Edge(color='magenta', style='solid', xlabel='waitLoad', fontcolor='magenta') >> transporttrolley
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='goMoveToHome', fontcolor='blue') >> transporttrolley
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='updatevirtualweight', fontcolor='blue') >> ticketservice
 diag

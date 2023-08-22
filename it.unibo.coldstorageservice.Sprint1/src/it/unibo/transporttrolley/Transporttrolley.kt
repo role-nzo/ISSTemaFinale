@@ -153,7 +153,6 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					action { //it:State
 						CommUtils.outblue("$name | at ColdRoom")
 						delay(3000) 
-						forward("deposit", "deposit(0)" ,"coldstorageservice" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

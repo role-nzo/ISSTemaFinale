@@ -193,7 +193,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 		
 		println("$name | at ColdRoom") color blue
 		delay 3000
-		//forward coldstorageservice -m deposit : deposit(0)
+		forward coldstorageservice -m deposit : deposit(0)
 		
 	} Goto waitcoldstorageservicerequest
 	
@@ -390,7 +390,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		   	   	val FoodWeight = payloadArg(1)   	
 		   	#]
 		   	
-		   	//request ticketservice -m ticketrequest : ticketrequest( $IDTicket, $FoodWeight )
+		   	request ticketservice -m ticketrequest : ticketrequest( $IDTicket, $FoodWeight )
 	   	}
 	}
 	Transition t1 whenReply ticketaccepted -> elabTicketAccepted
@@ -423,8 +423,8 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 			[# 
 					CurrentTicketFW = payloadArg(0).toInt()
 			#]
-			//forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0)
-			//request transporttrolley -m waitLoad : waitLoad(0)
+			forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0)
+			request transporttrolley -m waitLoad : waitLoad(0)
 			//TODO: transportrolley deve andare da solo in coldRoom dopo essere andato in Indoor e prelevato
 			
 			
@@ -461,7 +461,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	State moveRobotHome {
 		
-		//forward transporttrolley -m goMoveToHome     : goMoveToHome(0)
+		forward transporttrolley -m goMoveToHome     : goMoveToHome(0)
 		
 	}
 	Goto waitclientrequest
@@ -469,7 +469,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	State elabClearColdRoom{
 		println("$name | empty coldRoom") color green
 		printCurrentMessage
-		//forward ticketservice -m updatevirtualweight : updatevirtualweight($CurrentWeightReal)
+		forward ticketservice -m updatevirtualweight : updatevirtualweight($CurrentWeightReal)
 		
 		[#
 			CurrentWeightReal = 0	
