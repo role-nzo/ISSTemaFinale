@@ -7,10 +7,12 @@ plugins {
 
 group = 'it.unibo'
 version = '0.0.1-SNAPSHOT'
+sourceCompatibility = "11"
 
+/*
 java {
 	sourceCompatibility = '1.8'
-}
+}*/
 
 repositories {
 	mavenCentral()

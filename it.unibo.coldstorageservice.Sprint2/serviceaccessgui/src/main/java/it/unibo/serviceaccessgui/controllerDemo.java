@@ -16,8 +16,6 @@ import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.Socket;
 
-import static sun.jvm.hotspot.oops.CellTypeState.addr;
-
 @Controller
 @RequestMapping("/")
 public class controllerDemo {
@@ -36,6 +34,7 @@ public class controllerDemo {
             CommSystemConfig.tracing = true;
             String ctxqakdest       = "ctxcoldstorageservice";
             String qakdestination 	= "coldstorageservice";
+            String addr = "127.0.0.1";
             String path   = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
             coapconn                = new CoapConnection(addr+":"+cssPort, path);
             //connToPathexec = new CoapConnection(addr+":"+robotPort, ctxqakdest+"/pathexec" );
@@ -43,8 +42,8 @@ public class controllerDemo {
             //CommUtils.outyellow("RobotUtils | connect Coap conn:" + coapconn);
 
             //Coap coon e observer per i delegati
-            //CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/coldstorageservice" );
-            //planexecconn.observeResource( new ColdRoomCoapObserver() );
+            CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/coldstorageservice" );
+            planexecconn.observeResource( new ColdRoomCoapObserver() );
 
 
 
@@ -59,6 +58,7 @@ public class controllerDemo {
                 CommSystemConfig.tracing = true;
                 String ctxqakdest       = "ctxcoldstorageservice";
                 String qakdestination 	= "coldstorageservice";
+                String addr = "127.0.0.1";
                 String path   = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
                 coapconn                = new CoapConnection(addr+":"+cssPort, path);
                 //connToPathexec = new CoapConnection(addr+":"+robotPort, ctxqakdest+"/pathexec" );
@@ -89,16 +89,18 @@ public class controllerDemo {
     }
 
     @PostMapping("/newticket")
-    public String newTicket(Model model, @RequestParam String requestFw) throws IOException {
+    public String newTicket(Model model, @RequestParam String requestFw) throws Exception {
 
-        Socket client = new Socket("localhost", 8022);
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        coapconn.request("msg(newticket,request,tester,coldstorageservice,newticket("+requestFw+"),12)\n");
 
-        out.write("msg(newticket,request,tester,coldstorageservice,newticket("+requestFw+"),12)\n");
-        out.flush();
+        //Socket client = new Socket("127.0.0.1", 8022);
+        //BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+        //BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-        String response = in.readLine();
+        //out.write("msg(newticket,request,tester,coldstorageservice,newticket("+requestFw+"),12)\n");
+        //out.flush();
+
+        String response = coapconn.receiveMsg();
         String ticket = "Error";
         if(response.contains("newticketaccepted")) {
             ticket = response.split(",")[4].split("\\(")[1].split("\\)")[0];
