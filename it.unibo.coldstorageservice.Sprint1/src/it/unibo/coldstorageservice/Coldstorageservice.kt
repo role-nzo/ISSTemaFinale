@@ -52,6 +52,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 								 
 										   	   	val IDTicket = payloadArg(0)
 										   	   	val FoodWeight = payloadArg(1)   	
+								request("ticketrequest", "ticketrequest($IDTicket,$FoodWeight)" ,"ticketservice" )  
 						}
 						//genTimer( actor, state )
 					}
@@ -104,6 +105,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 
 													CurrentTicketFW = payloadArg(0).toInt()
+								forward("goMoveToIndoor", "goMoveToIndoor(0)" ,"transporttrolley" ) 
+								request("waitLoad", "waitLoad(0)" ,"transporttrolley" )  
 						}
 						//genTimer( actor, state )
 					}
@@ -155,6 +158,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				}	 
 				state("moveRobotHome") { //this:State
 					action { //it:State
+						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -167,6 +171,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						CommUtils.outgreen("$name | empty coldRoom")
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
+						forward("updatevirtualweight", "updatevirtualweight($CurrentWeightReal)" ,"ticketservice" ) 
 						
 									CurrentWeightReal = 0	
 						CommUtils.outgreen("$name | coldRoom cleared - current weight real: $CurrentWeightReal")

@@ -1,10 +1,10 @@
 System coldstorageservice
 
-Request engage        : engage(OWNER) //FATTO
-Reply   engagedone    : engagedone(ARG) //FATTO
-Reply   engagerefused : engagerefused(ARG) //FATTO
+Request engage        : engage(OWNER)
+Reply   engagedone    : engagedone(ARG)
+Reply   engagerefused : engagerefused(ARG)
 
-Dispatch disengage    : disengage(ARG) //FATTO
+Dispatch disengage    : disengage(ARG)
 
 Dispatch setrobotstate: setpos(X,Y,D)
 Dispatch setdirection : dir( D )  //D =up|down!left|right
@@ -19,9 +19,9 @@ Reply moverobotdone  :  moverobotok(ARG)
 Reply moverobotfailed:  moverobotfailed(ARG)
 
 
-Dispatch goMoveToIndoor   : goMoveToIndoor(_) //FATTO
-Dispatch goMoveToColdRoom : goMoveToColdRoom(_) //FATTO
-Dispatch goMoveToHome     : goMoveToHome(_) //FATTO
+Dispatch goMoveToIndoor   : goMoveToIndoor(_)
+Dispatch goMoveToColdRoom : goMoveToColdRoom(_)
+Dispatch goMoveToHome     : goMoveToHome(_)
 
 
 //Ottenimento del ticket
@@ -57,60 +57,14 @@ Reply coldRoomCleared : coldRoomCleared(_)
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
 //Context ctxtester 			  ip [host="127.0.0.1" port=8023] 
-Context ctxfridgetruck 		  ip [host="localhost" port=8023] //Eliminare -> funziona solo con 3 contesti
-//Context ctxfridgetrucktemp 	  ip [host="127.0.0.1" port=8024] //Eliminare -> funziona solo con 3 contesti
+//Context ctxfridgetruck 		  ip [host="localhost" port=8023]
+//Context ctxfridgetrucktemp 	  ip [host="127.0.0.1" port=8024]
 
 //ExternalQActor tester context ctxtester
 ExternalQActor basicrobot context ctxbasicrobot
 
-/*
- * TO-DO
- * Scrivere sullo sprint i ragionamenti fatti per raggiungere il modello
- * Scrivere perchè coldRoom POJO (non ha la necessità di inviare/ricevere messaggi direttamente)
- * Problema del load-time lungo -> perchè abbiamo scelto più messaggi per la showTicketRequest
- * 
- * PROBLEMA DRIVER MALEVOLO: come riconoscere il truck
- * 		--> non necessario
- * PROBLEMA CODA SHOW TICKET: come gestire il caso di più show ticket request
- * 		--> da testare
- * 
- * Nell'analisi del problema indicare:
- *  - Struttura ticket: idTruck,
- *  -  Perchè coldRoom come POJO e non Attore
- *  - Come abbiamo risolto problema del load time lungo
- *  - Problema carico maggiore rispetto al peso trasportabile
- * 
- */
-
-
-/*
- * 
- * PROBLEMA FRIDGE TRUCK:
- * TcpMsgHandler  | ERROR: A term starting with 0-9 cannot be parsed as a number
- * dipende dal ticket che comincia con un intero
- * 		
- */
- 
- 
-/*
- * TODO:
- * 1. gestione svuotamento periodico cold room: il peso reale viene azzerato mentre quello virtuale sarà "virtual - real" (il risultato sarà pari al peso dei ticket validi non ancora gestiti)
- * 2. gestione elaborazione ticket: delega a ticketservice (FATTO)
- */
- 
- /*
-  * TODO:
-  * scrivere motivazioni per l'implementazione dell'attore "ticketservice"
-  * 	es: sempre disponibile per la creazione di nuovi ticket
-  */
-  /*TODO:
-   * abbiamo introdotto un peso virtuale in modo da distinguere il peso effettivo all'interno della ColdRoom dal peso totale delle richieste di ticket
-   *
-   * 
-   */
 
 QActor transporttrolley context ctxcoldstorageservice{
-	//TODO: gestire il move failed 
 	
 	State s0 initial {
 		println("transporttrolley starts") color blue
@@ -177,7 +131,6 @@ QActor transporttrolley context ctxcoldstorageservice{
 	} Transition t1 whenRequest waitLoad -> elabWaitLoad
 	
 	State planFailedIndoor {
-		//prendere il carico
 		
 		println("$name | at Indoor") color blue
 		delay 3000
@@ -193,7 +146,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 		
 		println("$name | at ColdRoom") color blue
 		delay 3000
-		//forward coldstorageservice -m deposit : deposit(0)
+		forward coldstorageservice -m deposit : deposit(0)
 		
 	} Goto waitcoldstorageservicerequest
 	
@@ -205,8 +158,6 @@ QActor transporttrolley context ctxcoldstorageservice{
 		//NON FUNZIONA
 		//forward basicrobot -m setdirection : dir(down)
 	    
-	    
-		//aspettare altre richieste
 	} Goto waitcoldstorageservicerequest
 		
 }
@@ -214,7 +165,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 QActor emptycoldroom context ctxcoldstorageservice{
 	
 	State s0 initial{
-		/*request coldstorageservice -m clearColdRoom : clearColdRoom(0)*/
+		request coldstorageservice -m clearColdRoom : clearColdRoom(0)
 		println("$name | richiesta svuotamento coldroom")
 		delay 7000
 	}Goto s0
@@ -282,11 +233,6 @@ QActor ticketservice context ctxcoldstorageservice {
 				}
 			#]
 		}
-		
-		
-		//Verifica id univoco, il ticket verrà aggiunto ad una lista di ticket
-		
-		
 		
 	}
 	Goto s0
@@ -363,8 +309,6 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	[# var CurrentWeightReal = 0
 	   var CurrentTicketFW = 0
 	#]
-
-	//currentWeight rappresenta il peso virtuale corrente della coldRoom che considera anche i ticket ancora in coda
 	
 	State s0 initial{
 		println("coldstorageservice starts") color green
@@ -390,7 +334,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		   	   	val FoodWeight = payloadArg(1)   	
 		   	#]
 		   	
-		   	//request ticketservice -m ticketrequest : ticketrequest( $IDTicket, $FoodWeight )
+		   	request ticketservice -m ticketrequest : ticketrequest( $IDTicket, $FoodWeight )
 	   	}
 	}
 	Transition t1 whenReply ticketaccepted -> elabTicketAccepted
@@ -418,15 +362,12 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		printCurrentMessage
 		println("$name | elab load done") color green
 		
-		//gestione del caso in cui il peso da depositare del truck è maggiore rispetto alla capacità massima di peso trasportabile dal trolley
 		onMsg( loaddone : loaddone(FW)) {
 			[# 
 					CurrentTicketFW = payloadArg(0).toInt()
 			#]
-			//forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0)
-			//request transporttrolley -m waitLoad : waitLoad(0)
-			//TODO: transportrolley deve andare da solo in coldRoom dopo essere andato in Indoor e prelevato
-			
+			forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0)
+			request transporttrolley -m waitLoad : waitLoad(0)
 			
 		}
 	}
@@ -440,7 +381,6 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	} Goto elabWaitDeposit
 	
 	State elabWaitDeposit {
-		//Invio charge taken fridge truck 
 		println("$name | elab wait load done") color green
 	}
 	Transition t4 whenMsg deposit -> elabDeposit
@@ -461,7 +401,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	State moveRobotHome {
 		
-		//forward transporttrolley -m goMoveToHome     : goMoveToHome(0)
+		forward transporttrolley -m goMoveToHome     : goMoveToHome(0)
 		
 	}
 	Goto waitclientrequest
@@ -469,7 +409,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	State elabClearColdRoom{
 		println("$name | empty coldRoom") color green
 		printCurrentMessage
-		//forward ticketservice -m updatevirtualweight : updatevirtualweight($CurrentWeightReal)
+		forward ticketservice -m updatevirtualweight : updatevirtualweight($CurrentWeightReal)
 		
 		[#
 			CurrentWeightReal = 0	
@@ -483,12 +423,12 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 }
 
 
-
+/* 
 QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	
 	State s0 initial {
 		println("fridgetruck starts") color red
-		//request coldstorageservice -m newticket		: newticket( 3 )
+		request coldstorageservice -m newticket		: newticket( 3 )
 	}
 	Transition t0 whenReply newticketaccepted -> elabTicketAccepted
 	
@@ -501,14 +441,14 @@ QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 				println(CurrentTicketId)
 			#]
 			
-			//request coldstorageservice -m ticketrequest : ticketrequest($CurrentTicketId, 3)
+			request coldstorageservice -m ticketrequest : ticketrequest($CurrentTicketId, 3)
 		}
 	}
 	Transition t1 whenReply ticketaccepted -> elabLoadDone
 				  //whenReply ticketrejected -> s0
 	
 	State elabLoadDone {
-		//request coldstorageservice -m loaddone : loaddone( 3 )
+		request coldstorageservice -m loaddone : loaddone( 3 )
 	}
 	Transition t1 whenReply chargetaken -> elabChargeTaken
 	
@@ -516,7 +456,7 @@ QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 		printCurrentMessage
 	}
 	
-}
+}*/
 
 
 

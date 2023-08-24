@@ -214,7 +214,7 @@
             <div class="remark">
                 Lo sprint0 ha prodotto la seguente architettura:
                 <br>
-                <img src="./images/coldstorageservicearchsprint0.png" width="50%">
+                <img src="./images/coldstorageservicearchsprint0.png" width="60%">
                 <br>
 
             </div>
@@ -300,16 +300,16 @@
 
                 <h2>Architettura logica</h2>
                 <div class="remark">
-                    <img src="./images/coldstorageservicearchsprint1analisideirequisiti.png" width="100%">
+                    <img src="./images/coldstorageservicearchsprint1analisideirequisiti.png" width="60%">
                     <br>
                     Dall'architettua logica possiamo evidenziare i seguenti componenti:
                     <ul>
                         <li>ColdStorageService: riceve dal fridge truck le richieste di verifica di validità dei ticket che vengono successivamente
-                            inoltrate al TicketService, riceve le richieste di svuotamento dall'EmpytColdRoom e invia i messaggi al TrasportTrolley per iniziare la deposit action
+                            inoltrate al TicketService, riceve le richieste di svuotamento dall'EmptyColdRoom e invia i messaggi al TransportTrolley per iniziare la deposit action
                         </li>
                         <li>TransportTrolley: invia al BasicRobot i messaggi necessari per eseguire la deposit action</li>
                         <li>TicketService: si occupa di gestire le richieste per l'emissione di nuovi ticket e di verificarne la validità nel momento in cui viene presentato dal fridge truck </li>
-                        <li>EmpytColdRoom: si occupa di svuotare periodicamento la coldroom inviato un apposito messaggio al ColdStorageService</li>
+                        <li>EmptyColdRoom: si occupa di svuotare periodicamente la coldroom inviato un apposito messaggio al ColdStorageService</li>
                         <li>FridgeTruck: invia le richieste per l'emissione di un nuovo ticket e viene introdotto solamente per simulare un eventuale utente finale</li>
                         <li>BasicRobot: esegue i comandi ricevuti dal TransportTrolley</li>
                     </ul>
@@ -359,8 +359,8 @@ Reply chargefailure : chargefailure(REASON)
                         <li>ticketrequest è la richiesta con cui si presenta il ticket per poter successivamente eseguire l'operazione di scarico. Ticket rappresenta l'id fornito in precedenza
                             in risposta alla richiesta di newticket (tale messaggio verrà descritto più avanti nel documento); FW rappresenta il peso effettivo consegnato dal fridge truck.
                         </li>
-                        <li>loaddone viene invato, dal fridge truck, appena si riceve la risposta ticketaccepted. Con questa richiesta l'utente si mette in attesa della terminazione dell'operazione
-                            di carico del transporttrolley, che viene segnalata dalla ricezione del messaggio chargetaken. 
+                        <li>loaddone viene invato dal fridge truck appena si riceve la risposta ticketaccepted. Con questa richiesta l'utente si mette in attesa della terminazione dell'operazione
+                            di carico del transporttrolley che viene segnalata dalla ricezione del messaggio chargetaken. 
                         </li>
 
                     </ul>
@@ -402,7 +402,7 @@ var CurrentWeightVirtual;
                     </pre>
                     <ul>
                         <li>CurrentWeightReal rappresenta il peso effettivo contenuto all'interno della ColdRoom, e viene gestito dalla ColdStorageService</li>
-                        <li>CurrentWeightVirtual rappresenta il peso effettivo contenuto all'interno della ColdRoom sommato al peso totale dato dai ticket emessi ma non ancora elaborati, 
+                        <li>CurrentWeightVirtual rappresenta il peso effettivo contenuto all'interno della ColdRoom sommato al peso totale dato dai ticket emessi ma non ancora elaborati 
                             e viene gestito dal TicketService.</li>
                     </ul>
 
@@ -435,6 +435,12 @@ if(foodWeight < ticket!!.fw) {
                     </ul>
 
 
+                </div>
+
+                <h2>Architettura logica finale</h2>
+                <div class="remark">
+                    <a href="https://github.com/role-nzo/ISSTemaFinale/tree/main/it.unibo.coldstorageservice.Sprint1/src/coldstorageserviceV1.qak">Metamodello qak</a><br>
+                    <img src="../coldstorageservicearch.png" width="60%">
                 </div>
 
                 <h2>Test</h2>

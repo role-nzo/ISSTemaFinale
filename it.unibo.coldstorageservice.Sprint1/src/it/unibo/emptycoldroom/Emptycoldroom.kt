@@ -21,6 +21,7 @@ class Emptycoldroom ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
+						request("clearColdRoom", "clearColdRoom(0)" ,"coldstorageservice" )  
 						CommUtils.outblack("$name | richiesta svuotamento coldroom")
 						delay(7000) 
 						//genTimer( actor, state )
