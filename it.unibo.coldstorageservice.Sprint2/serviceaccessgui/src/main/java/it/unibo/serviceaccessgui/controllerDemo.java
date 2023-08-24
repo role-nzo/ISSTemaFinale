@@ -91,16 +91,16 @@ public class controllerDemo {
     @PostMapping("/newticket")
     public String newTicket(Model model, @RequestParam String requestFw) throws Exception {
 
-        coapconn.request("msg(newticket,request,tester,coldstorageservice,newticket("+requestFw+"),12)\n");
+        //coapconn.request("msg(newticket,request,tester,coldstorageservice,newticket("+requestFw+"),12)\n");
 
-        //Socket client = new Socket("127.0.0.1", 8022);
-        //BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-        //BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        Socket client = new Socket("127.0.0.1", 8022);
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-        //out.write("msg(newticket,request,tester,coldstorageservice,newticket("+requestFw+"),12)\n");
-        //out.flush();
+        out.write("msg(newticket,request,tester,coldstorageservice,newticket("+requestFw+"),12)\n");
+        out.flush();
 
-        String response = coapconn.receiveMsg();
+        String response = in.readLine();
         String ticket = "Error";
         if(response.contains("newticketaccepted")) {
             ticket = response.split(",")[4].split("\\(")[1].split("\\)")[0];
