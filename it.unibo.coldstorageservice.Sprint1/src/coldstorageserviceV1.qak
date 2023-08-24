@@ -392,6 +392,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		[#
 			CurrentWeightReal += CurrentTicketFW	
 		#]
+		updateResource [# "depositdone($CurrentWeightReal )" #]
 		
 		println("Deposit - Current weight real: $CurrentWeightReal") color green 
 	}
@@ -414,6 +415,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		[#
 			CurrentWeightReal = 0	
 		#]
+		updateResource [# "clearcoldroomdone($CurrentWeightReal )" #]
 		println("$name | coldRoom cleared - current weight real: $CurrentWeightReal") color green
 		replyTo clearColdRoom with coldRoomCleared : coldRoomCleared(0)
 	

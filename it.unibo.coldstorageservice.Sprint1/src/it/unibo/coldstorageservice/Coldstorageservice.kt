@@ -145,6 +145,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						 	   
 						
 									CurrentWeightReal += CurrentTicketFW	
+						updateResourceRep( "depositdone($CurrentWeightReal )"  
+						)
 						CommUtils.outgreen("Deposit - Current weight real: $CurrentWeightReal")
 						//genTimer( actor, state )
 					}
@@ -174,6 +176,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						forward("updatevirtualweight", "updatevirtualweight($CurrentWeightReal)" ,"ticketservice" ) 
 						
 									CurrentWeightReal = 0	
+						updateResourceRep( "clearcoldroomdone($CurrentWeightReal )"  
+						)
 						CommUtils.outgreen("$name | coldRoom cleared - current weight real: $CurrentWeightReal")
 						answer("clearColdRoom", "coldRoomCleared", "coldRoomCleared(0)"   )  
 						//genTimer( actor, state )

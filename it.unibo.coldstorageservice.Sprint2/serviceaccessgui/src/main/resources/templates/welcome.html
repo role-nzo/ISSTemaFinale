@@ -1,0 +1,24 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Welcome</title></head>
+<body>
+<h1>Welcome (in templates)</h1>
+<p>Welcome to <b><span th:text="${arg}">Our Arg</span></b>.</p>
+<h3>Peso occupato nella coldroom</h3>
+<h3>Richiesta nuovo ticket:</h3>
+<form action="/newticket" method="post">
+    <label for="requestFw">Fw:</label><br>
+    <input type="text" id="requestFw" name="requestFw"><br>
+    <input type="submit" value="Submit">
+</form>
+<p>Ticekt id: <b><span th:text="${newticket}">Our Arg</span></b></p>
+<h3>Presenta il ticket: </h3>
+<form action="/showticket" method="post">
+    <label for="requestTicket">Ticket id:</label><br>
+    <input type="text" id="requestTicket" name="requestTicket"><br>
+    <label for="requestShowTicketFw">Fw:</label><br>
+    <input type="text" id="requestShowTicketFw" name="requestShowTicketFw"><br>
+    <input type="submit" value="Submit">
+</form>
+<p>Complete: <b><span th:text="${showticket}">Our Arg</span></b></p>
+</body>
+</html>
