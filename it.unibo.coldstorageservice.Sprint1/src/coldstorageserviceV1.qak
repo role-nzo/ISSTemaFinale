@@ -165,9 +165,11 @@ QActor transporttrolley context ctxcoldstorageservice{
 QActor emptycoldroom context ctxcoldstorageservice{
 	
 	State s0 initial{
+		
+		delay 15000
 		request coldstorageservice -m clearColdRoom : clearColdRoom(0)
 		println("$name | richiesta svuotamento coldroom")
-		delay 7000
+		
 	}Goto s0
 		
 }
@@ -178,6 +180,7 @@ QActor ticketservice context ctxcoldstorageservice {
 	   var currentWeightVirtual = 0 
 	   var maxWeight = 100
 	   var TimeMax = 300
+	   var Ticketsrejected = 0
 	#]
 	
 	State s0 initial{
@@ -291,7 +294,9 @@ QActor ticketservice context ctxcoldstorageservice {
 						[#
 					} else{
 						currentWeightVirtual -= ticket!!.fw
+						Ticketsrejected++
 						#]
+						updateResource [# " ticketsrejected($Ticketsrejected)" #]
 						replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)		 
 			  			[#
 			  		}
@@ -359,6 +364,8 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	Transition t2 whenRequest loaddone -> elabLoadDone
 	
 	State elabLoadDone {
+		//ROBOT diventa occupato
+		updateResource [# "robotfree(occupato)" #]
 		printCurrentMessage
 		println("$name | elab load done") color green
 		
@@ -392,7 +399,9 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		[#
 			CurrentWeightReal += CurrentTicketFW	
 		#]
-		updateResource [# "depositdone($CurrentWeightReal )" #]
+		updateResource [# "depositdone($CurrentWeightReal)" #]
+		//ROBOT libero
+		updateResource [# "robotfree(libero)" #]
 		
 		println("Deposit - Current weight real: $CurrentWeightReal") color green 
 	}

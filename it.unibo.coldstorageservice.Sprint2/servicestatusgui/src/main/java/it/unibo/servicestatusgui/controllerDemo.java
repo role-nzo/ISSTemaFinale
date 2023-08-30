@@ -1,4 +1,4 @@
-package it.unibo.serviceaccessgui;
+package it.unibo.servicestatusgui;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +24,7 @@ public class controllerDemo {
     String appName;
 
     private Interaction coapconn;
-    public static final int cssPort           = 8022;
+    public int cssPort           = 8022;
 
 
     @PostConstruct
@@ -34,6 +34,7 @@ public class controllerDemo {
             CommSystemConfig.tracing = true;
             String ctxqakdest       = "ctxcoldstorageservice";
             String qakdestination 	= "coldstorageservice";
+
             String addr = "127.0.0.1";
             String path   = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
             coapconn                = new CoapConnection(addr+":"+cssPort, path);
@@ -41,9 +42,26 @@ public class controllerDemo {
             //((CoapConnection)connToPathexec).observeResource( new PlanCoapObserver() );
             //CommUtils.outyellow("RobotUtils | connect Coap conn:" + coapconn);
 
+
+
             //Coap coon e observer per i delegati
             CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/coldstorageservice" );
             planexecconn.observeResource( new ColdRoomCoapObserver() );
+
+            ctxqakdest = "ctxbasicrobot";
+            qakdestination = "basicrobot";
+            cssPort = 8020;
+            /* /planexec invia solo il percorso fatto al termine*/
+
+            CoapConnection planexecctestonn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/robotposendosimbiotico" );
+            planexecctestonn.observeResource( new ColdRoomCoapObserver() );
+
+            /*
+            CoapConnection planexbasictonn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/basicrobot" );
+            planexbasictonn.observeResource( new ColdRoomCoapObserver() );
+
+            CoapConnection planexectonn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/planexec" );
+            planexectonn.observeResource( new ColdRoomCoapObserver() );*/
 
 
 

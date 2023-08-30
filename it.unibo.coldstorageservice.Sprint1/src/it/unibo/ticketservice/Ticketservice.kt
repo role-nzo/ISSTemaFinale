@@ -22,6 +22,7 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 			   var currentWeightVirtual = 0 
 			   var maxWeight = 100
 			   var TimeMax = 300
+			   var Ticketsrejected = 0
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -151,6 +152,9 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 								
 													} else{
 														currentWeightVirtual -= ticket!!.fw
+														Ticketsrejected++
+								updateResourceRep( " ticketsrejected($Ticketsrejected)"  
+								)
 								answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
 								
 											  		}

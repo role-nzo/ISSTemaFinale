@@ -98,6 +98,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
+						updateResourceRep( "robotfree(occupato)"  
+						)
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
 						CommUtils.outgreen("$name | elab load done")
@@ -145,7 +147,9 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						 	   
 						
 									CurrentWeightReal += CurrentTicketFW	
-						updateResourceRep( "depositdone($CurrentWeightReal )"  
+						updateResourceRep( "depositdone($CurrentWeightReal)"  
+						)
+						updateResourceRep( "robotfree(libero)"  
 						)
 						CommUtils.outgreen("Deposit - Current weight real: $CurrentWeightReal")
 						//genTimer( actor, state )

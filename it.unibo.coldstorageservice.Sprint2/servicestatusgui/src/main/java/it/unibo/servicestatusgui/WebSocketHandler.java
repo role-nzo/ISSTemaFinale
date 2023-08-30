@@ -1,4 +1,4 @@
-package it.unibo.serviceaccessgui;
+package it.unibo.servicestatusgui;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -8,6 +8,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import unibo.basicomm23.utils.CommUtils;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;

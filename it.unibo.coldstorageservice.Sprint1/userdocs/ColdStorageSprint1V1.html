@@ -498,7 +498,10 @@ public void emptyColdRoom() throws IOException {
     assertTrue(response.contains("coldRoomCleared"));
 }
                     </pre>
-                </div>
+                    Per poter eseguire il sistema e i test è necessario avviare nel seguente ordine i vari componenti: BasicRobot, il ctxcoldstorageservice
+                    e il ctxfridgetruck.
+                    Per l'esecuzione del test non è necessario avviare il ctxfridgetruck in quanto è completamente simulato dalla Unit.
+                </div> 
             </div>  
             
             <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
