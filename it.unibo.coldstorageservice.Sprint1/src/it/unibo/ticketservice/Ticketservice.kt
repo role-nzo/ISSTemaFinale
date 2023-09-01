@@ -34,9 +34,9 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t013",targetState="elabNewTicket",cond=whenRequest("newticket"))
-					transition(edgeName="t014",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
-					transition(edgeName="t015",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
+					 transition(edgeName="t014",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					transition(edgeName="t015",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					transition(edgeName="t016",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
 				}	 
 				state("elabNewTicket") { //this:State
 					action { //it:State
@@ -152,6 +152,7 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 								
 													} else{
 														currentWeightVirtual -= ticket!!.fw
+														//TODO: "Ticketsrejected" non serve su "coldstorageservice" ma solo su "statusservice"
 														Ticketsrejected++
 								updateResourceRep( " ticketsrejected($Ticketsrejected)"  
 								)

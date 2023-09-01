@@ -40,8 +40,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t016",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
-					transition(edgeName="t017",targetState="elabClearColdRoom",cond=whenRequest("clearColdRoom"))
+					 transition(edgeName="t017",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					transition(edgeName="t018",targetState="elabClearColdRoom",cond=whenRequest("clearColdRoom"))
 				}	 
 				state("elabTicketRequest") { //this:State
 					action { //it:State
@@ -59,8 +59,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t118",targetState="elabTicketAccepted",cond=whenReply("ticketaccepted"))
-					transition(edgeName="t119",targetState="elabTicketRejected",cond=whenReply("ticketrejected"))
+					 transition(edgeName="t119",targetState="elabTicketAccepted",cond=whenReply("ticketaccepted"))
+					transition(edgeName="t120",targetState="elabTicketRejected",cond=whenReply("ticketrejected"))
 				}	 
 				state("elabTicketAccepted") { //this:State
 					action { //it:State
@@ -94,7 +94,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t220",targetState="elabLoadDone",cond=whenRequest("loaddone"))
+					 transition(edgeName="t221",targetState="elabLoadDone",cond=whenRequest("loaddone"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -115,7 +115,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t321",targetState="elabChargeTaken",cond=whenReply("waitLoadDone"))
+					 transition(edgeName="t322",targetState="elabChargeTaken",cond=whenReply("waitLoadDone"))
 				}	 
 				state("elabChargeTaken") { //this:State
 					action { //it:State
@@ -138,7 +138,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t422",targetState="elabDeposit",cond=whenDispatch("deposit"))
+					 transition(edgeName="t423",targetState="elabDeposit",cond=whenDispatch("deposit"))
 				}	 
 				state("elabDeposit") { //this:State
 					action { //it:State
@@ -147,6 +147,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						 	   
 						
 									CurrentWeightReal += CurrentTicketFW	
+						updateResourceRep( "weightUpdate($CurrentWeightReal)"  
+						)
 						updateResourceRep( "depositdone($CurrentWeightReal)"  
 						)
 						updateResourceRep( "robotfree(libero)"  
@@ -159,8 +161,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				 	 		stateTimer = TimerActor("timer_elabDeposit", 
 				 	 					  scope, context!!, "local_tout_coldstorageservice_elabDeposit", 2500.toLong() )
 					}	 	 
-					 transition(edgeName="t523",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabDeposit"))   
-					transition(edgeName="t524",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
+					 transition(edgeName="t524",targetState="moveRobotHome",cond=whenTimeout("local_tout_coldstorageservice_elabDeposit"))   
+					transition(edgeName="t525",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
 				}	 
 				state("moveRobotHome") { //this:State
 					action { //it:State
@@ -180,6 +182,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						forward("updatevirtualweight", "updatevirtualweight($CurrentWeightReal)" ,"ticketservice" ) 
 						
 									CurrentWeightReal = 0	
+						updateResourceRep( "weightUpdate($CurrentWeightReal)"  
+						)
 						updateResourceRep( "clearcoldroomdone($CurrentWeightReal )"  
 						)
 						CommUtils.outgreen("$name | coldRoom cleared - current weight real: $CurrentWeightReal")

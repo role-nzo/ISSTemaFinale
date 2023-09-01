@@ -1,5 +1,7 @@
 System coldstorageservice
 
+Dispatch coapUpdate: coapUpdate(RESOURCE, VALUE)
+
 Request engage        : engage(OWNER)
 Reply   engagedone    : engagedone(ARG)
 Reply   engagerefused : engagerefused(ARG)
@@ -62,6 +64,7 @@ Context ctxcoldstorageservice ip [host="localhost" port=8022]
 
 //ExternalQActor tester context ctxtester
 ExternalQActor basicrobot context ctxbasicrobot
+ExternalQActor robotposendosimbiotico context ctxbasicrobot
 
 
 QActor transporttrolley context ctxcoldstorageservice{
@@ -160,6 +163,78 @@ QActor transporttrolley context ctxcoldstorageservice{
 	    
 	} Goto waitcoldstorageservicerequest
 		
+}
+
+
+
+QActor statusservice context ctxcoldstorageservice {
+	//TODO: richiesta in ingresso; ricevuta quando viene aperta la pagina servicestatusgui
+	//TODO: updateResource; viene utilizzata per aggiornare lo stato della servicestatusgui
+	
+	//la richiesta è uguale all'updateResource se non per la mappa: questa infatti viene inviata
+	//	solamente nella richiesta iniziale in quanto non varia nel tempo
+	
+	//STRUTTURA MESSAGGI
+	//richiesta
+	//	status(MAP, POSIZIONE_X, POSIZIONE_Y, STATO_ROBOT, PESO, RICHIESTE_RIFIUTATE)
+	//updateResource
+	//	status([CAUSA???, ]POSIZIONE_X, POSIZIONE_Y, STATO_ROBOT, PESO, RICHIESTE_RIFIUTATE)
+	
+	//PROBLEMA
+	//nel momento in cui viene aperta la pagina web non tutti i dati potrebbero essere disponibili all'attore statusservice
+	//
+	
+	[#
+		var Map = ""
+		var PosX = 0
+		var PosY = 0
+		var RobotFree = "libero"
+		var CurrentWeightReal = 0 
+		var RejectedTickets = 0  
+	#]
+		
+	State s0 initial {
+		[#
+			CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")
+		#]
+		observeResource coldstorageservice
+	}
+	Goto observing
+	
+	State observing {
+		
+	} Transition t0 whenMsg coapUpdate -> doObserve
+
+	State doObserve{
+		printCurrentMessage
+		[#
+			val msg = currentMsg.msgContent().drop(11).dropLast(1)
+			val resource = msg.split(", ")[0]
+			val value = msg.dropWhile { it != ',' }.drop(2)
+							 
+			if( resource == "coldstorageservice" ) {
+				if( value.startsWith("robotfree") ) {
+					RobotFree = value.split("(")[1].dropLast(1)
+				} else if( value.startsWith("ticketrejected") ) {
+					RejectedTickets++
+				} else if( value.startsWith("weightUpdate") ) {
+					CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()
+				}
+			} else if( resource == "robotposendosimbiotico" ) {
+				if( value.startsWith("|") ) {
+					Map = value.substring(0, value.lastIndexOf("\n"))
+					var temp = value.substring(value.lastIndexOf("\n")).split(")")[0].split("(")[1]
+					PosX = temp.split(",")[0].toInt()
+					PosY = temp.split(",")[1].toInt()
+				}
+			}
+			
+			println(resource)
+			println(value) 
+		#]
+		updateResource [# "status($PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)" #]
+	}
+	Goto observing
 }
 
 QActor emptycoldroom context ctxcoldstorageservice{
@@ -294,6 +369,7 @@ QActor ticketservice context ctxcoldstorageservice {
 						[#
 					} else{
 						currentWeightVirtual -= ticket!!.fw
+						//TODO: "Ticketsrejected" non serve su "coldstorageservice" ma solo su "statusservice"
 						Ticketsrejected++
 						#]
 						updateResource [# " ticketsrejected($Ticketsrejected)" #]
@@ -399,6 +475,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		[#
 			CurrentWeightReal += CurrentTicketFW	
 		#]
+		updateResource [# "weightUpdate($CurrentWeightReal)" #]
 		updateResource [# "depositdone($CurrentWeightReal)" #]
 		//ROBOT libero
 		updateResource [# "robotfree(libero)" #]
@@ -424,6 +501,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		[#
 			CurrentWeightReal = 0	
 		#]
+		updateResource [# "weightUpdate($CurrentWeightReal)" #]
 		updateResource [# "clearcoldroomdone($CurrentWeightReal )" #]
 		println("$name | coldRoom cleared - current weight real: $CurrentWeightReal") color green
 		replyTo clearColdRoom with coldRoomCleared : coldRoomCleared(0)

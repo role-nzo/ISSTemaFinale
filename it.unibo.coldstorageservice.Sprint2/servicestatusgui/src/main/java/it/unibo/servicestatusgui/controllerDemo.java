@@ -45,22 +45,22 @@ public class controllerDemo {
 
 
             //Coap coon e observer per i delegati
-            CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/coldstorageservice" );
+            CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/statusservice" );
             planexecconn.observeResource( new ColdRoomCoapObserver() );
 
-            ctxqakdest = "ctxbasicrobot";
+            /*ctxqakdest = "ctxbasicrobot";
             qakdestination = "basicrobot";
             cssPort = 8020;
-            /* /planexec invia solo il percorso fatto al termine*/
+            //planexec invia solo il percorso fatto al termine
 
             CoapConnection planexecctestonn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/robotposendosimbiotico" );
-            planexecctestonn.observeResource( new ColdRoomCoapObserver() );
+            planexecctestonn.observeResource( new ColdRoomCoapObserver() );*/
 
             /*
             CoapConnection planexbasictonn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/basicrobot" );
-            planexbasictonn.observeResource( new ColdRoomCoapObserver() );
+            planexbasictonn.observeResource( new ColdRoomCoapObserver() );*/
 
-            CoapConnection planexectonn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/planexec" );
+            /*CoapConnection planexectonn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/planexec" );
             planexectonn.observeResource( new ColdRoomCoapObserver() );*/
 
 
