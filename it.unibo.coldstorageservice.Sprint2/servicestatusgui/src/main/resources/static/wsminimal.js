@@ -32,7 +32,10 @@ wsminimal.js
 
 connect();
 
-parse({data: "status(|r, 1, 1, 1, 1, X,\n|1, 1, 1, 1, 1, X,\n|1, 1, X, 1, 1, X,\n|X, X, X, X, X, X,  0, 0, libero, 0, 0)"})
+
+//testing
+//parse({data: "status(|r, 1, 1, 1, 1, X,\n|1, 1, 1, 1, 1, X,\n|1, 1, X, 1, 1, X,\n|X, X, X, X, X, X,  0, 0, libero, 0, 0)"})
+
 
 function parse (event) {
     //alert(`Got Message: ${event.data}`);
