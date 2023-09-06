@@ -101,8 +101,16 @@ public class controllerDemo {
     }
 
     @GetMapping("/")
-    public String homePage(Model model) {
+    public String homePage(Model model) throws IOException {
         model.addAttribute("arg", appName);
+
+        Socket client = new Socket("localhost", 8022);
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+
+        //invio elabTicketRequest
+        out.write("msg(sendmap,dispatch,tester,statusservice,sendmap(_),13)\n");
+        out.flush();
         return "welcome";
     }
 

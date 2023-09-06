@@ -1,0 +1,561 @@
+System coldstorageservice
+
+Dispatch coapUpdate: coapUpdate(RESOURCE, VALUE)
+
+Request engage        : engage(OWNER)
+Reply   engagedone    : engagedone(ARG)
+Reply   engagerefused : engagerefused(ARG)
+
+Dispatch disengage    : disengage(ARG)
+
+Dispatch setrobotstate: setpos(X,Y,D)
+Dispatch setdirection : dir( D )  //D =up|down!left|right
+
+Request  doplan   : doplan( PATH, OWNER, STEPTIME )
+Reply doplandone  : doplandone( ARG )
+Reply doplanfailed  : doplanfailed( PLANDONE, PLANTODO )
+
+
+Request moverobot    :  moverobot(TARGETX, TARGETY)
+Reply moverobotdone  :  moverobotok(ARG)
+Reply moverobotfailed:  moverobotfailed(ARG)
+
+
+Dispatch goMoveToIndoor   : goMoveToIndoor(_)
+Dispatch goMoveToColdRoom : goMoveToColdRoom(_)
+Dispatch goMoveToHome     : goMoveToHome(_)
+
+
+//Ottenimento del ticket
+Request newticket		: newticket( FW )
+Reply newticketaccepted : newticketaccepted( TICKET )
+Reply newticketrefused  : newticketrefused( REASON )
+
+
+//Show ticket per rilascio merce
+Request ticketrequest : ticketrequest( TICKET, FW )
+Reply ticketaccepted  : ticketaccepted( MESSAGE )
+Reply ticketrejected  : ticketrejected( REASON )
+
+
+Request loaddone	: loaddone(FW)
+Reply chargetaken	: chargetaken(MESSAGE)
+Reply chargefailure : chargefailure(REASON)
+
+
+Request waitLoad : waitLoad(_)
+Reply waitLoadDone : waitLoadDone(_)
+
+Dispatch deposit : deposit(_)
+Dispatch updatevirtualweight : updatevirtualweight(FW)
+
+Request clearColdRoom : clearColdRoom(_)
+Reply coldRoomCleared : coldRoomCleared(_)
+
+//invio mappa 
+Dispatch sendmap 	: sendmap(_)
+
+
+
+Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
+Context ctxcoldstorageservice ip [host="localhost" port=8022]
+//Context ctxtester 			  ip [host="127.0.0.1" port=8023] 
+//Context ctxfridgetruck 		  ip [host="localhost" port=8023]
+//Context ctxfridgetrucktemp 	  ip [host="127.0.0.1" port=8024]
+
+//ExternalQActor tester context ctxtester
+ExternalQActor basicrobot context ctxbasicrobot
+ExternalQActor robotposendosimbiotico context ctxbasicrobot
+
+
+QActor transporttrolley context ctxcoldstorageservice{
+	
+	State s0 initial {
+		println("transporttrolley starts") color blue
+		//Acquisizione del basicrobot
+    	request basicrobot -m engage : engage(transporttrolley)	
+	}
+	Transition t0 whenReply engagedone    -> init
+                  whenReply engagerefused -> waitrobotfree
+                  
+    State waitrobotfree{
+		println("transporttrolley engage refused") color blue
+	}
+	
+	State init{
+		println("transporttrolley init") color blue
+	} Goto waitcoldstorageservicerequest
+	
+	
+	State waitcoldstorageservicerequest {
+	  println("$name | waiting the client request...") color blue
+	}
+	Transition t0 whenMsg goMoveToIndoor   -> elabMoveIndoor
+				  whenMsg goMoveToColdRoom -> elabMoveColdRoom
+				  whenMsg goMoveToHome     -> elabMoveHome
+	 
+	State elabMoveIndoor {	
+		printCurrentMessage color blue	
+		
+		request basicrobot -m moverobot	: moverobot(0, 4)
+	}
+	Transition t0 whenReply moverobotdone -> planFinishIndoor
+				  whenReply moverobotfailed -> waitcoldstorageservicerequest
+	
+	State elabMoveColdRoom {
+		printCurrentMessage color blue
+        
+        request basicrobot -m moverobot	: moverobot(4, 3)	
+	}
+	Transition t0 whenReply moverobotdone -> planFinishColdRoom
+				  whenReply moverobotfailed -> waitcoldstorageservicerequest
+	
+	State elabMoveHome {
+		printCurrentMessage color blue
+
+        request basicrobot -m moverobot	: moverobot(0, 0)		
+	}
+	Transition t0 whenReply moverobotdone -> planFinishHome
+				  whenReply moverobotfailed -> waitcoldstorageservicerequest
+
+	
+	State stopped {
+		
+	}
+	
+	State resumed {
+		
+	}
+	
+	State planFinishIndoor {
+		//prendere il carico
+		
+		println("$name | at Indoor") color blue
+		delay 3000
+	} Transition t1 whenRequest waitLoad -> elabWaitLoad
+	
+	State planFailedIndoor {
+		
+		println("$name | at Indoor") color blue
+		delay 3000
+		
+	} Transition t1 whenRequest waitLoad -> elabWaitLoad
+	
+	State elabWaitLoad {
+		replyTo waitLoad with waitLoadDone  : waitLoadDone(valid)
+	} Goto elabMoveColdRoom
+	
+	State planFinishColdRoom {
+		//depositare il carico
+		
+		println("$name | at ColdRoom") color blue
+		delay 3000
+		forward coldstorageservice -m deposit : deposit(0)
+		
+	} Goto waitcoldstorageservicerequest
+	
+	State planFinishHome {
+		
+		println("$name | at home") color blue
+		delay 1000
+		
+		//NON FUNZIONA
+		//forward basicrobot -m setdirection : dir(down)
+	    
+	} Goto waitcoldstorageservicerequest
+		
+}
+
+
+
+QActor statusservice context ctxcoldstorageservice {
+	//TODO: richiesta in ingresso; ricevuta quando viene aperta la pagina servicestatusgui
+	//TODO: updateResource; viene utilizzata per aggiornare lo stato della servicestatusgui
+	
+	//la richiesta è uguale all'updateResource se non per la mappa: questa infatti viene inviata
+	//	solamente nella richiesta iniziale in quanto non varia nel tempo
+	
+	//STRUTTURA MESSAGGI
+	//richiesta
+	//	status(MAP, POSIZIONE_X, POSIZIONE_Y, STATO_ROBOT, PESO, RICHIESTE_RIFIUTATE)
+	//updateResource
+	//	status([CAUSA???, ]POSIZIONE_X, POSIZIONE_Y, STATO_ROBOT, PESO, RICHIESTE_RIFIUTATE)
+	
+	//PROBLEMA
+	//nel momento in cui viene aperta la pagina web non tutti i dati potrebbero essere disponibili all'attore statusservice
+	//
+	
+	[#
+		var Map = ""
+		var PosX = 0
+		var PosY = 0
+		var RobotFree = "libero"
+		var CurrentWeightReal = 0 
+		var RejectedTickets = 0  
+	#]
+		
+	State s0 initial {
+		[#
+			CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")
+		#]
+		observeResource coldstorageservice
+	}
+	Goto observing
+	
+	State observing {
+		
+	} Transition t0 whenMsg coapUpdate -> doObserve
+	 				whenMsg sendmap -> sendMap
+
+	
+	State sendMap{
+		
+		updateResource [# "status($Map, $PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)" #]
+			
+	}
+	
+	State doObserve{
+		printCurrentMessage
+		[#
+			val msg = currentMsg.msgContent().drop(11).dropLast(1)
+			val resource = msg.split(", ")[0]
+			val value = msg.dropWhile { it != ',' }.drop(2)
+							 
+			if( resource == "coldstorageservice" ) {
+				if( value.startsWith("robotfree") ) {
+					RobotFree = value.split("(")[1].dropLast(1)
+				} else if( value.startsWith("ticketrejected") ) {
+					RejectedTickets++
+				} else if( value.startsWith("weightUpdate") ) {
+					CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()
+				}
+			} else if( resource == "robotposendosimbiotico" ) {
+				if( value.startsWith("|") ) {
+					Map = value.substring(0, value.lastIndexOf("\n"))
+					var temp = value.substring(value.lastIndexOf("\n")).split(")")[0].split("(")[1]
+					PosX = temp.split(",")[0].toInt()
+					PosY = temp.split(",")[1].toInt()
+				}
+			}
+			
+			println(resource)
+			println(value) 
+		#]
+		updateResource [# "status($PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)" #]
+	}
+	Goto observing
+	
+}
+
+QActor emptycoldroom context ctxcoldstorageservice{
+	
+	State s0 initial{
+		
+		delay 15000
+		request coldstorageservice -m clearColdRoom : clearColdRoom(0)
+		println("$name | richiesta svuotamento coldroom")
+		
+	}Goto s0
+		
+}
+
+QActor ticketservice context ctxcoldstorageservice {
+	
+	[# var ticketList = mutableListOf<Ticket>() 
+	   var currentWeightVirtual = 0 
+	   var maxWeight = 100
+	   var TimeMax = 300
+	   var Ticketsrejected = 0
+	#]
+	
+	State s0 initial{
+		println("$name | wait for request") color yellow
+		printCurrentMessage
+	}
+	Transition t0 whenRequest newticket -> elabNewTicket
+				  whenRequest ticketrequest  -> elabTicketRequest
+				  whenMsg updatevirtualweight -> elabUpdateVirtualWeight
+	
+
+	State elabNewTicket{
+		
+		println("$name | elab new ticket") color yellow
+		printCurrentMessage
+		onMsg( newticket : newticket( FW )){
+			
+			[#
+			val currentTime = java.time.Instant.now().epochSecond 
+			for( t in ticketList){
+				if((currentTime - t.creationTime) > TimeMax){
+					currentWeightVirtual -= t.fw
+					ticketList.remove(t)
+				}
+			}
+			var fw = payloadArg(0).toInt()
+			if(currentWeightVirtual + fw <= maxWeight){
+				currentWeightVirtual += fw
+				var Id = Ticket.getRandomId() 
+				var found = false
+				while(found){
+				found = false
+				
+					for (t in ticketList){
+						if(t.id==Id){
+							Id = Ticket.getRandomId()
+							found = true
+							break
+						}
+					}
+				}
+				
+				var ticket = Ticket(Id, java.time.Instant.now().epochSecond, fw)
+				
+				ticketList.add(ticket)
+				
+				println(ticket)
+				
+			
+				#] replyTo newticket with newticketaccepted:newticketaccepted( $Id ) [#
+				} else {
+				#] replyTo newticket with newticketrefused:newticketrefused( Peso ) [#
+				}
+			#]
+		}
+		
+	}
+	Goto s0
+	
+	State elabUpdateVirtualWeight{
+			println("$name | virtual weight update") color yellow
+			printCurrentMessage
+			onMsg( updatevirtualweight : updatevirtualweight(FW)){
+				[#
+					currentWeightVirtual = currentWeightVirtual - payloadArg(0).toInt()
+				#]
+			}
+			println("$name | current virtual weight: $currentWeightVirtual") color yellow
+	}Goto s0
+	
+	State elabTicketRequest{
+		
+		println("$name | elab ticket request") color yellow
+		printCurrentMessage
+		onMsg( ticketrequest : ticketrequest( TICKET, FW )) {
+			[#
+				val currentTime = java.time.Instant.now().epochSecond 
+		   	   	val idTicket = payloadArg(0)
+		   	   	val foodWeight = payloadArg(1).toInt()
+		   	   
+		   	   	var ticket : Ticket? = null
+		   	   
+		   	   	for (t in ticketList) {
+					//ciclo for per trovare il biglietto del driver nella lista
+		   	   	  	if(t.id == idTicket) {
+		   	   	  	
+		   	   	  		ticket = t
+		   	   	  		break
+		   	   	  	}
+		   	   	}
+		   	   
+		   	   	if(ticket==null) { 
+		   	   		println("Not found")
+	   	   			#]
+		   	   		replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)
+		   	   		[#
+		   	   	} else {   
+			   	  	
+				   	if(foodWeight<ticket!!.fw){
+						currentWeightVirtual -= (ticket!!.fw-foodWeight)
+				   	}
+				   	   
+					ticketList.remove(ticket)
+				   	   
+					println(currentTime - ticket!!.creationTime)
+				   	   
+					if((currentTime - ticket!!.creationTime) < TimeMax) {	
+				   	   	println("ticket valid")	
+			   	   		#]
+						replyTo ticketrequest with ticketaccepted  : ticketaccepted(valid)
+						[#
+					} else{
+						currentWeightVirtual -= ticket!!.fw
+						//TODO: "Ticketsrejected" non serve su "coldstorageservice" ma solo su "statusservice"
+						Ticketsrejected++
+						#]
+						updateResource [# " ticketsrejected($Ticketsrejected)" #]
+						replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)		 
+			  			[#
+			  		}
+		  		}
+  			#]	  	
+		}		
+	}
+	Goto s0
+}
+
+
+
+QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
+	
+	[# var CurrentWeightReal = 0
+	   var CurrentTicketFW = 0
+	#]
+	
+	State s0 initial{
+		println("coldstorageservice starts") color green
+		
+		delegate "newticket" to ticketservice
+				
+	}
+	Goto waitclientrequest
+	
+	
+	State waitclientrequest{
+	  println("$name | waiting the client request...") color green
+	  
+	}
+	Transition t0 whenRequest ticketrequest  -> elabTicketRequest
+				  whenRequest clearColdRoom  -> elabClearColdRoom
+	
+	State elabTicketRequest {
+		printCurrentMessage
+		onMsg( ticketrequest : ticketrequest( TICKET, FW )) {
+			[# 
+		   	   	val IDTicket = payloadArg(0)
+		   	   	val FoodWeight = payloadArg(1)   	
+		   	#]
+		   	
+		   	request ticketservice -m ticketrequest : ticketrequest( $IDTicket, $FoodWeight )
+	   	}
+	}
+	Transition t1 whenReply ticketaccepted -> elabTicketAccepted
+				  whenReply ticketrejected -> elabTicketRejected
+				  
+	
+	State elabTicketAccepted {
+		printCurrentMessage
+		replyTo ticketrequest with ticketaccepted  : ticketaccepted(valid)
+	} Goto waitLoadDoneRequest
+	
+	State elabTicketRejected {
+		printCurrentMessage
+		replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)		
+	} Goto waitclientrequest
+	
+	
+	State waitLoadDoneRequest{
+		println("$name | wait load request") color green
+		
+	}
+	Transition t2 whenRequest loaddone -> elabLoadDone
+	
+	State elabLoadDone {
+		//ROBOT diventa occupato
+		updateResource [# "robotfree(occupato)" #]
+		printCurrentMessage
+		println("$name | elab load done") color green
+		
+		onMsg( loaddone : loaddone(FW)) {
+			[# 
+					CurrentTicketFW = payloadArg(0).toInt()
+			#]
+			forward transporttrolley -m goMoveToIndoor   : goMoveToIndoor(0)
+			request transporttrolley -m waitLoad : waitLoad(0)
+			
+		}
+	}
+	Transition t3 whenReply waitLoadDone -> elabChargeTaken
+	
+	State elabChargeTaken {
+		printCurrentMessage
+		println("$name | elab charge taken") color green
+				
+		replyTo loaddone with chargetaken : chargetaken(0)
+	} Goto elabWaitDeposit
+	
+	State elabWaitDeposit {
+		println("$name | elab wait load done") color green
+	}
+	Transition t4 whenMsg deposit -> elabDeposit
+	
+	
+	State elabDeposit {
+		println("$name | elab deposit") color green
+		printCurrentMessage
+		[#
+			CurrentWeightReal += CurrentTicketFW	
+		#]
+		updateResource [# "weightUpdate($CurrentWeightReal)" #]
+		updateResource [# "depositdone($CurrentWeightReal)" #]
+		//ROBOT libero
+		updateResource [# "robotfree(libero)" #]
+		
+		println("Deposit - Current weight real: $CurrentWeightReal") color green 
+	}
+	Transition t5 whenTime 2500 -> moveRobotHome
+				  whenRequest ticketrequest  -> elabTicketRequest
+				  
+	
+	State moveRobotHome {
+		
+		forward transporttrolley -m goMoveToHome     : goMoveToHome(0)
+		
+	}
+	Goto waitclientrequest
+	
+	State elabClearColdRoom{
+		println("$name | empty coldRoom") color green
+		printCurrentMessage
+		forward ticketservice -m updatevirtualweight : updatevirtualweight($CurrentWeightReal)
+		
+		[#
+			CurrentWeightReal = 0	
+		#]
+		updateResource [# "weightUpdate($CurrentWeightReal)" #]
+		updateResource [# "clearcoldroomdone($CurrentWeightReal )" #]
+		println("$name | coldRoom cleared - current weight real: $CurrentWeightReal") color green
+		replyTo clearColdRoom with coldRoomCleared : coldRoomCleared(0)
+	
+	}Goto waitclientrequest
+	
+	
+}
+
+
+/* 
+QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
+	
+	State s0 initial {
+		println("fridgetruck starts") color red
+		request coldstorageservice -m newticket		: newticket( 3 )
+	}
+	Transition t0 whenReply newticketaccepted -> elabTicketAccepted
+	
+	State elabTicketAccepted {
+		
+		printCurrentMessage
+		onMsg( newticketaccepted : newticketaccepted(TICKET)){
+			[# 
+				var CurrentTicketId = payloadArg(0)
+				println(CurrentTicketId)
+			#]
+			
+			request coldstorageservice -m ticketrequest : ticketrequest($CurrentTicketId, 3)
+		}
+	}
+	Transition t1 whenReply ticketaccepted -> elabLoadDone
+				  //whenReply ticketrejected -> s0
+	
+	State elabLoadDone {
+		request coldstorageservice -m loaddone : loaddone( 3 )
+	}
+	Transition t1 whenReply chargetaken -> elabChargeTaken
+	
+	State elabChargeTaken {
+		printCurrentMessage
+	}
+	
+}*/
+
+
+
