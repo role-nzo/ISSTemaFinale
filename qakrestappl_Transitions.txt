@@ -1,1 +1,0 @@
-{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitclientrequest", "nextstate":"elabMove", "msgId":"domove"}
