@@ -19,7 +19,7 @@ In Spring we can create a customized handler by extends abstract class
 AbstractWebSocketHandler or one of it's subclass,
 either TextWebSocketHandler or BinaryWebSocketHandler:
  */
-public class WebSocketHandler extends AbstractWebSocketHandler implements IWsHandler {
+public class WebSocketHandler extends AbstractWebSocketHandler implements it.unibo.serviceaccessgui.IWsHandler {
     private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
     private JSONParser jsonparser = new JSONParser();
     @Override

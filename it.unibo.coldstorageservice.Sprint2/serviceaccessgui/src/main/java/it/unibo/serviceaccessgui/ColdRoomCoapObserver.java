@@ -4,6 +4,7 @@ import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapResponse;
 import unibo.basicomm23.utils.CommUtils;
 
+
 public class ColdRoomCoapObserver implements CoapHandler {
     @Override
     public void onLoad(CoapResponse response) {
