@@ -31,11 +31,19 @@ wsminimal.js
     }//connect
 
 connect();
+window.onload= function(){
+    $.ajax({
+            type: "GET",
+            url: "/getmap",
+    });
+
+}
 
 
 //testing
 //parse({data: "status(|r, 1, 1, 1, 1, X,\n|1, 1, 1, 1, 1, X,\n|1, 1, X, 1, 1, X,\n|X, X, X, X, X, X,  0, 0, libero, 0, 0)"})
-
+const canvas = document.getElementById("map");
+const ctx = canvas.getContext("2d");
 
 function parse (event) {
     //alert(`Got Message: ${event.data}`);
@@ -50,9 +58,6 @@ function parse (event) {
 
     /*if( msg.includes("plan") ) setMessageToWindow(planexecDisplay,msg);
     else setMessageToWindow(robotDisplay,msg);*/
-    const canvas = document.getElementById("map");
-    const ctx = canvas.getContext("2d");
-
 
     var fullMessage = msg.split("(")[1].split(")")[0];
     var message = fullMessage.split(",");

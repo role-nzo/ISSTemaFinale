@@ -50,23 +50,27 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				}	 
 				state("sendMap") { //this:State
 					action { //it:State
+						CommUtils.outblack("$Map")
 						updateResourceRep( "status($Map, $PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)"  
 						)
+						CommUtils.outblack("$Map")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
+					 transition( edgeName="goto",targetState="observing", cond=doswitch() )
 				}	 
 				state("doObserve") { //this:State
 					action { //it:State
+						CommUtils.outblack("print doObserve")
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
 						
 									val msg = currentMsg.msgContent().drop(11).dropLast(1)
 									val resource = msg.split(", ")[0]
 									val value = msg.dropWhile { it != ',' }.drop(2)
-													 
+												 
 									if( resource == "coldstorageservice" ) {
 										if( value.startsWith("robotfree") ) {
 											RobotFree = value.split("(")[1].dropLast(1)
@@ -76,6 +80,7 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 											CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()
 										}
 									} else if( resource == "robotposendosimbiotico" ) {
+										
 										if( value.startsWith("|") ) {
 											Map = value.substring(0, value.lastIndexOf("\n"))
 											var temp = value.substring(value.lastIndexOf("\n")).split(")")[0].split("(")[1]

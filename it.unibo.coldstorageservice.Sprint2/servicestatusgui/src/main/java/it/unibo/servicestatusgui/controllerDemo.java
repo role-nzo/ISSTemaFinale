@@ -103,6 +103,11 @@ public class controllerDemo {
     @GetMapping("/")
     public String homePage(Model model) throws IOException {
         model.addAttribute("arg", appName);
+        return "welcome";
+    }
+
+    @GetMapping("/getmap")
+    public ResponseEntity<String> getMap(Model model) throws IOException {
 
         Socket client = new Socket("localhost", 8022);
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
@@ -111,7 +116,7 @@ public class controllerDemo {
         //invio elabTicketRequest
         out.write("msg(sendmap,dispatch,tester,statusservice,sendmap(_),13)\n");
         out.flush();
-        return "welcome";
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
 
     @PostMapping("/newticket")

@@ -193,7 +193,7 @@ QActor statusservice context ctxcoldstorageservice {
 		var CurrentWeightReal = 0 
 		var RejectedTickets = 0  
 	#]
-		
+	//TODO: simulare spostamenti nella posizione (0,0) per forzare il movimento nella mappa(8/9)
 	State s0 initial {
 		[#
 			CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")
@@ -210,17 +210,20 @@ QActor statusservice context ctxcoldstorageservice {
 	
 	State sendMap{
 		
+		println("$Map")
 		updateResource [# "status($Map, $PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)" #]
-			
-	}
+		println("$Map")
+		
+	}Goto observing
 	
 	State doObserve{
+		println("print doObserve")
 		printCurrentMessage
 		[#
 			val msg = currentMsg.msgContent().drop(11).dropLast(1)
 			val resource = msg.split(", ")[0]
 			val value = msg.dropWhile { it != ',' }.drop(2)
-							 
+						 
 			if( resource == "coldstorageservice" ) {
 				if( value.startsWith("robotfree") ) {
 					RobotFree = value.split("(")[1].dropLast(1)
@@ -230,6 +233,7 @@ QActor statusservice context ctxcoldstorageservice {
 					CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()
 				}
 			} else if( resource == "robotposendosimbiotico" ) {
+				
 				if( value.startsWith("|") ) {
 					Map = value.substring(0, value.lastIndexOf("\n"))
 					var temp = value.substring(value.lastIndexOf("\n")).split(")")[0].split("(")[1]
