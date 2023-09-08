@@ -9,11 +9,14 @@
 <p>Welcome to <b><span th:text="${arg}">Our Arg</span></b>.</p>
 <h3>Map:</h3>
 <canvas id="map"></canvas>
-<h3>Stato robot: (occupato/libero):</h3>
-<h3>Posizione robot:</h3>
-<h3>Peso occupato nella coldroom:</h3>
-<span id="fw_real"></span>
-<h3>Numero richieste rifiutate:</h3>
+<h3>Stato robot: </h3><span id="stato"></span>
+<h3>Posizione robot:</h3> <span id="posizione"></span>
+<h3>Peso occupato nella coldroom:</h3><span id="fw_real"></span>
+<h3>Numero richieste rifiutate:</h3><span id="rifiuti"></span>
+
+<div style="display:none;">
+    <img id="source" src="robot.png" width="134" height="134" />
+</div>
 
 <script src="wsminimal.js"></script>
 <script>

@@ -36,12 +36,7 @@ public class controllerDemo {
             String qakdestination 	= "coldstorageservice";
             String addr = "127.0.0.1";
             String path   = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
-            coapconn                = new CoapConnection(addr+":"+cssPort, path);
-            //connToPathexec = new CoapConnection(addr+":"+robotPort, ctxqakdest+"/pathexec" );
-            //((CoapConnection)connToPathexec).observeResource( new PlanCoapObserver() );
-            //CommUtils.outyellow("RobotUtils | connect Coap conn:" + coapconn);
 
-            //Coap coon e observer per i delegati
             CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/coldstorageservice" );
             planexecconn.observeResource( new ColdRoomCoapObserver() );
 
@@ -49,36 +44,6 @@ public class controllerDemo {
 
         }catch(Exception e){
             CommUtils.outred("RobotUtils | connectWithRobotUsingTcp ERROR:"+e.getMessage());
-        }
-    }
-
-    public Interaction getConnection(){
-        if (coapconn==null){
-            try {
-                CommSystemConfig.tracing = true;
-                String ctxqakdest       = "ctxcoldstorageservice";
-                String qakdestination 	= "coldstorageservice";
-                String addr = "127.0.0.1";
-                String path   = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
-                coapconn                = new CoapConnection(addr+":"+cssPort, path);
-                //connToPathexec = new CoapConnection(addr+":"+robotPort, ctxqakdest+"/pathexec" );
-                //((CoapConnection)connToPathexec).observeResource( new PlanCoapObserver() );
-                CommUtils.outyellow("RobotUtils | connect Coap conn:" + coapconn);
-
-                //Coap coon e observer per i delegati
-                CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/coldstorageservice" );
-                planexecconn.observeResource( new ColdRoomCoapObserver() );
-                return coapconn;
-
-
-
-            }catch(Exception e){
-                CommUtils.outred("RobotUtils | connectWithRobotUsingTcp ERROR:"+e.getMessage());
-            }finally {
-                return coapconn;
-            }
-        } else {
-            return coapconn;
         }
     }
 
@@ -90,8 +55,6 @@ public class controllerDemo {
 
     @PostMapping("/newticket")
     public ResponseEntity<String> newTicket(Model model, @RequestParam String requestFw) throws Exception {
-
-        //coapconn.request("msg(newticket,request,tester,coldstorageservice,newticket("+requestFw+"),12)\n");
 
         Socket client = new Socket("127.0.0.1", 8022);
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
@@ -106,9 +69,6 @@ public class controllerDemo {
             ticket = response.split(",")[4].split("\\(")[1].split("\\)")[0];
         }
 
-        //model.addAttribute("arg", appName);
-        //model.addAttribute("newticket",ticket);
-        ///return "welcome";
         return new ResponseEntity<>(ticket, HttpStatus.OK);
     }
 
@@ -128,6 +88,8 @@ public class controllerDemo {
         response = in.readLine();
         String esito = "Error";
 
+        System.out.println(response);
+
         if(response.contains("ticketaccepted")){
 
             //invio loadDone
@@ -139,6 +101,9 @@ public class controllerDemo {
                 esito = "chargetaken";
             }
 
+        }
+        if (response.contains("ticketrejected")){
+            esito = "ticket rifiutato";
         }
 
         //model.addAttribute("arg", appName);

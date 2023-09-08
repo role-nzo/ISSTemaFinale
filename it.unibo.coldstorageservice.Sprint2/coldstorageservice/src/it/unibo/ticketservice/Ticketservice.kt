@@ -21,7 +21,7 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 		 var ticketList = mutableListOf<Ticket>() 
 			   var currentWeightVirtual = 0 
 			   var maxWeight = 100
-			   var TimeMax = 300
+			   var TimeMax = 10
 			   var Ticketsrejected = 0
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
@@ -152,9 +152,10 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 								
 													} else{
 														currentWeightVirtual -= ticket!!.fw
+														println("ticketservice " + Ticketsrejected)
 														//TODO: "Ticketsrejected" non serve su "coldstorageservice" ma solo su "statusservice"
 														Ticketsrejected++
-								updateResourceRep( " ticketsrejected($Ticketsrejected)"  
+								updateResourceRep( " ticketrejected($Ticketsrejected)"  
 								)
 								answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
 								

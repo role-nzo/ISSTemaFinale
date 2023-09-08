@@ -29,8 +29,10 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				state("s0") { //this:State
 					action { //it:State
 						
-									CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")
+									CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
+									
 						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","coldstorageservice")
+						request("moverobot", "moverobot(0,0)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -75,6 +77,7 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 										if( value.startsWith("robotfree") ) {
 											RobotFree = value.split("(")[1].dropLast(1)
 										} else if( value.startsWith("ticketrejected") ) {
+											println("Status " + RejectedTickets)
 											RejectedTickets++
 										} else if( value.startsWith("weightUpdate") ) {
 											CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()

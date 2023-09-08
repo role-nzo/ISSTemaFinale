@@ -59,9 +59,9 @@ Dispatch sendmap 	: sendmap(_)
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
-//Context ctxtester 			  ip [host="127.0.0.1" port=8023] 
-//Context ctxfridgetruck 		  ip [host="localhost" port=8023]
-//Context ctxfridgetrucktemp 	  ip [host="127.0.0.1" port=8024]
+Context ctxserviceaccessgui ip [host="localhost" port=8023]
+Context ctxservicestatusgui ip [host="localhost" port=8024]
+
 
 //ExternalQActor tester context ctxtester
 ExternalQActor basicrobot context ctxbasicrobot
@@ -169,21 +169,6 @@ QActor transporttrolley context ctxcoldstorageservice{
 
 
 QActor statusservice context ctxcoldstorageservice {
-	//TODO: richiesta in ingresso; ricevuta quando viene aperta la pagina servicestatusgui
-	//TODO: updateResource; viene utilizzata per aggiornare lo stato della servicestatusgui
-	
-	//la richiesta è uguale all'updateResource se non per la mappa: questa infatti viene inviata
-	//	solamente nella richiesta iniziale in quanto non varia nel tempo
-	
-	//STRUTTURA MESSAGGI
-	//richiesta
-	//	status(MAP, POSIZIONE_X, POSIZIONE_Y, STATO_ROBOT, PESO, RICHIESTE_RIFIUTATE)
-	//updateResource
-	//	status([CAUSA???, ]POSIZIONE_X, POSIZIONE_Y, STATO_ROBOT, PESO, RICHIESTE_RIFIUTATE)
-	
-	//PROBLEMA
-	//nel momento in cui viene aperta la pagina web non tutti i dati potrebbero essere disponibili all'attore statusservice
-	//
 	
 	[#
 		var Map = ""
@@ -193,12 +178,15 @@ QActor statusservice context ctxcoldstorageservice {
 		var CurrentWeightReal = 0 
 		var RejectedTickets = 0  
 	#]
-	//TODO: simulare spostamenti nella posizione (0,0) per forzare il movimento nella mappa(8/9)
+	
 	State s0 initial {
+		
 		[#
-			CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")
+			CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
+			
 		#]
 		observeResource coldstorageservice
+		request basicrobot -m moverobot	: moverobot(0, 0)
 	}
 	Goto observing
 	
@@ -228,6 +216,7 @@ QActor statusservice context ctxcoldstorageservice {
 				if( value.startsWith("robotfree") ) {
 					RobotFree = value.split("(")[1].dropLast(1)
 				} else if( value.startsWith("ticketrejected") ) {
+					println("Status " + RejectedTickets)
 					RejectedTickets++
 				} else if( value.startsWith("weightUpdate") ) {
 					CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()
@@ -255,7 +244,7 @@ QActor emptycoldroom context ctxcoldstorageservice{
 	
 	State s0 initial{
 		
-		delay 15000
+		delay 60000
 		request coldstorageservice -m clearColdRoom : clearColdRoom(0)
 		println("$name | richiesta svuotamento coldroom")
 		
@@ -268,7 +257,7 @@ QActor ticketservice context ctxcoldstorageservice {
 	[# var ticketList = mutableListOf<Ticket>() 
 	   var currentWeightVirtual = 0 
 	   var maxWeight = 100
-	   var TimeMax = 300
+	   var TimeMax = 10
 	   var Ticketsrejected = 0
 	#]
 	
@@ -383,10 +372,11 @@ QActor ticketservice context ctxcoldstorageservice {
 						[#
 					} else{
 						currentWeightVirtual -= ticket!!.fw
+						println("ticketservice " + Ticketsrejected)
 						//TODO: "Ticketsrejected" non serve su "coldstorageservice" ma solo su "statusservice"
 						Ticketsrejected++
 						#]
-						updateResource [# " ticketsrejected($Ticketsrejected)" #]
+						updateResource [# " ticketrejected($Ticketsrejected)" #]
 						replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)		 
 			  			[#
 			  		}
@@ -403,6 +393,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	[# var CurrentWeightReal = 0
 	   var CurrentTicketFW = 0
+	   var Ticketsrejected = 0
 	#]
 	
 	State s0 initial{
@@ -443,6 +434,8 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	State elabTicketRejected {
 		printCurrentMessage
+		[# Ticketsrejected++ #]
+		updateResource [# "ticketrejected($Ticketsrejected)" #]
 		replyTo ticketrequest with ticketrejected  : ticketrejected(invalid)		
 	} Goto waitclientrequest
 	
@@ -525,10 +518,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 }
 
-
-/* 
-QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
-	
+QActor serviceaccessgui context ctxserviceaccessgui{
 	State s0 initial {
 		println("fridgetruck starts") color red
 		request coldstorageservice -m newticket		: newticket( 3 )
@@ -558,8 +548,12 @@ QActor fridgetruck context ctxfridgetruck{ //SCOMPARE
 	State elabChargeTaken {
 		printCurrentMessage
 	}
-	
-}*/
+}
 
+QActor servicestatusgui context ctxservicestatusgui{
+	State s0 initial{
+		
+	}
+}
 
 

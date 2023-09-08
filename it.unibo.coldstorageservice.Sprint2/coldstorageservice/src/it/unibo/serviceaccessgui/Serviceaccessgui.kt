@@ -21,9 +21,47 @@ class Serviceaccessgui ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outred("Serviceaccessgui starts")
-						request("ticketrequest", "ticketrequest(arg)" ,"coldstorageservice" )  
-						request("showticketrequest", "showticketrequest(arg)" ,"coldstorageservice" )  
+						CommUtils.outred("fridgetruck starts")
+						request("newticket", "newticket(3)" ,"coldstorageservice" )  
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t027",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
+				}	 
+				state("elabTicketAccepted") { //this:State
+					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
+						if( checkMsgContent( Term.createTerm("newticketaccepted(TICKET)"), Term.createTerm("newticketaccepted(TICKET)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 
+												var CurrentTicketId = payloadArg(0)
+												println(CurrentTicketId)
+								request("ticketrequest", "ticketrequest($CurrentTicketId,3)" ,"coldstorageservice" )  
+						}
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t128",targetState="elabLoadDone",cond=whenReply("ticketaccepted"))
+				}	 
+				state("elabLoadDone") { //this:State
+					action { //it:State
+						request("loaddone", "loaddone(3)" ,"coldstorageservice" )  
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t129",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
+				}	 
+				state("elabChargeTaken") { //this:State
+					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

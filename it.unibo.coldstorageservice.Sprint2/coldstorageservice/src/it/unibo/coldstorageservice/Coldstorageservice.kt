@@ -20,6 +20,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 		val interruptedStateTransitions = mutableListOf<Transition>()
 		 var CurrentWeightReal = 0
 			   var CurrentTicketFW = 0
+			   var Ticketsrejected = 0
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -78,6 +79,9 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
+						 Ticketsrejected++  
+						updateResourceRep( "ticketrejected($Ticketsrejected)"  
+						)
 						answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
 						//genTimer( actor, state )
 					}
