@@ -1,6 +1,5 @@
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveIndoor", "msgId":"goMoveToIndoor"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveColdRoom", "msgId":"goMoveToColdRoom"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveHome", "msgId":"goMoveToHome"}
-{"actor":"statusservice", "msgType":"dispatch", "curstate":"observing", "nextstate":"doObserve", "msgId":"coapUpdate"}
 {"actor":"ticketservice", "msgType":"dispatch", "curstate":"s0", "nextstate":"elabUpdateVirtualWeight", "msgId":"updatevirtualweight"}
 {"actor":"coldstorageservice", "msgType":"dispatch", "curstate":"elabWaitDeposit", "nextstate":"elabDeposit", "msgId":"deposit"}

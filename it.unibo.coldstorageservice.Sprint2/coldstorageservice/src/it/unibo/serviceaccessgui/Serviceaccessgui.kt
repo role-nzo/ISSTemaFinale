@@ -22,6 +22,7 @@ class Serviceaccessgui ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outred("fridgetruck starts")
+						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","statusservice")
 						request("newticket", "newticket(3)" ,"coldstorageservice" )  
 						//genTimer( actor, state )
 					}

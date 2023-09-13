@@ -521,6 +521,8 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 QActor serviceaccessgui context ctxserviceaccessgui{
 	State s0 initial {
 		println("fridgetruck starts") color red
+		
+		observeResource statusservice
 		request coldstorageservice -m newticket		: newticket( 3 )
 	}
 	Transition t0 whenReply newticketaccepted -> elabTicketAccepted
@@ -552,6 +554,8 @@ QActor serviceaccessgui context ctxserviceaccessgui{
 
 QActor servicestatusgui context ctxservicestatusgui{
 	State s0 initial{
+		
+		observeResource statusservice
 		
 	}
 }

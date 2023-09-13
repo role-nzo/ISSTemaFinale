@@ -43,7 +43,9 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
      coldstorageservice >> Edge(color='magenta', style='solid', xlabel='waitLoad', fontcolor='magenta') >> transporttrolley
      coldstorageservice >> Edge(color='blue', style='solid', xlabel='goMoveToHome', fontcolor='blue') >> transporttrolley
      coldstorageservice >> Edge(color='blue', style='solid', xlabel='updatevirtualweight', fontcolor='blue') >> ticketservice
+     statusservice >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> serviceaccessgui
      serviceaccessgui >> Edge(color='magenta', style='solid', xlabel='newticket', fontcolor='magenta') >> coldstorageservice
      serviceaccessgui >> Edge(color='magenta', style='solid', xlabel='ticketrequest', fontcolor='magenta') >> coldstorageservice
      serviceaccessgui >> Edge(color='magenta', style='solid', xlabel='loaddone', fontcolor='magenta') >> coldstorageservice
+     statusservice >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> servicestatusgui
 diag

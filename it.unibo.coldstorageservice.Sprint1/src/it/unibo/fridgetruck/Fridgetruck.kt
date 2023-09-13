@@ -22,6 +22,7 @@ class Fridgetruck ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outred("fridgetruck starts")
+						request("newticket", "newticket(3)" ,"coldstorageservice" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -38,6 +39,7 @@ class Fridgetruck ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name
 								 
 												var CurrentTicketId = payloadArg(0)
 												println(CurrentTicketId)
+								request("ticketrequest", "ticketrequest($CurrentTicketId,3)" ,"coldstorageservice" )  
 						}
 						//genTimer( actor, state )
 					}
@@ -48,6 +50,7 @@ class Fridgetruck ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
+						request("loaddone", "loaddone(3)" ,"coldstorageservice" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
