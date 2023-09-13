@@ -37,7 +37,7 @@ public class controllerDemo {
             String addr = "127.0.0.1";
             String path   = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
 
-            CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/coldstorageservice" );
+            CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/statusservice" );
             planexecconn.observeResource( new ColdRoomCoapObserver() );
 
 

@@ -33,14 +33,10 @@ wsminimal.js
             //alert(`Got Message: ${msg}`);
             console.log("ws-status:" + msg);
 
-            if(msg.includes("depositdone")||msg.includes("clearcoldroomdone")){
-                var fw = msg.split("(")[1].split(")")[0];
-                document.getElementById("fw_real").innerHTML = fw;
-            }
-
-            if( msg.includes("plan") ) setMessageToWindow(planexecDisplay,msg);
-            //else if( msg.includes("RobotPos") ) setMessageToWindow(robotDisplay,msg);
-            else setMessageToWindow(robotDisplay,msg); //""+`${event.data}`*/
+            var fullMessage = msg.split("(")[1].split(")")[0];
+            var message = fullMessage.split(",");
+            var currentWeightReal = message[message.length - 2];
+            document.getElementById("fw_real").innerHTML = currentWeightReal;
          };
     }//connect
 
