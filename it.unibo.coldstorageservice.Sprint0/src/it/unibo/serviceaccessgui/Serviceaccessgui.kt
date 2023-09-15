@@ -21,14 +21,44 @@ class Serviceaccessgui ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outred("Serviceaccessgui starts")
-						request("ticketrequest", "ticketrequest(arg)" ,"coldstorageservice" )  
-						request("storefood", "storefood(fw)" ,"coldstorageservice" )  
+						CommUtils.outred("serviceaccessgui starts")
+						request("newticket", "newticket(3)" ,"coldstorageservice" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
+					 transition(edgeName="t00",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
+				}	 
+				state("elabTicketAccepted") { //this:State
+					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
+						if( checkMsgContent( Term.createTerm("newticketaccepted(TICKET)"), Term.createTerm("newticketaccepted(TICKET)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 
+												var CurrentTicketId = payloadArg(0)
+												println(CurrentTicketId)
+								request("storefood", "storefood($CurrentTicketId,3)" ,"coldstorageservice" )  
+						}
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t11",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
+				}	 
+				state("elabChargeTaken") { //this:State
+					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
+						delay(5000) 
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="s0", cond=doswitch() )
 				}	 
 			}
 		}

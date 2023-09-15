@@ -18,6 +18,9 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		val interruptedStateTransitions = mutableListOf<Transition>()
+		
+				var ticketList = mutableListOf<Ticket>()
+				var TimeMax = 300
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -27,6 +30,83 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
+					 transition(edgeName="t02",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					transition(edgeName="t03",targetState="elabStoreFood",cond=whenRequest("storefood"))
+				}	 
+				state("elabNewTicket") { //this:State
+					action { //it:State
+						CommUtils.outyellow("$name | elab new ticket")
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
+						if( checkMsgContent( Term.createTerm("newticket(FW)"), Term.createTerm("newticket(FW)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								
+												var Id = "ABCDE"
+												val currentTime = java.time.Instant.now().epochSecond 
+												var fw = payloadArg(0).toInt()
+												
+												var ticket = Ticket(Id, currentTime, fw)
+												
+												ticketList.add(ticket)
+												
+												println(ticket)
+								answer("newticket", "newticketaccepted", "newticketaccepted($Id)"   )  
+						}
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="s0", cond=doswitch() )
+				}	 
+				state("elabStoreFood") { //this:State
+					action { //it:State
+						CommUtils.outyellow("$name | elab store food")
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
+						if( checkMsgContent( Term.createTerm("storefood(TICKET,FW)"), Term.createTerm("storefood(TICKET,FW)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								
+												val currentTime = java.time.Instant.now().epochSecond 
+										   	   	val idTicket = payloadArg(0)
+										   	   	val foodWeight = payloadArg(1).toInt()
+										   	   
+										   	   	var ticket : Ticket? = null
+										   	   
+										   	   	for (t in ticketList) {
+													//ciclo for per trovare il biglietto del driver nella lista
+										   	   	  	if(t.id == idTicket) {
+										   	   	  		ticket = t
+										   	   	  		break
+										   	   	  	}
+										   	   	}
+										   	   
+										   	   	if(ticket==null) { 
+										   	   		println("Not found")
+								answer("storefood", "chargefailure", "chargefailure(invalid)"   )  
+								
+										   	   	} else {   
+											   	  	
+												   	ticketList.remove(ticket)
+												   	   
+													println(currentTime - ticket!!.creationTime)
+												   	   
+													if((currentTime - ticket!!.creationTime) < TimeMax) {	
+												   	   	println("ticket valid")	
+								answer("storefood", "chargetaken", "chargetaken(valid)"   )  
+								
+													} else{
+								answer("storefood", "chargefailure", "chargefailure(invalid)"   )  
+								
+											  		}
+										  		}
+						}
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="s0", cond=doswitch() )
 				}	 
 			}
 		}
