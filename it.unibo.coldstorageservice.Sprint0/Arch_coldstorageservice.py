@@ -25,6 +25,9 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
           transporttrolley=Custom('transporttrolley','./qakicons/symActorSmall.png')
           coldstorageservice=Custom('coldstorageservice','./qakicons/symActorSmall.png')
           servicestatusgui=Custom('servicestatusgui','./qakicons/symActorSmall.png')
+     with Cluster('ctxrasp', graph_attr=nodeattr):
+          alarmdevice=Custom('alarmdevice','./qakicons/symActorSmall.png')
+          warningdevice=Custom('warningdevice','./qakicons/symActorSmall.png')
      with Cluster('ctxfridgetruck', graph_attr=nodeattr):
           serviceaccessgui=Custom('serviceaccessgui','./qakicons/symActorSmall.png')
           fridgetruck=Custom('fridgetruck','./qakicons/symActorSmall.png')

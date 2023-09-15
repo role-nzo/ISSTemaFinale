@@ -11,15 +11,17 @@ Reply moverobotdone  :  moverobotok(ARG)
 Reply moverobotfailed:  moverobotfailed(ARG)
 
 
+//Ottenimento del ticket
+Request newticket		: newticket( FW )
+Reply newticketaccepted : newticketaccepted( TICKET )
+Reply newticketrefused  : newticketrefused( REASON )
+
 Request storefood 	: storefood( TICKET, FW )
 Reply chargetaken 	: chargetaken(ARG)
 Reply chargefailure : chargefailure(REASON)
 
 
-//Ottenimento del ticket
-Request newticket		: newticket( FW )
-Reply newticketaccepted : newticketaccepted( TICKET )
-Reply newticketrefused  : newticketrefused( REASON )
+
 
 
 
@@ -28,14 +30,14 @@ Reply newticketrefused  : newticketrefused( REASON )
 
 Context ctxbasicrobot ip [host="127.0.0.1" port=8020]
 Context ctxcoldstorageservice ip [host="127.0.0.1" port=8022]
-//Context ctxrasp ip[host="IPRASP" port=1111]
+Context ctxrasp ip[host="IPRASP" port=1111]
 Context ctxfridgetruck ip [host="localhost" port=8023] 
 
 ExternalQActor basicrobot context ctxbasicrobot
 
 
 
-/*QActor alarmdevice context ctxrasp{
+QActor alarmdevice context ctxrasp{
 	State s0 initial{
 		println("alarmdevice starts") color blue
 	}
@@ -45,7 +47,7 @@ QActor warningdevice context ctxrasp{
 	State s0 initial{
 		println("warningdevice starts") color blue
 	}
-}*/
+}
 
 QActor transporttrolley context ctxcoldstorageservice{
 	State s0 initial{
