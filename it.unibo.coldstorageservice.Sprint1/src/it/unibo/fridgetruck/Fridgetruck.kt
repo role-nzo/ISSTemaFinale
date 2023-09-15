@@ -39,14 +39,14 @@ class Fridgetruck ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name
 								 
 												var CurrentTicketId = payloadArg(0)
 												println(CurrentTicketId)
-								request("ticketrequest", "ticketrequest($CurrentTicketId,3)" ,"coldstorageservice" )  
+								request("storefood", "storefood($CurrentTicketId,3)" ,"coldstorageservice" )  
 						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t126",targetState="elabLoadDone",cond=whenReply("ticketaccepted"))
+					 transition(edgeName="t126",targetState="elabLoadDone",cond=whenReply("storefoodaccepted"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State

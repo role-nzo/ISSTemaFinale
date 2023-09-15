@@ -153,13 +153,16 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					action { //it:State
 						CommUtils.outblue("$name | at ColdRoom")
 						delay(3000) 
-						forward("deposit", "deposit(0)" ,"coldstorageservice" ) 
+						forward("depositdone", "depositdone(0)" ,"coldstorageservice" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
+				 	 		stateTimer = TimerActor("timer_planFinishColdRoom", 
+				 	 					  scope, context!!, "local_tout_transporttrolley_planFinishColdRoom", 10000.toLong() )
 					}	 	 
-					 transition( edgeName="goto",targetState="waitcoldstorageservicerequest", cond=doswitch() )
+					 transition(edgeName="t513",targetState="elabMoveHome",cond=whenTimeout("local_tout_transporttrolley_planFinishColdRoom"))   
+					transition(edgeName="t514",targetState="elabMoveIndoor",cond=whenDispatch("goMoveToIndoor"))
 				}	 
 				state("planFinishHome") { //this:State
 					action { //it:State

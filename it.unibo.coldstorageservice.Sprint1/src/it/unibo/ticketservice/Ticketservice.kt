@@ -34,9 +34,9 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t013",targetState="elabNewTicket",cond=whenRequest("newticket"))
-					transition(edgeName="t014",targetState="elabTicketRequest",cond=whenRequest("ticketrequest"))
-					transition(edgeName="t015",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
+					 transition(edgeName="t015",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					transition(edgeName="t016",targetState="elabStoreFood",cond=whenRequest("storefood"))
+					transition(edgeName="t017",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
 				}	 
 				state("elabNewTicket") { //this:State
 					action { //it:State
@@ -109,12 +109,12 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 					}	 	 
 					 transition( edgeName="goto",targetState="s0", cond=doswitch() )
 				}	 
-				state("elabTicketRequest") { //this:State
+				state("elabStoreFood") { //this:State
 					action { //it:State
 						CommUtils.outyellow("$name | elab ticket request")
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						if( checkMsgContent( Term.createTerm("ticketrequest(TICKET,FW)"), Term.createTerm("ticketrequest(TICKET,FW)"), 
+						if( checkMsgContent( Term.createTerm("storefood(TICKET,FW)"), Term.createTerm("storefood(TICKET,FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								
 												val currentTime = java.time.Instant.now().epochSecond 
@@ -134,7 +134,7 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 										   	   
 										   	   	if(ticket==null) { 
 										   	   		println("Not found")
-								answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
+								answer("storefood", "storefoodrejected", "storefoodrejected(invalid)"   )  
 								
 										   	   	} else {   
 											   	  	
@@ -148,15 +148,13 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 												   	   
 													if((currentTime - ticket!!.creationTime) < TimeMax) {	
 												   	   	println("ticket valid")	
-								answer("ticketrequest", "ticketaccepted", "ticketaccepted(valid)"   )  
+								answer("storefood", "storefoodaccepted", "storefoodaccepted(valid)"   )  
 								
 													} else{
 														currentWeightVirtual -= ticket!!.fw
 														//TODO: "Ticketsrejected" non serve su "coldstorageservice" ma solo su "statusservice"
 														Ticketsrejected++
-								updateResourceRep( " ticketsrejected($Ticketsrejected)"  
-								)
-								answer("ticketrequest", "ticketrejected", "ticketrejected(invalid)"   )  
+								answer("storefood", "storefoodrejected", "storefoodrejected(invalid)"   )  
 								
 											  		}
 										  		}
