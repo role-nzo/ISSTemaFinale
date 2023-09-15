@@ -312,14 +312,14 @@ Reply moverobotfailed:  moverobotfailed(PLANDONE, PLANTODO)</pre></li>
                 
                 <h3>Dialogo col committente</h3>
                 <ul>
-                    <li>Il processo di scarico della <i>ColdRoom</i> sarebbe da realizzare mediante un attore apposito. Tale realizzazione non è d'interesse in questo processo ma può essere implementato in uno sviluppo futuro.</li>
+                    <li>Il processo di scarico della <i>ColdRoom</i> sarebbe da realizzare mediante un attore apposito. Tale realizzazione non è d'interesse in questo sprint ma sarà implementata nello sprint 1.</li>
                 </ul>
             </div>
             
             <h2>Architettura logica</h2>
             <div class="remark">
                 <a href="https://github.com/role-nzo/ISSTemaFinale/tree/main/it.unibo.coldstorageservice.Sprint0/src/coldstorageserviceV3.qak">Metamodello qak</a>
-                <img src="./images/" width="100%">
+                <img src="./images/coldstorageservicearchv3.png" width="100%">
                 Come si evince dai requisiti la richiesta <pre style="margin: 0; display: inline-block">newticket</pre> viene utilizzata per ottenere un nuovo ticket number che verrà successivamente indicato nella richiesta <pre style="margin: 0; display: inline-block">storefood</pre> necessaria per avviare una nuova operazione di deposito.
                 <br>
                 In risposta alla richiesta di <pre style="margin: 0; display: inline-block">storefood</pre> il <i>coldstorageservice</i> invia un messaggio <pre style="margin: 0; display: inline-block">chargetaken</pre> per indicare che l'operazione di carico è terminata con successo.
