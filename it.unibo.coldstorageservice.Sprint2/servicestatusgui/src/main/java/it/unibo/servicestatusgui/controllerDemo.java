@@ -23,29 +23,12 @@ public class controllerDemo {
     @Value("${spring.application.name}")
     String appName;
 
-    private Interaction coapconn;
-    public int cssPort           = 8022;
-
+    private ServiceStatusUseCaseInterface useCase;
 
     @PostConstruct
     public void init(){
-        System.out.println("init");
-        try {
-            CommSystemConfig.tracing = true;
-            String ctxqakdest       = "ctxcoldstorageservice";
-            String qakdestination 	= "coldstorageservice";
-
-            String addr = "127.0.0.1";
-            String path   = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
-            coapconn                = new CoapConnection(addr+":"+cssPort, path);
-
-            CoapConnection statusservicecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/statusservice" );
-            statusservicecconn.observeResource( new StatusServiceCoapObserver() );
-
-
-        }catch(Exception e){
-            CommUtils.outred("RobotUtils | connectWithRobotUsingTcp ERROR:"+e.getMessage());
-        }
+        useCase = new ServiceStatusUseCase();
+        useCase.init();
     }
 
     @GetMapping("/")
@@ -56,14 +39,7 @@ public class controllerDemo {
 
     @GetMapping("/getmap")
     public ResponseEntity<String> getMap(Model model) throws IOException {
-
-        Socket client = new Socket("localhost", 8022);
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
-        //invio elabTicketRequest
-        out.write("msg(sendmap,dispatch,tester,statusservice,sendmap(_),13)\n");
-        out.flush();
+        useCase.getMap();
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 

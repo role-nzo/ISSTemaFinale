@@ -59,8 +59,9 @@ Dispatch sendmap 	: sendmap(_)
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
-Context ctxserviceaccessgui ip [host="localhost" port=8023]
-Context ctxservicestatusgui ip [host="localhost" port=8024]
+//FOR IMAGE
+//Context ctxserviceaccessgui ip [host="localhost" port=8023]
+//Context ctxservicestatusgui ip [host="localhost" port=8024]
 
 
 //ExternalQActor tester context ctxtester
@@ -186,7 +187,8 @@ QActor statusservice context ctxcoldstorageservice {
 			
 		#]
 		observeResource coldstorageservice
-		request basicrobot -m moverobot	: moverobot(0, 0)
+		//request basicrobot -m moverobot	: moverobot(0, 0)
+		forward transporttrolley -m goMoveToHome : goMoveToHome(0)
 	}
 	Goto observing
 	
@@ -518,7 +520,9 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 }
 
-QActor serviceaccessgui context ctxserviceaccessgui{
+
+//FOR IMAGE
+/*QActor serviceaccessgui context ctxserviceaccessgui{
 	State s0 initial {
 		println("fridgetruck starts") color red
 		
@@ -558,6 +562,6 @@ QActor servicestatusgui context ctxservicestatusgui{
 		observeResource statusservice
 		
 	}
-}
+}*/
 
 

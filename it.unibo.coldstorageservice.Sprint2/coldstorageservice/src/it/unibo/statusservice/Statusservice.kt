@@ -32,7 +32,7 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 									CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
 									
 						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","coldstorageservice")
-						request("moverobot", "moverobot(0,0)" ,"basicrobot" )  
+						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
