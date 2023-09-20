@@ -1,6 +1,7 @@
 package it.unibo.servicestatusgui;
 
 import unibo.basicomm23.coap.CoapConnection;
+import unibo.basicomm23.interfaces.IApplMessage;
 import unibo.basicomm23.utils.CommSystemConfig;
 import unibo.basicomm23.utils.CommUtils;
 import unibo.basicomm23.interfaces.Interaction;
@@ -38,9 +39,10 @@ public class ServiceStatusUseCase implements ServiceStatusUseCaseInterface {
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
         BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-        System.out.println(CommUtils.buildDispatch("tester", "sendmap", "sendmap(_)","statusservice"));
+        IApplMessage request = CommUtils.buildDispatch("tester", "sendmap", "sendmap(_)","statusservice");
+
         //invio elabTicketRequest
-        out.write("msg(sendmap,dispatch,tester,statusservice,sendmap(_),13)\n");
+        out.write(request + "\n");
         out.flush();
     }
 }

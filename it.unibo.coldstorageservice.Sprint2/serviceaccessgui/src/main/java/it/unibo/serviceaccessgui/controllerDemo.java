@@ -25,26 +25,12 @@ public class controllerDemo {
 
     private Interaction coapconn;
     public static final int cssPort           = 8022;
+    private ServiceAccessUseCase serviceAccessUseCase = new ServiceAccessUseCase();
 
 
     @PostConstruct
     public void init(){
-        System.out.println("init");
-        try {
-            CommSystemConfig.tracing = true;
-            String ctxqakdest       = "ctxcoldstorageservice";
-            String qakdestination 	= "coldstorageservice";
-            String addr = "127.0.0.1";
-            String path   = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
-
-            CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/statusservice" );
-            planexecconn.observeResource( new ColdRoomCoapObserver() );
-
-
-
-        }catch(Exception e){
-            CommUtils.outred("RobotUtils | connectWithRobotUsingTcp ERROR:"+e.getMessage());
-        }
+        serviceAccessUseCase.init();
     }
 
     @GetMapping("/")
@@ -56,18 +42,7 @@ public class controllerDemo {
     @PostMapping("/newticket")
     public ResponseEntity<String> newTicket(Model model, @RequestParam String requestFw) throws Exception {
 
-        Socket client = new Socket("127.0.0.1", 8022);
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
-        out.write("msg(newticket,request,tester,coldstorageservice,newticket("+requestFw+"),12)\n");
-        out.flush();
-
-        String response = in.readLine();
-        String ticket = "Error";
-        if(response.contains("newticketaccepted")) {
-            ticket = response.split(",")[4].split("\\(")[1].split("\\)")[0];
-        }
+        String ticket = serviceAccessUseCase.newTicket(requestFw);
 
         return new ResponseEntity<>(ticket, HttpStatus.OK);
     }
@@ -75,36 +50,7 @@ public class controllerDemo {
     @PostMapping("/showticket")
     public ResponseEntity<String> showticket(Model model, @RequestParam String requestTicket, @RequestParam String requestShowTicketFw) throws IOException{
 
-        Socket client = new Socket("localhost", 8022);
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
-        //invio elabTicketRequest
-        out.write("msg(ticketrequest,request,tester,coldstorageservice,ticketrequest("+requestTicket+","+requestShowTicketFw+"),13)\n");
-        out.flush();
-        String response = "";
-
-        //verifica ticket accepted
-        response = in.readLine();
-        String esito = "Error";
-
-        System.out.println(response);
-
-        if(response.contains("ticketaccepted")){
-
-            //invio loadDone
-            out.write("msg(loaddone,request,tester,coldstorageservice,loaddone("+requestShowTicketFw+"),14)\n");
-            out.flush();
-            //risposta chargetaken
-            response = in.readLine();
-            if(response.contains("chargetaken")){
-                esito = "chargetaken";
-            }
-
-        }
-        if (response.contains("ticketrejected")){
-            esito = "ticket rifiutato";
-        }
+        String esito = serviceAccessUseCase.showticket(requestTicket, requestShowTicketFw);
 
         //model.addAttribute("arg", appName);
         //model.addAttribute("showticket",esito);

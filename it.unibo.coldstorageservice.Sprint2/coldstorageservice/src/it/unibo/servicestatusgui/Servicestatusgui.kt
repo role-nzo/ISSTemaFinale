@@ -21,7 +21,6 @@ class Servicestatusgui ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","statusservice")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
