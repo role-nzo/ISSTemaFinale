@@ -31,6 +31,8 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 						
 									CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
 									
+						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","coldstorageservice")
+						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -50,6 +52,8 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				state("sendMap") { //this:State
 					action { //it:State
 						CommUtils.outblack("$Map")
+						updateResourceRep( "status($Map, $PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)"  
+						)
 						CommUtils.outblack("$Map")
 						//genTimer( actor, state )
 					}
@@ -89,6 +93,8 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 									
 									println(resource)
 									println(value) 
+						updateResourceRep( "status($PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)"  
+						)
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

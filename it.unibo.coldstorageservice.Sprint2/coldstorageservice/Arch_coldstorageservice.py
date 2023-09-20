@@ -28,11 +28,11 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
           emptycoldroom=Custom('emptycoldroom','./qakicons/symActorSmall.png')
           ticketservice=Custom('ticketservice','./qakicons/symActorSmall.png')
           coldstorageservice=Custom('coldstorageservice','./qakicons/symActorSmall.png')
-     with Cluster('ctxservicestatusgui', graph_attr=nodeattr):
-          servicestatusgui=Custom('servicestatusgui','./qakicons/symActorSmall.png')
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='engage', fontcolor='magenta') >> basicrobot
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='moverobot', fontcolor='magenta') >> basicrobot
      transporttrolley >> Edge(color='blue', style='solid', xlabel='depositdone', fontcolor='blue') >> coldstorageservice
+     coldstorageservice >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> statusservice
+     statusservice >> Edge(color='blue', style='solid', xlabel='goMoveToHome', fontcolor='blue') >> transporttrolley
      emptycoldroom >> Edge(color='magenta', style='solid', xlabel='clearColdRoom', fontcolor='magenta') >> coldstorageservice
      coldstorageservice >> Edge(color='magenta', style='solid', xlabel='storefood', fontcolor='magenta') >> ticketservice
      coldstorageservice >> Edge(color='blue', style='solid', xlabel='goMoveToIndoor', fontcolor='blue') >> transporttrolley

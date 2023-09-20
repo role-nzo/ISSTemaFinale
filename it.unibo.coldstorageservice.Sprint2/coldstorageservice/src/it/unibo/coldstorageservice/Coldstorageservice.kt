@@ -80,6 +80,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
 						 Ticketsrejected++  
+						updateResourceRep( "ticketrejected($Ticketsrejected)"  
+						)
 						answer("storefood", "storefoodrejected", "storefoodrejected(invalid)"   )  
 						//genTimer( actor, state )
 					}
@@ -100,6 +102,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
+						updateResourceRep( "robotfree(occupato)"  
+						)
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
 						CommUtils.outgreen("$name | elab load done")
@@ -147,6 +151,12 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						 	   
 						
 									CurrentWeightReal += CurrentTicketFW	
+						updateResourceRep( "weightUpdate($CurrentWeightReal)"  
+						)
+						updateResourceRep( "depositdone($CurrentWeightReal)"  
+						)
+						updateResourceRep( "robotfree(libero)"  
+						)
 						CommUtils.outgreen("Deposit - Current weight real: $CurrentWeightReal")
 						//genTimer( actor, state )
 					}
@@ -173,6 +183,10 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 						forward("updatevirtualweight", "updatevirtualweight($CurrentWeightReal)" ,"ticketservice" ) 
 						
 									CurrentWeightReal = 0	
+						updateResourceRep( "weightUpdate($CurrentWeightReal)"  
+						)
+						updateResourceRep( "clearcoldroomdone($CurrentWeightReal )"  
+						)
 						CommUtils.outgreen("$name | coldRoom cleared - current weight real: $CurrentWeightReal")
 						answer("clearColdRoom", "coldRoomCleared", "coldRoomCleared(0)"   )  
 						//genTimer( actor, state )

@@ -155,6 +155,8 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 														println("ticketservice " + Ticketsrejected)
 														//TODO: "Ticketsrejected" non serve su "coldstorageservice" ma solo su "statusservice"
 														Ticketsrejected++
+								updateResourceRep( " ticketrejected($Ticketsrejected)"  
+								)
 								answer("storefood", "storefoodrejected", "storefoodrejected(invalid)"   )  
 								
 											  		}
