@@ -194,7 +194,7 @@ QActor statusservice context ctxcoldstorageservice {
 	
 	State observing {
 		
-	} Transition t0 //whenMsg coapUpdate -> doObserve
+	} Transition t0 whenMsg coapUpdate -> doObserve
 	 				whenMsg sendmap -> sendMap
 
 	

@@ -34,9 +34,9 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t016",targetState="elabNewTicket",cond=whenRequest("newticket"))
-					transition(edgeName="t017",targetState="elabStoreFood",cond=whenRequest("storefood"))
-					transition(edgeName="t018",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
+					 transition(edgeName="t017",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					transition(edgeName="t018",targetState="elabStoreFood",cond=whenRequest("storefood"))
+					transition(edgeName="t019",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
 				}	 
 				state("elabNewTicket") { //this:State
 					action { //it:State
