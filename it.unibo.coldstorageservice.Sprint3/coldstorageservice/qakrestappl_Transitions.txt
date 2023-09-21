@@ -1,0 +1,8 @@
+{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveIndoor", "msgId":"goMoveToIndoor"}
+{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveColdRoom", "msgId":"goMoveToColdRoom"}
+{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveHome", "msgId":"goMoveToHome"}
+{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"planFinishColdRoom", "nextstate":"elabMoveIndoor", "msgId":"goMoveToIndoor"}
+{"actor":"statusservice", "msgType":"dispatch", "curstate":"observing", "nextstate":"doObserve", "msgId":"coapUpdate"}
+{"actor":"statusservice", "msgType":"dispatch", "curstate":"observing", "nextstate":"sendMap", "msgId":"sendmap"}
+{"actor":"ticketservice", "msgType":"dispatch", "curstate":"s0", "nextstate":"elabUpdateVirtualWeight", "msgId":"updatevirtualweight"}
+{"actor":"coldstorageservice", "msgType":"dispatch", "curstate":"elabWaitDepositDone", "nextstate":"elabDepositDone", "msgId":"depositdone"}

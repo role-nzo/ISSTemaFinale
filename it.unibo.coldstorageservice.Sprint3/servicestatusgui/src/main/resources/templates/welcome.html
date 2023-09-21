@@ -1,0 +1,52 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Welcome</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>Welcome (in templates)</h1>
+<p>Welcome to <b><span th:text="${arg}">Our Arg</span></b>.</p>
+<h3>Map:</h3>
+<canvas id="map"></canvas>
+<h3>Stato robot: </h3><span id="stato"></span>
+<h3>Posizione robot:</h3> <span id="posizione"></span>
+<h3>Peso occupato nella coldroom:</h3><span id="fw_real"></span>
+<h3>Numero richieste rifiutate:</h3><span id="rifiuti"></span>
+
+<div style="display:none;">
+    <img id="source" src="robot.png" width="134" height="134" />
+</div>
+
+<script src="wsminimal.js"></script>
+<script>
+
+// this is the id of the form
+$("form").submit(function(e) {
+
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+    var form = $(this);
+    var actionUrl = form.attr('action');
+
+    $.ajax({
+        type: "POST",
+        url: actionUrl,
+        data: form.serialize(), // serializes the form's elements.
+        success: (data) => {
+            if(actionUrl=="/newticket"){
+
+                $("#ticket_id").html(data)
+            }
+            else if(actionUrl=="/showticket"){
+
+                $("#show_ticket").html(data)
+            }
+        }
+    });
+
+});
+
+</script>
+</body>
+</html>

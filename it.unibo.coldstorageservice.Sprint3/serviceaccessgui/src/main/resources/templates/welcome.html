@@ -1,0 +1,57 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Welcome</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>Welcome (in templates)</h1>
+<p>Welcome to <b><span th:text="${arg}">Our Arg</span></b>.</p>
+<h3>Peso occupato nella coldroom:</h3>
+<span id="fw_real"></span>
+<h3>Richiesta nuovo ticket:</h3>
+<form action="/newticket" method="post">
+    <label for="requestFw">Fw:</label><br>
+    <input type="text" id="requestFw" name="requestFw"><br>
+    <input type="submit" value="Submit">
+</form>
+<p>Ticekt id: <b><span th:text="${newticket}" id="ticket_id">Our Arg</span></b></p>
+<h3>Presenta il ticket: </h3>
+<form action="/showticket" method="post">
+    <label for="requestTicket">Ticket id:</label><br>
+    <input type="text" id="requestTicket" name="requestTicket"><br>
+    <label for="requestShowTicketFw">Fw:</label><br>
+    <input type="text" id="requestShowTicketFw" name="requestShowTicketFw"><br>
+    <input type="submit" value="Submit">
+</form>
+<p>Complete: <b><span th:text="${showticket}" id="show_ticket">Our Arg</span></b></p>
+<script src="wsminimal.js"></script>
+<script>
+
+// this is the id of the form
+$("form").submit(function(e) {
+
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+    var form = $(this);
+    var actionUrl = form.attr('action');
+
+    $.ajax({
+        type: "POST",
+        url: actionUrl,
+        data: form.serialize(), // serializes the form's elements.
+        success: (data) => {
+            if(actionUrl=="/newticket"){
+
+                $("#ticket_id").html(data)
+            }
+            else if(actionUrl=="/showticket"){
+
+                $("#show_ticket").html(data)
+            }
+        }
+    });
+
+});
+
+</script>
+</body>
+</html>
