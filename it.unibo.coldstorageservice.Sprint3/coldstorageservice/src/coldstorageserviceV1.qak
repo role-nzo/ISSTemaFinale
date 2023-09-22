@@ -57,7 +57,8 @@ Reply coldRoomCleared : coldRoomCleared(_)
 Dispatch sendmap 	: sendmap(_)
 
 //sonar e led
-Event    sonardata          : distance( V ) 
+Event    sonardata          : distance( V )
+Event    resume          : resume( _ ) 
 
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
@@ -73,10 +74,15 @@ ExternalQActor robotposendosimbiotico context ctxbasicrobot
 QActor sendevent context ctxcoldstorageservice{
 	
 	State s0 initial {
-		delay 5000
+		
+		
+		delay 27000
+		println("mancano 3 sec") color blue
+		delay 3000
 		println("sendevent starts") color blue
-		emit alarm : alarm(obstacle)
-		forward transporttrolley -m sendmap : sendmap(_) 			
+		emit sonardata : sonardata(obstacle)
+		delay 3000
+		emit resume : resume(_) 			
 	}
 }
 
@@ -85,6 +91,8 @@ QActor transporttrolley context ctxcoldstorageservice{
 		var GoingTo = " "
 		var LastStopTime = 0
 		var Mint = 10000
+		var AlarmCondition = false
+		var MoveAlarm = " "
 	#]
 	State s0 initial {
 		println("transporttrolley starts") color blue
@@ -115,44 +123,76 @@ QActor transporttrolley context ctxcoldstorageservice{
 		[# GoingTo = "INDOOR"#]
 		request basicrobot -m moverobot	: moverobot(0, 4)
 	}
-	Transition t0 whenReply moverobotdone -> planFinishIndoor
-				  whenReply moverobotfailed -> waitcoldstorageservicerequest
+	Goto waitRobot
 	
 	State elabMoveColdRoom {
 		printCurrentMessage color blue
         [# GoingTo = "COLDROOM"#]
         request basicrobot -m moverobot	: moverobot(4, 3)	
 	}
-	Transition t0 whenReply moverobotdone -> planFinishColdRoom
-				  whenReply moverobotfailed -> waitcoldstorageservicerequest
+	Goto waitRobot
 	
 	State elabMoveHome {
 		printCurrentMessage color blue
 		[# GoingTo = "HOME"#]
         request basicrobot -m moverobot	: moverobot(0, 0)		
 	}
-	Transition t0 whenReply moverobotdone -> planFinishHome
-				  whenReply moverobotfailed -> waitcoldstorageservicerequest
-
+	Goto waitRobot
 	
-	State stopped {
+	State waitRobot{
+		println("Wait robot")
+	}
+	Transition t1 whenEvent sonardata -> checkSonarData
+				  //whenReply moverobotfailed -> waitcoldstorageservicerequest
+				  whenReply moverobotfailed -> robothit
+				  whenReply moverobotdone -> planFinishSwitch
+	
+	State robothit{
+		printCurrentMessage
+		println("Robot hit")
+	}
+	Goto waitcoldstorageservicerequest
+		  
+	State planFinishSwitch{
+		
+	}Goto planFinishIndoor if [#GoingTo == "INDOOR"#] else planFinishSecondSwitch
+	
+	State planFinishSecondSwitch{
+		
+	}Goto planFinishColdRoom if [#GoingTo == "COLDROOM"#] else planFinishHome
+	
+	State checkSonarData {
 		[#
-		   val currentTime = java.time.Instant.now().epochSecond 
-		   if((currentTime - LastStopTime) > Mint){#]
-				emitlocalstream alarm : alarm(obstacle)
+		   val currentTime = java.time.Instant.now().epochSecond
+		   val AlarmCondition = (currentTime - LastStopTime) > Mint
+		   if(AlarmCondition){ MoveAlarm = "STOP"#]
+		   		
+				emit alarm : alarm(pippo)
+				println("alarm emitted")
 				
-		 [#}
+				
+		 [# println(AlarmCondition)}
 		   else{
+		   		MoveAlarm = "WAIT"
 		   		println("Stop failed: not enough time from last stop")
 		   }			
 		#]		
 	}
+	//Goto stopped if [# MoveAlarm == "STOP" #] else waitRobot
+	Transition t3 whenReply moverobotfailed -> stopped
+				  whenReply moverobotdone -> planFinishSwitch
 	
-	State resumed {
+	State stopped{
+		println("Sono fermo")
+	}
+	Transition t2 whenEvent resume -> resuming
+	
+	State resuming {
+		println("Resuming")
 		
-	}Goto elabMoveIndoor if [#GoingTo == "INDOOR"#] else secondResumed
+	}Goto elabMoveIndoor if [#GoingTo == "INDOOR"#] else secondResuming
 	
-	State secondResumed{
+	State secondResuming{
 		
 	}Goto elabMoveColdRoom if [#GoingTo == "COLDROOM"#] else elabMoveHome
 						 

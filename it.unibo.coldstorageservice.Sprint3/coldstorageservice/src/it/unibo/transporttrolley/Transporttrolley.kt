@@ -22,6 +22,8 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				var GoingTo = " "
 				var LastStopTime = 0
 				var Mint = 10000
+				var AlarmCondition = false
+				var MoveAlarm = " "
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -77,8 +79,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t05",targetState="planFinishIndoor",cond=whenReply("moverobotdone"))
-					transition(edgeName="t06",targetState="waitcoldstorageservicerequest",cond=whenReply("moverobotfailed"))
+					 transition( edgeName="goto",targetState="waitRobot", cond=doswitch() )
 				}	 
 				state("elabMoveColdRoom") { //this:State
 					action { //it:State
@@ -91,8 +92,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t07",targetState="planFinishColdRoom",cond=whenReply("moverobotdone"))
-					transition(edgeName="t08",targetState="waitcoldstorageservicerequest",cond=whenReply("moverobotfailed"))
+					 transition( edgeName="goto",targetState="waitRobot", cond=doswitch() )
 				}	 
 				state("elabMoveHome") { //this:State
 					action { //it:State
@@ -105,17 +105,67 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t09",targetState="planFinishHome",cond=whenReply("moverobotdone"))
-					transition(edgeName="t010",targetState="waitcoldstorageservicerequest",cond=whenReply("moverobotfailed"))
+					 transition( edgeName="goto",targetState="waitRobot", cond=doswitch() )
 				}	 
-				state("stopped") { //this:State
+				state("waitRobot") { //this:State
+					action { //it:State
+						CommUtils.outblack("Wait robot")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t15",targetState="checkSonarData",cond=whenEvent("sonardata"))
+					transition(edgeName="t16",targetState="robothit",cond=whenReply("moverobotfailed"))
+					transition(edgeName="t17",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
+				}	 
+				state("robothit") { //this:State
+					action { //it:State
+						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
+						 	   
+						CommUtils.outblack("Robot hit")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="waitcoldstorageservicerequest", cond=doswitch() )
+				}	 
+				state("planFinishSwitch") { //this:State
+					action { //it:State
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="planFinishIndoor", cond=doswitchGuarded({GoingTo == "INDOOR" 
+					}) )
+					transition( edgeName="goto",targetState="planFinishSecondSwitch", cond=doswitchGuarded({! (GoingTo == "INDOOR" 
+					) }) )
+				}	 
+				state("planFinishSecondSwitch") { //this:State
+					action { //it:State
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="planFinishColdRoom", cond=doswitchGuarded({GoingTo == "COLDROOM" 
+					}) )
+					transition( edgeName="goto",targetState="planFinishHome", cond=doswitchGuarded({! (GoingTo == "COLDROOM" 
+					) }) )
+				}	 
+				state("checkSonarData") { //this:State
 					action { //it:State
 						
-								   val currentTime = java.time.Instant.now().epochSecond 
-								   if((currentTime - LastStopTime) > Mint){ 
-						emitLocalStreamEvent("alarm", "alarm(obstacle)" ) 
-						}
+								   val currentTime = java.time.Instant.now().epochSecond
+								   val AlarmCondition = (currentTime - LastStopTime) > Mint
+								   if(AlarmCondition){ MoveAlarm = "STOP" 
+						emit("alarm", "alarm(pippo)" ) 
+						CommUtils.outblack("alarm emitted")
+						 println(AlarmCondition)}
 								   else{
+								   		MoveAlarm = "WAIT"
 								   		println("Stop failed: not enough time from last stop")
 								   }			
 						//genTimer( actor, state )
@@ -123,9 +173,22 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
+					 transition(edgeName="t38",targetState="stopped",cond=whenReply("moverobotfailed"))
+					transition(edgeName="t39",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
 				}	 
-				state("resumed") { //this:State
+				state("stopped") { //this:State
 					action { //it:State
+						CommUtils.outblack("Sono fermo")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t210",targetState="resuming",cond=whenEvent("resume"))
+				}	 
+				state("resuming") { //this:State
+					action { //it:State
+						CommUtils.outblack("Resuming")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -133,10 +196,10 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					}	 	 
 					 transition( edgeName="goto",targetState="elabMoveIndoor", cond=doswitchGuarded({GoingTo == "INDOOR" 
 					}) )
-					transition( edgeName="goto",targetState="secondResumed", cond=doswitchGuarded({! (GoingTo == "INDOOR" 
+					transition( edgeName="goto",targetState="secondResuming", cond=doswitchGuarded({! (GoingTo == "INDOOR" 
 					) }) )
 				}	 
-				state("secondResumed") { //this:State
+				state("secondResuming") { //this:State
 					action { //it:State
 						//genTimer( actor, state )
 					}

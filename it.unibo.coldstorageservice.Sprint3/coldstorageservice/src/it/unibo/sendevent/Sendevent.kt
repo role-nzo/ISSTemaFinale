@@ -21,10 +21,13 @@ class Sendevent ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, 
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						delay(5000) 
+						delay(27000) 
+						CommUtils.outblue("mancano 3 sec")
+						delay(3000) 
 						CommUtils.outblue("sendevent starts")
-						emit("alarm", "alarm(obstacle)" ) 
-						forward("sendmap", "sendmap(_)" ,"transporttrolley" ) 
+						emit("sonardata", "sonardata(obstacle)" ) 
+						delay(3000) 
+						emit("resume", "resume(_)" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
