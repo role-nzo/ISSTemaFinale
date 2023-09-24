@@ -86,6 +86,12 @@ QActor sendevent context ctxcoldstorageservice{
 	}
 }
 
+/*
+ * TO-DO
+ * Gestire moverobotfailed 
+ * 
+ */
+
 QActor transporttrolley context ctxcoldstorageservice{
 	[#
 		var GoingTo = " "
