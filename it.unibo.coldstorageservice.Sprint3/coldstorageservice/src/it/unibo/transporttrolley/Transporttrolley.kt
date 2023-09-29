@@ -28,7 +28,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outblue("transporttrolley starts")
-						request("engage", "engage(transporttrolley)" ,"basicrobot" )  
+						request("engage", "engage(transporttrolley,330)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -161,7 +161,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 								   val currentTime = java.time.Instant.now().epochSecond
 								   val AlarmCondition = (currentTime - LastStopTime) > Mint
 								   if(AlarmCondition){ MoveAlarm = "STOP" 
-						emit("alarm", "alarm(pippo)" ) 
+						emit("alarm", "alarm(stop)" ) 
 						CommUtils.outblack("alarm emitted")
 						 println(AlarmCondition)}
 								   else{

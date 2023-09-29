@@ -103,7 +103,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	State s0 initial {
 		println("transporttrolley starts") color blue
 		//Acquisizione del basicrobot
-    	request basicrobot -m engage : engage(transporttrolley)	
+    	request basicrobot -m engage : engage(transporttrolley,330)	
 	}
 	Transition t0 whenReply engagedone    -> init
                   whenReply engagerefused -> waitrobotfree
@@ -173,7 +173,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 		   val AlarmCondition = (currentTime - LastStopTime) > Mint
 		   if(AlarmCondition){ MoveAlarm = "STOP"#]
 		   		
-				emit alarm : alarm(pippo)
+				emit alarm : alarm(stop)
 				println("alarm emitted")
 				
 				
