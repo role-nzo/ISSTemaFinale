@@ -1,5 +1,7 @@
 System coldstorageservice
 
+//mqttBroker "broker.hivemq.com" :  1883 eventTopic "unibo/zdel/sonar/events"
+
 Dispatch coapUpdate: coapUpdate(RESOURCE, VALUE)
 Event alarm           : alarm(X)
 
@@ -63,14 +65,15 @@ Event    resume          : resume( _ )
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
+//Context ctxraspberry 		  ip [host="192.168.1.35" port=8023]
 //FOR IMAGE
 //Context ctxserviceaccessgui ip [host="localhost" port=8023]
 //Context ctxservicestatusgui ip [host="localhost" port=8024]
-//Context ctxraspberry ip [host="localhost" port=8068]
+
 
 ExternalQActor basicrobot context ctxbasicrobot
 ExternalQActor robotposendosimbiotico context ctxbasicrobot
-
+/*
 QActor sendevent context ctxcoldstorageservice{
 	
 	State s0 initial {
@@ -84,13 +87,7 @@ QActor sendevent context ctxcoldstorageservice{
 		delay 3000
 		emit resume : resume(_) 			
 	}
-}
-
-/*
- * TO-DO
- * Gestire moverobotfailed 
- * 
- */
+}*/
 
 QActor transporttrolley context ctxcoldstorageservice{
 	[#

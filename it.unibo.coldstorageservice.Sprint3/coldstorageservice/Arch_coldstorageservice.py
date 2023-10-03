@@ -23,14 +23,11 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
           basicrobot=Custom('basicrobot(ext)','./qakicons/externalQActor.png')
           robotposendosimbiotico=Custom('robotposendosimbiotico(ext)','./qakicons/externalQActor.png')
      with Cluster('ctxcoldstorageservice', graph_attr=nodeattr):
-          sendevent=Custom('sendevent','./qakicons/symActorSmall.png')
           transporttrolley=Custom('transporttrolley','./qakicons/symActorSmall.png')
           statusservice=Custom('statusservice','./qakicons/symActorSmall.png')
           emptycoldroom=Custom('emptycoldroom','./qakicons/symActorSmall.png')
           ticketservice=Custom('ticketservice','./qakicons/symActorSmall.png')
           coldstorageservice=Custom('coldstorageservice','./qakicons/symActorSmall.png')
-     sendevent >> Edge( xlabel='sonardata', **eventedgeattr, fontcolor='red') >> sys
-     sendevent >> Edge( xlabel='resume', **eventedgeattr, fontcolor='red') >> sys
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='engage', fontcolor='magenta') >> basicrobot
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='moverobot', fontcolor='magenta') >> basicrobot
      sys >> Edge(color='red', style='dashed', xlabel='sonardata', fontcolor='red') >> transporttrolley
