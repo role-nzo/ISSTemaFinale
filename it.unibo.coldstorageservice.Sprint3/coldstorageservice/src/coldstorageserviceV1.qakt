@@ -1,6 +1,7 @@
 System coldstorageservice
 
 //mqttBroker "broker.hivemq.com" :  1883 eventTopic "unibo/zdel/sonar/events"
+//mqttBroker "mqtt.eclipseprojects.io" : 1883 eventTopic "unibo/sonar/events"
 
 Dispatch coapUpdate: coapUpdate(RESOURCE, VALUE)
 Event alarm           : alarm(X)
@@ -59,8 +60,9 @@ Reply coldRoomCleared : coldRoomCleared(_)
 Dispatch sendmap 	: sendmap(_)
 
 //sonar e led
-Event    sonardata          : distance( V )
-Event    resume          : resume( _ ) 
+Event sonardata : sonardata(D)   //emitted  by distancefilter
+Event obstacle  : obstacle(D)   //emitted as stream by distancefilter
+Event resume    : resume( _ ) 
 
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
@@ -73,7 +75,8 @@ Context ctxcoldstorageservice ip [host="localhost" port=8022]
 
 ExternalQActor basicrobot context ctxbasicrobot
 ExternalQActor robotposendosimbiotico context ctxbasicrobot
-/*
+
+/* 
 QActor sendevent context ctxcoldstorageservice{
 	
 	State s0 initial {

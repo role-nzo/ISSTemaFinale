@@ -47,8 +47,8 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t015",targetState="doObserve",cond=whenDispatch("coapUpdate"))
-					transition(edgeName="t016",targetState="sendMap",cond=whenDispatch("sendmap"))
+					 transition(edgeName="t018",targetState="doObserve",cond=whenDispatch("coapUpdate"))
+					transition(edgeName="t019",targetState="sendMap",cond=whenDispatch("sendmap"))
 				}	 
 				state("sendMap") { //this:State
 					action { //it:State

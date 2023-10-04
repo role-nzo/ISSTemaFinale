@@ -1,6 +1,9 @@
+{"actor":"sonar23observer", "msgType":"dispatch", "curstate":"observing", "nextstate":"doObserve", "msgId":"coapUpdate"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveIndoor", "msgId":"goMoveToIndoor"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveColdRoom", "msgId":"goMoveToColdRoom"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveHome", "msgId":"goMoveToHome"}
+{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitRobot", "nextstate":"checkSonarData", "msgId":"stop"}
+{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"stopped", "nextstate":"resuming", "msgId":"resume"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"planFinishColdRoom", "nextstate":"elabMoveIndoor", "msgId":"goMoveToIndoor"}
 {"actor":"statusservice", "msgType":"dispatch", "curstate":"observing", "nextstate":"doObserve", "msgId":"coapUpdate"}
 {"actor":"statusservice", "msgType":"dispatch", "curstate":"observing", "nextstate":"sendMap", "msgId":"sendmap"}
