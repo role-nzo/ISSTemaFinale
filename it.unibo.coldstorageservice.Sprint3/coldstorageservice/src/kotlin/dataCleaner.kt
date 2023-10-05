@@ -11,8 +11,8 @@ import unibo.basicomm23.utils.CommUtils
 
 
 class dataCleaner (name : String ) : ActorBasic( name ) {
-val LimitLow  = 2	
-val LimitHigh = 400
+val LimitLow  = 0
+val LimitHigh = 300
 //@kotlinx.coroutines.ObsoleteCoroutinesApi
     override suspend fun actorBody(msg: IApplMessage) {
         if( msg.msgId() != "sonardistance") return

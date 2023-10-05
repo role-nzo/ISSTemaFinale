@@ -32,7 +32,13 @@ class sonarHCSR04Support23 ( name : String ) : ActorBasic( name ) {
 			println("sonarHCSR04Support23 sono attivo")
 			try{
 				//val p  = Runtime.getRuntime().exec("sudo ./SonarAlone")
-				val p  = Runtime.getRuntime().exec("C://Users//zacen//AppData//Local//Programs//Python//Python311//python C://Users//zacen//OneDrive//Desktop//ISSTemaFinale//it.unibo.coldstorageservice.Sprint3//coldstorageservice//resources//SonarReceiver.py ")
+				val pythonEnrico = "C://Users//zacen//AppData//Local//Programs//Python//Python311//python "
+				val eseguibileEnrico = "C://Users//zacen//OneDrive//Desktop//ISSTemaFinale//it.unibo.coldstorageservice.Sprint3//coldstorageservice//resources//SonarReceiver.py "
+
+				val testLucaPython =  "/Library/Frameworks/Python.framework/Versions/3.8/bin/python3 "
+				val testLucaSonarSimulator = "//Users//lucadominici//Desktop//IngegneriaSoftware//ProgettoFinale//ISSTemaFinale//it.unibo.coldstorageservice.Sprint3//coldstorageservice//resources//SonarSimulator.py"
+				val p  = Runtime.getRuntime().exec(pythonEnrico + eseguibileEnrico )
+				//val p  = Runtime.getRuntime().exec( testLucaPython + testLucaSonarSimulator )
 				sleep(5000)
 				reader = BufferedReader(  InputStreamReader(p.getInputStream() ))
 				println("Do Read")
@@ -51,13 +57,14 @@ class sonarHCSR04Support23 ( name : String ) : ActorBasic( name ) {
 				var data = reader.readLine()
 
 				if( data != null ){
-					println(data)
+					println("SonarKt: " + data)
 					try{
 						val vd = data.toFloat()
 						val v  = vd.toInt()
 						//CommUtils.outyellow("$name with python: data = $data"   )
 						if( v <= 300 ){	//A first filter ...
 							val m1 = "distance( ${v} )"
+							//println("Sonarkt " + m1)
 							val event = MsgUtil.buildEvent( "sonarHCSR04Support","sonardistance",m1)
 							//emit( event )  //should be propagated also to the remote resource
 							emitLocalStreamEvent( event )		//not propagated to remote actors

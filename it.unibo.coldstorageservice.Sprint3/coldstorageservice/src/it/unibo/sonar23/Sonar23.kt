@@ -56,10 +56,13 @@ class Sonar23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, sc
 												var d = payloadArg(0).toInt()
 												if (d <= Limit && !Stopped){
 													Stopped = true
-								forward("stop", "stop(_)" ,"transporttrolley" ) 
+								CommUtils.outblack("INVIO STOP")
+								emit("stopevent", "stopevent(_)" ) 
 								}
 												else if(d > Limit && Stopped) {
-								forward("resume", "resume(_)" ,"transporttrolley" ) 
+													Stopped = false
+								CommUtils.outblack("INVIO RESUME")
+								emit("resumevent", "resumevent(_)" ) 
 								}
 											
 						}
@@ -77,7 +80,6 @@ class Sonar23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, sc
 						if( checkMsgContent( Term.createTerm("obstacle(D)"), Term.createTerm("obstacle(D)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								CommUtils.outmagenta("$name handleobstacle ALARM ${payloadArg(0)}")
-								emit("alarm", "alarm(obstacle)" ) 
 						}
 						//genTimer( actor, state )
 					}

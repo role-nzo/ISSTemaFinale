@@ -10,7 +10,7 @@ import unibo.basicomm23.utils.CommUtils
 
 
 class distanceFilter (name : String ) : ActorBasic( name ) {
-val LimitDistance = 10
+val LimitDistance = 200
 //@kotlinx.coroutines.ObsoleteCoroutinesApi
 
     override suspend fun actorBody(msg: IApplMessage) {

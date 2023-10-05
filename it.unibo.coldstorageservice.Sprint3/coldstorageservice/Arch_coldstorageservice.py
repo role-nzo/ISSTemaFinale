@@ -35,13 +35,14 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
           distancefilter=Custom('distancefilter(coded)','./qakicons/codedQActor.png')
      sys >> Edge(color='red', style='dashed', xlabel='sonardata', fontcolor='red') >> sonar23
      sys >> Edge(color='red', style='dashed', xlabel='obstacle', fontcolor='red') >> sonar23
-     sonar23 >> Edge(color='blue', style='solid', xlabel='stop', fontcolor='blue') >> transporttrolley
-     sonar23 >> Edge(color='blue', style='solid', xlabel='resume', fontcolor='blue') >> transporttrolley
-     sonar23 >> Edge( xlabel='alarm', **eventedgeattr, fontcolor='red') >> sys
+     sonar23 >> Edge( xlabel='stopevent', **eventedgeattr, fontcolor='red') >> sys
+     sonar23 >> Edge( xlabel='resumevent', **eventedgeattr, fontcolor='red') >> sys
      sonar23 >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> sonar23observer
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='engage', fontcolor='magenta') >> basicrobot
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='moverobot', fontcolor='magenta') >> basicrobot
+     sys >> Edge(color='red', style='dashed', xlabel='stopevent', fontcolor='red') >> transporttrolley
      transporttrolley >> Edge( xlabel='alarm', **eventedgeattr, fontcolor='red') >> sys
+     sys >> Edge(color='red', style='dashed', xlabel='resumevent', fontcolor='red') >> transporttrolley
      transporttrolley >> Edge(color='blue', style='solid', xlabel='depositdone', fontcolor='blue') >> coldstorageservice
      coldstorageservice >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> statusservice
      statusservice >> Edge(color='blue', style='solid', xlabel='goMoveToHome', fontcolor='blue') >> transporttrolley

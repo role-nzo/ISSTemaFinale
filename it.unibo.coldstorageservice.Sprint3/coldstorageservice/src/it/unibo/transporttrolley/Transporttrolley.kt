@@ -49,6 +49,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				state("init") { //this:State
 					action { //it:State
 						CommUtils.outblue("transporttrolley init")
+						 subscribeToLocalActor("sonar23") 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -115,7 +116,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t18",targetState="checkSonarData",cond=whenDispatch("stop"))
+					 transition(edgeName="t18",targetState="checkSonarData",cond=whenEvent("stopevent"))
 					transition(edgeName="t19",targetState="robothit",cond=whenReply("moverobotfailed"))
 					transition(edgeName="t110",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
 				}	 
@@ -184,7 +185,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t213",targetState="resuming",cond=whenDispatch("resume"))
+					 transition(edgeName="t213",targetState="resuming",cond=whenEvent("resumevent"))
 				}	 
 				state("resuming") { //this:State
 					action { //it:State
