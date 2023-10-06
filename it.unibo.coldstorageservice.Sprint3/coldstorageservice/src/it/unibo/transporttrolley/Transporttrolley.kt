@@ -34,8 +34,8 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t03",targetState="init",cond=whenReply("engagedone"))
-					transition(edgeName="t04",targetState="waitrobotfree",cond=whenReply("engagerefused"))
+					 transition(edgeName="t07",targetState="init",cond=whenReply("engagedone"))
+					transition(edgeName="t08",targetState="waitrobotfree",cond=whenReply("engagerefused"))
 				}	 
 				state("waitrobotfree") { //this:State
 					action { //it:State
@@ -65,9 +65,9 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t05",targetState="elabMoveIndoor",cond=whenDispatch("goMoveToIndoor"))
-					transition(edgeName="t06",targetState="elabMoveColdRoom",cond=whenDispatch("goMoveToColdRoom"))
-					transition(edgeName="t07",targetState="elabMoveHome",cond=whenDispatch("goMoveToHome"))
+					 transition(edgeName="t09",targetState="elabMoveIndoor",cond=whenDispatch("goMoveToIndoor"))
+					transition(edgeName="t010",targetState="elabMoveColdRoom",cond=whenDispatch("goMoveToColdRoom"))
+					transition(edgeName="t011",targetState="elabMoveHome",cond=whenDispatch("goMoveToHome"))
 				}	 
 				state("elabMoveIndoor") { //this:State
 					action { //it:State
@@ -111,20 +111,24 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				state("waitRobot") { //this:State
 					action { //it:State
 						CommUtils.outblack("Wait robot")
+						updateResourceRep( "transporttrolleystatus(moving)" 
+						)
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t18",targetState="checkSonarData",cond=whenEvent("stopevent"))
-					transition(edgeName="t19",targetState="robothit",cond=whenReply("moverobotfailed"))
-					transition(edgeName="t110",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
+					 transition(edgeName="t112",targetState="checkSonarData",cond=whenEvent("stopevent"))
+					transition(edgeName="t113",targetState="robothit",cond=whenReply("moverobotfailed"))
+					transition(edgeName="t114",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
 				}	 
 				state("robothit") { //this:State
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
 						CommUtils.outblack("Robot hit")
+						updateResourceRep( "transporttrolleystatus(stopped)" 
+						)
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -163,33 +167,38 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 								   val AlarmCondition = (currentTime - LastStopTime) > Mint
 								   if(AlarmCondition){ MoveAlarm = "STOP" 
 						emit("alarm", "alarm(stop)" ) 
+						forward("robotstop", "robotstop(_)" ,"sonar23" ) 
 						CommUtils.outblack("alarm emitted")
 						 println(AlarmCondition)}
 								   else{
 								   		MoveAlarm = "WAIT"
-								   		println("Stop failed: not enough time from last stop")
-								   }			
+						forward("robotstopfailed", "robotstopfailed(_)" ,"sonar23" ) 
+						CommUtils.outblack("Stop failed: not enough time from last stop")
+						}			
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t311",targetState="stopped",cond=whenReply("moverobotfailed"))
-					transition(edgeName="t312",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
+					 transition(edgeName="t315",targetState="stopped",cond=whenReply("moverobotfailed"))
+					transition(edgeName="t316",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
 				}	 
 				state("stopped") { //this:State
 					action { //it:State
 						CommUtils.outblack("Sono fermo")
+						updateResourceRep( "transporttrolleystatus(stopped)" 
+						)
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t213",targetState="resuming",cond=whenEvent("resumevent"))
+					 transition(edgeName="t217",targetState="resuming",cond=whenEvent("resumevent"))
 				}	 
 				state("resuming") { //this:State
 					action { //it:State
 						CommUtils.outblack("Resuming")
+						forward("robotresume", "robotresume(_)" ,"sonar23" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -221,7 +230,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t114",targetState="elabWaitLoad",cond=whenRequest("waitLoad"))
+					 transition(edgeName="t118",targetState="elabWaitLoad",cond=whenRequest("waitLoad"))
 				}	 
 				state("planFailedIndoor") { //this:State
 					action { //it:State
@@ -232,7 +241,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t115",targetState="elabWaitLoad",cond=whenRequest("waitLoad"))
+					 transition(edgeName="t119",targetState="elabWaitLoad",cond=whenRequest("waitLoad"))
 				}	 
 				state("elabWaitLoad") { //this:State
 					action { //it:State
@@ -256,12 +265,14 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				 	 		stateTimer = TimerActor("timer_planFinishColdRoom", 
 				 	 					  scope, context!!, "local_tout_transporttrolley_planFinishColdRoom", 10000.toLong() )
 					}	 	 
-					 transition(edgeName="t516",targetState="elabMoveHome",cond=whenTimeout("local_tout_transporttrolley_planFinishColdRoom"))   
-					transition(edgeName="t517",targetState="elabMoveIndoor",cond=whenDispatch("goMoveToIndoor"))
+					 transition(edgeName="t520",targetState="elabMoveHome",cond=whenTimeout("local_tout_transporttrolley_planFinishColdRoom"))   
+					transition(edgeName="t521",targetState="elabMoveIndoor",cond=whenDispatch("goMoveToIndoor"))
 				}	 
 				state("planFinishHome") { //this:State
 					action { //it:State
 						CommUtils.outblue("$name | at home")
+						updateResourceRep( "transporttrolleystatus(home)" 
+						)
 						delay(1000) 
 						//genTimer( actor, state )
 					}

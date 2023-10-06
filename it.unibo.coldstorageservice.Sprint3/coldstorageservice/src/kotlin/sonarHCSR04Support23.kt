@@ -51,6 +51,8 @@ class sonarHCSR04Support23 ( name : String ) : ActorBasic( name ) {
 		
 	suspend fun doRead(   ){
  		var counter = 0
+		var last = 0
+		val limit = 10
 		//GlobalScope.launch{	//to allow message handling
 		scope.launch{
 		while( true ){
@@ -63,12 +65,18 @@ class sonarHCSR04Support23 ( name : String ) : ActorBasic( name ) {
 						val v  = vd.toInt()
 						//CommUtils.outyellow("$name with python: data = $data"   )
 						if( v <= 300 ){	//A first filter ...
-							val m1 = "distance( ${v} )"
-							//println("Sonarkt " + m1)
-							val event = MsgUtil.buildEvent( "sonarHCSR04Support","sonardistance",m1)
-							//emit( event )  //should be propagated also to the remote resource
-							emitLocalStreamEvent( event )		//not propagated to remote actors
-							CommUtils.outyellow("sonarHCSR04Support23 doRead emits ${counter++}: $event "   )
+							if((last <= limit && v > limit) || (last > limit && v <= limit)){
+								//var res = if(v > limit) "HIGH" else "LOW"
+								val m1 = "distance(${if(v > limit) "HIGH" else "LOW"})"
+								//println("Sonarkt " + m1)
+								//UTILIZZO con dataCleaner
+								//val event = MsgUtil.buildEvent( "sonarHCSR04Support","sonardistance",m1)
+								val event = MsgUtil.buildEvent( "sonarHCSR04Support","sonardata",m1)
+								//emit( event )  //should be propagated also to the remote resource
+								emitLocalStreamEvent( event )		//not propagated to remote actors
+								CommUtils.outyellow("sonarHCSR04Support23 doRead emits ${counter++}: $event "   )
+							}
+							last = v
 						}
 					}catch(e: Exception){
 						CommUtils.outred("sonarHCSR04Support23 doRead ERROR: $e "   )

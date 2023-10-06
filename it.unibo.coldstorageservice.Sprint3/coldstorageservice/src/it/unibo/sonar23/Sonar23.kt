@@ -26,7 +26,7 @@ class Sonar23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, sc
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outblack("sonar23 | start with appl: $ApplAlso")
-						 subscribeToLocalActor("distancefilter").subscribeToLocalActor("datacleaner").subscribeToLocalActor("sonar")  
+						 subscribeToLocalActor("sonar")  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -36,15 +36,13 @@ class Sonar23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, sc
 				}	 
 				state("work") { //this:State
 					action { //it:State
-						updateResourceRep( "sonar23 waiting ..."  
-						)
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t00",targetState="handlesonardata",cond=whenEvent("sonardata"))
-					transition(edgeName="t01",targetState="handleobstacle",cond=whenEvent("obstacle"))
+					 transition(edgeName="t01",targetState="handlesonardata",cond=whenEvent("sonardata"))
+					transition(edgeName="t02",targetState="handleobstacle",cond=whenEvent("obstacle"))
 				}	 
 				state("handlesonardata") { //this:State
 					action { //it:State
@@ -53,21 +51,54 @@ class Sonar23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, sc
 						if( checkMsgContent( Term.createTerm("distance(D)"), Term.createTerm("distance(D)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								
-												var d = payloadArg(0).toInt()
-												if (d <= Limit && !Stopped){
-													Stopped = true
+												var d = payloadArg(0)
+												if (d == "LOW" && !Stopped){
+													
 								CommUtils.outblack("INVIO STOP")
 								emit("stopevent", "stopevent(_)" ) 
 								}
-												else if(d > Limit && Stopped) {
-													Stopped = false
+												else if(d == "HIGH" && Stopped) {
+													
 								CommUtils.outblack("INVIO RESUME")
 								emit("resumevent", "resumevent(_)" ) 
 								}
 											
 						}
-						updateResourceRep( "sonar23 handles $currentMsg"  
-						)
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+				 	 		stateTimer = TimerActor("timer_handlesonardata", 
+				 	 					  scope, context!!, "local_tout_sonar23_handlesonardata", 100.toLong() )
+					}	 	 
+					 transition(edgeName="t13",targetState="work",cond=whenTimeout("local_tout_sonar23_handlesonardata"))   
+					transition(edgeName="t14",targetState="handlerobotstop",cond=whenDispatch("robotstop"))
+					transition(edgeName="t15",targetState="handlerobotstopfailed",cond=whenDispatch("robotstopfailed"))
+					transition(edgeName="t16",targetState="handlerobotresume",cond=whenDispatch("robotresume"))
+				}	 
+				state("handlerobotstop") { //this:State
+					action { //it:State
+						Stopped = true  
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="work", cond=doswitch() )
+				}	 
+				state("handlerobotstopfailed") { //this:State
+					action { //it:State
+						Stopped = false  
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="work", cond=doswitch() )
+				}	 
+				state("handlerobotresume") { //this:State
+					action { //it:State
+						Stopped = false  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

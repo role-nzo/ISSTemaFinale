@@ -9,7 +9,7 @@ n         = 1
 #sonardatamsg = "msg(sonardistance,event,sonar,none,distance(V),N)"
 #client    = paho.Client("controller")
 #client.connect(brokerAddr, 1883, 60)
-print("SonarReceiver execution")
+
 host_ip = "192.168.1.140"
 port = 6524
 stopped = False

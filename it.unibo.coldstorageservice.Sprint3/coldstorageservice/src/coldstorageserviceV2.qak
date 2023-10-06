@@ -65,8 +65,16 @@ Event obstacle  : obstacle(D)   //emitted as stream by distancefilter
 Dispatch resume    : resume( _ ) 
 Dispatch stop : stop(D) //stop da inviare al transporttrolley
 
+//Eventi sonar
 Event stopevent : stopevent(_)
 Event resumevent : resumevent(_)
+
+Dispatch robotstop : robotstop(_)
+Dispatch robotstopfailed : robotstopfailed(_)
+Dispatch robotresume : robotresume(_) 
+
+//Eventi led
+Event ledstatuschange : ledstatuschange(STATUS)
 
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
@@ -82,8 +90,43 @@ ExternalQActor robotposendosimbiotico context ctxbasicrobot
 
 //CodedQActor sonar  context ctxcoldstorageservice className "sonarSimulator"           //IN LOCALE
 CodedQActor sonar  context ctxcoldstorageservice className "sonarHCSR04Support23"   //SU RASP
-CodedQActor datacleaner    context ctxcoldstorageservice className "rx.dataCleaner"
-CodedQActor distancefilter context ctxcoldstorageservice className "rx.distanceFilter"
+//CodedQActor led context ctxcoldstorageservice className "ledSupport23"
+
+//CodedQActor datacleaner    context ctxcoldstorageservice className "rx.dataCleaner"
+//CodedQActor distancefilter context ctxcoldstorageservice className "rx.distanceFilter"
+
+QActor led23 context ctxcoldstorageservice{
+	
+	State s0 initial{  
+		println("led23 | start  ") 
+		observeResource transporttrolley
+	}
+	Goto observing 
+	
+	State observing{
+			
+	}
+	Transition t0 whenMsg coapUpdate -> doObserve
+
+	State doObserve{
+		printCurrentMessage
+		[#val Msg = currentMsg.msgContent().split("(")[1].split(")")[0] 
+		 if(Msg == "stopped"){
+		#]
+			emit ledstatuschange : ledstatuschange(stopped) [#
+		}		
+		 if(Msg == "moving"){
+		#]
+			emit ledstatuschange : ledstatuschange(moving) [#
+		}else {#]
+			emit ledstatuschange : ledstatuschange(home) [#
+		}#]
+		  
+	}
+	Goto observing
+}
+
+CodedQActor led context ctxcoldstorageservice className "ledSupport23"
 
 QActor sonar23 context ctxcoldstorageservice{ 
 	[# var  ApplAlso = sysUtil.getActor("appl") != null
@@ -93,50 +136,60 @@ QActor sonar23 context ctxcoldstorageservice{
 	#]
 	State s0 initial{  
 		println("sonar23 | start with appl: $ApplAlso") 
-		[# subscribeToLocalActor("distancefilter").subscribeToLocalActor("datacleaner").subscribeToLocalActor("sonar") #]  //.subscribeToLocalActor("sonar")
+		//[# subscribeToLocalActor("distancefilter").subscribeToLocalActor("datacleaner").subscribeToLocalActor("sonar") #]  //.subscribeToLocalActor("sonar")
+		[# subscribeToLocalActor("sonar") #]
 	}
 	Goto work
 	 
 	State work{
 		//println("sonar23 | waits ... ") 		
-		updateResource [# "sonar23 waiting ..." #]
+		//updateResource [# "sonar23 waiting ..." #]
 	}
 	Transition t0 whenEvent sonardata -> handlesonardata 
 	              whenEvent obstacle  -> handleobstacle
 
-	/*
-	    Modificare:
-	    In questo modo non si gestisce il caso in cui un allarme viene inviato troppo vicino al precedente.
-	    Succede che sonar23 pone Stopped = true, ma in realtà l'allarme viene ignorato dal transporttrolley
-	    -> possibile soluzione1: fare in modo che il trolley invii una risposta indicando se si è realmente fermato o no
-	    e in base a questo modificare la variabile Stopped di sonar23 
-	*/
+	
 	State handlesonardata{		
 		printCurrentMessage
 		onMsg(sonardata : distance(D)){
 			[#
-				var d = payloadArg(0).toInt()
-				if (d <= Limit && !Stopped){
-					Stopped = true
+				var d = payloadArg(0)
+				if (d == "LOW" && !Stopped){
+					
 				#]
-				println("INVIO STOP")	
+					println("INVIO STOP")	
 				//forward transporttrolley -m stop : stop(_)
-				emit stopevent : stopevent(_)
+					emit stopevent : stopevent(_)
 				[#}
-				else if(d > Limit && Stopped) {
-					Stopped = false
+				else if(d == "HIGH" && Stopped) {
+					
 				#]
-				println("INVIO RESUME")
-				emit resumevent : resumevent(_)
+					println("INVIO RESUME")
+					emit resumevent : resumevent(_)
 				//forward transporttrolley -m resume : resume(_)
 				[#}
 			
 			#]	
 		}
 		
-		updateResource [# "sonar23 handles $currentMsg" #]
+		//updateResource [# "sonar23 handles $currentMsg" #]
 	}
-	Goto work 
+	Transition t1 whenTime 100 -> work
+				  whenMsg robotstop -> handlerobotstop
+				  whenMsg robotstopfailed -> handlerobotstopfailed
+				  whenMsg robotresume -> handlerobotresume
+	
+	State handlerobotstop{
+		[#Stopped = true #]
+	}Goto work
+	
+	State handlerobotstopfailed{
+		[#Stopped = false #]
+	}Goto work
+	
+	State handlerobotresume{
+		[#Stopped = false #]
+	}Goto work
 	
 	State handleobstacle{
 		onMsg( obstacle : obstacle(D)){			
@@ -153,6 +206,7 @@ QActor sonar23 context ctxcoldstorageservice{
 }   
 
 //Si può eliminare
+/*
 QActor sonar23observer context ctxcoldstorageservice{
 	State s0 initial{  
 		println("sonar23observer | start  ") 
@@ -170,7 +224,7 @@ QActor sonar23observer context ctxcoldstorageservice{
 	}
 	Goto observing
 	
-}
+} */
 
 
  
@@ -246,6 +300,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	
 	State waitRobot{
 		println("Wait robot")
+		updateResource [# "transporttrolleystatus(moving)"#]
 	}
 	Transition t1 whenEvent stopevent -> checkSonarData
 				  //whenReply moverobotfailed -> waitcoldstorageservicerequest
@@ -256,6 +311,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	State robothit{
 		printCurrentMessage
 		println("Robot hit")
+		updateResource [# "transporttrolleystatus(stopped)"#]
 	}
 	Goto waitcoldstorageservicerequest
 		  
@@ -274,14 +330,17 @@ QActor transporttrolley context ctxcoldstorageservice{
 		   if(AlarmCondition){ MoveAlarm = "STOP"#]
 		   		
 				emit alarm : alarm(stop)
+				forward sonar23 -m robotstop : robotstop(_)
 				println("alarm emitted")
 				
 				
 		 [# println(AlarmCondition)}
 		   else{
 		   		MoveAlarm = "WAIT"
+		   		#]	   		
+		   		forward sonar23 -m robotstopfailed : robotstopfailed(_)
 		   		println("Stop failed: not enough time from last stop")
-		   }			
+		   [#}			
 		#]		
 	}
 	//Goto stopped if [# MoveAlarm == "STOP" #] else waitRobot
@@ -290,12 +349,14 @@ QActor transporttrolley context ctxcoldstorageservice{
 	
 	State stopped{
 		println("Sono fermo")
+		updateResource [# "transporttrolleystatus(stopped)"#]
 	}
 	Transition t2 whenEvent resumevent -> resuming
 				 //whenMsg resume -> resuming
 	
 	State resuming {
 		println("Resuming")
+		forward sonar23 -m robotresume : robotresume(_)
 		
 	}Goto elabMoveIndoor if [#GoingTo == "INDOOR"#] else secondResuming
 	
@@ -335,6 +396,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	State planFinishHome {
 		
 		println("$name | at home") color blue
+		updateResource [# "transporttrolleystatus(home)"#]
 		delay 1000
 		
 		//NON FUNZIONA

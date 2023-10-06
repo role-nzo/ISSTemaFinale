@@ -1,4 +1,7 @@
-{"actor":"sonar23observer", "msgType":"dispatch", "curstate":"observing", "nextstate":"doObserve", "msgId":"coapUpdate"}
+{"actor":"led23", "msgType":"dispatch", "curstate":"observing", "nextstate":"doObserve", "msgId":"coapUpdate"}
+{"actor":"sonar23", "msgType":"dispatch", "curstate":"handlesonardata", "nextstate":"handlerobotstop", "msgId":"robotstop"}
+{"actor":"sonar23", "msgType":"dispatch", "curstate":"handlesonardata", "nextstate":"handlerobotstopfailed", "msgId":"robotstopfailed"}
+{"actor":"sonar23", "msgType":"dispatch", "curstate":"handlesonardata", "nextstate":"handlerobotresume", "msgId":"robotresume"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveIndoor", "msgId":"goMoveToIndoor"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveColdRoom", "msgId":"goMoveToColdRoom"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveHome", "msgId":"goMoveToHome"}
