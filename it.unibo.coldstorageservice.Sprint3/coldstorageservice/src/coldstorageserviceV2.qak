@@ -96,7 +96,7 @@ CodedQActor sonar  context ctxcoldstorageservice className "sonarHCSR04Support23
 //CodedQActor distancefilter context ctxcoldstorageservice className "rx.distanceFilter"
 
 QActor led23 context ctxcoldstorageservice{
-	
+	[#var Msg = ""#]
 	State s0 initial{  
 		println("led23 | start  ") 
 		observeResource transporttrolley
@@ -110,7 +110,9 @@ QActor led23 context ctxcoldstorageservice{
 
 	State doObserve{
 		printCurrentMessage
-		[#val Msg = currentMsg.msgContent().split("(")[1].split(")")[0] 
+		[#Msg = currentMsg.msgContent().split(", ")[1].split("(")[1].split(")")[0] 
+		 println(Msg)
+		 println(currentMsg.msgContent())
 		 if(Msg == "stopped"){
 		#]
 			emit ledstatuschange : ledstatuschange(stopped) [#
@@ -147,6 +149,9 @@ QActor sonar23 context ctxcoldstorageservice{
 	}
 	Transition t0 whenEvent sonardata -> handlesonardata 
 	              whenEvent obstacle  -> handleobstacle
+	              whenMsg robotstop -> handlerobotstop
+				  whenMsg robotstopfailed -> handlerobotstopfailed
+				  whenMsg robotresume -> handlerobotresume
 
 	
 	State handlesonardata{		
@@ -247,8 +252,8 @@ QActor sendevent context ctxcoldstorageservice{
 QActor transporttrolley context ctxcoldstorageservice{
 	[#
 		var GoingTo = " "
-		var LastStopTime = 0
-		var Mint = 10000
+		var LastStopTime = 0L
+		var Mint = 5000
 		var AlarmCondition = false
 		var MoveAlarm = " "
 	#]
@@ -326,11 +331,11 @@ QActor transporttrolley context ctxcoldstorageservice{
 	State checkSonarData {
 		[#
 		   val currentTime = java.time.Instant.now().epochSecond
-		   val AlarmCondition = (currentTime - LastStopTime) > Mint
+		   AlarmCondition = (currentTime - LastStopTime)*1000 > Mint
 		   if(AlarmCondition){ MoveAlarm = "STOP"#]
 		   		
 				emit alarm : alarm(stop)
-				forward sonar23 -m robotstop : robotstop(_)
+	            //forward sonar23 -m robotstop : robotstop(_)
 				println("alarm emitted")
 				
 				
@@ -349,7 +354,10 @@ QActor transporttrolley context ctxcoldstorageservice{
 	
 	State stopped{
 		println("Sono fermo")
+		[#LastStopTime = java.time.Instant.now().epochSecond#]
+		forward sonar23 -m robotstop : robotstop(_)
 		updateResource [# "transporttrolleystatus(stopped)"#]
+		updateResource [# "robotfree(fermo)"#]
 	}
 	Transition t2 whenEvent resumevent -> resuming
 				 //whenMsg resume -> resuming
@@ -387,10 +395,10 @@ QActor transporttrolley context ctxcoldstorageservice{
 		//depositare il carico
 		
 		println("$name | at ColdRoom") color blue
-		delay 3000
+		delay 1500
 		forward coldstorageservice -m depositdone : depositdone(0)
 		
-	} Transition t5 whenTime 10000 -> elabMoveHome
+	} Transition t5 whenTime 4000 -> elabMoveHome
 		  			whenMsg goMoveToIndoor  -> elabMoveIndoor
 	
 	State planFinishHome {
@@ -422,10 +430,11 @@ QActor statusservice context ctxcoldstorageservice {
 	State s0 initial {
 		
 		[#
-			CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
-			
+			//CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
+			CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotpos")
 		#]
 		observeResource coldstorageservice
+		observeResource transporttrolley
 		//request basicrobot -m moverobot	: moverobot(0, 0)
 		forward transporttrolley -m goMoveToHome : goMoveToHome(0)
 	}
@@ -453,7 +462,7 @@ QActor statusservice context ctxcoldstorageservice {
 			val resource = msg.split(", ")[0]
 			val value = msg.dropWhile { it != ',' }.drop(2)
 						 
-			if( resource == "coldstorageservice" ) {
+			if( resource == "coldstorageservice" || resource == "transporttrolley" ) {
 				if( value.startsWith("robotfree") ) {
 					RobotFree = value.split("(")[1].dropLast(1)
 				} else if( value.startsWith("ticketrejected") ) {
@@ -462,7 +471,7 @@ QActor statusservice context ctxcoldstorageservice {
 				} else if( value.startsWith("weightUpdate") ) {
 					CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()
 				}
-			} else if( resource == "robotposendosimbiotico" ) {
+			} else if( resource == "robotpos" ) {
 				
 				if( value.startsWith("|") ) {
 					Map = value.substring(0, value.lastIndexOf("\n"))
@@ -485,7 +494,7 @@ QActor emptycoldroom context ctxcoldstorageservice{
 	
 	State s0 initial{
 		
-		delay 60000
+		delay 120000
 		request coldstorageservice -m clearColdRoom : clearColdRoom(0)
 		println("$name | richiesta svuotamento coldroom")
 		

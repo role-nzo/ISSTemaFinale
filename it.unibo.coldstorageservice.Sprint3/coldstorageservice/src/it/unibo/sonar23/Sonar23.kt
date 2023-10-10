@@ -43,6 +43,9 @@ class Sonar23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, sc
 					}	 	 
 					 transition(edgeName="t01",targetState="handlesonardata",cond=whenEvent("sonardata"))
 					transition(edgeName="t02",targetState="handleobstacle",cond=whenEvent("obstacle"))
+					transition(edgeName="t03",targetState="handlerobotstop",cond=whenDispatch("robotstop"))
+					transition(edgeName="t04",targetState="handlerobotstopfailed",cond=whenDispatch("robotstopfailed"))
+					transition(edgeName="t05",targetState="handlerobotresume",cond=whenDispatch("robotresume"))
 				}	 
 				state("handlesonardata") { //this:State
 					action { //it:State
@@ -71,10 +74,10 @@ class Sonar23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, sc
 				 	 		stateTimer = TimerActor("timer_handlesonardata", 
 				 	 					  scope, context!!, "local_tout_sonar23_handlesonardata", 100.toLong() )
 					}	 	 
-					 transition(edgeName="t13",targetState="work",cond=whenTimeout("local_tout_sonar23_handlesonardata"))   
-					transition(edgeName="t14",targetState="handlerobotstop",cond=whenDispatch("robotstop"))
-					transition(edgeName="t15",targetState="handlerobotstopfailed",cond=whenDispatch("robotstopfailed"))
-					transition(edgeName="t16",targetState="handlerobotresume",cond=whenDispatch("robotresume"))
+					 transition(edgeName="t16",targetState="work",cond=whenTimeout("local_tout_sonar23_handlesonardata"))   
+					transition(edgeName="t17",targetState="handlerobotstop",cond=whenDispatch("robotstop"))
+					transition(edgeName="t18",targetState="handlerobotstopfailed",cond=whenDispatch("robotstopfailed"))
+					transition(edgeName="t19",targetState="handlerobotresume",cond=whenDispatch("robotresume"))
 				}	 
 				state("handlerobotstop") { //this:State
 					action { //it:State

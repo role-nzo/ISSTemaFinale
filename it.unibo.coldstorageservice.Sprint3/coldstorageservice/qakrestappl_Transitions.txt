@@ -1,4 +1,7 @@
 {"actor":"led23", "msgType":"dispatch", "curstate":"observing", "nextstate":"doObserve", "msgId":"coapUpdate"}
+{"actor":"sonar23", "msgType":"dispatch", "curstate":"work", "nextstate":"handlerobotstop", "msgId":"robotstop"}
+{"actor":"sonar23", "msgType":"dispatch", "curstate":"work", "nextstate":"handlerobotstopfailed", "msgId":"robotstopfailed"}
+{"actor":"sonar23", "msgType":"dispatch", "curstate":"work", "nextstate":"handlerobotresume", "msgId":"robotresume"}
 {"actor":"sonar23", "msgType":"dispatch", "curstate":"handlesonardata", "nextstate":"handlerobotstop", "msgId":"robotstop"}
 {"actor":"sonar23", "msgType":"dispatch", "curstate":"handlesonardata", "nextstate":"handlerobotstopfailed", "msgId":"robotstopfailed"}
 {"actor":"sonar23", "msgType":"dispatch", "curstate":"handlesonardata", "nextstate":"handlerobotresume", "msgId":"robotresume"}

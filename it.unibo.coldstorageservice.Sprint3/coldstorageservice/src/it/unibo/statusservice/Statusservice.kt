@@ -29,9 +29,10 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				state("s0") { //this:State
 					action { //it:State
 						
-									CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
-									
+									//CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
+									CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotpos")
 						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","coldstorageservice")
+						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","transporttrolley")
 						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
 						//genTimer( actor, state )
 					}
@@ -47,8 +48,8 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t022",targetState="doObserve",cond=whenDispatch("coapUpdate"))
-					transition(edgeName="t023",targetState="sendMap",cond=whenDispatch("sendmap"))
+					 transition(edgeName="t025",targetState="doObserve",cond=whenDispatch("coapUpdate"))
+					transition(edgeName="t026",targetState="sendMap",cond=whenDispatch("sendmap"))
 				}	 
 				state("sendMap") { //this:State
 					action { //it:State
@@ -73,7 +74,7 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 									val resource = msg.split(", ")[0]
 									val value = msg.dropWhile { it != ',' }.drop(2)
 												 
-									if( resource == "coldstorageservice" ) {
+									if( resource == "coldstorageservice" || resource == "transporttrolley" ) {
 										if( value.startsWith("robotfree") ) {
 											RobotFree = value.split("(")[1].dropLast(1)
 										} else if( value.startsWith("ticketrejected") ) {
@@ -82,7 +83,7 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 										} else if( value.startsWith("weightUpdate") ) {
 											CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()
 										}
-									} else if( resource == "robotposendosimbiotico" ) {
+									} else if( resource == "robotpos" ) {
 										
 										if( value.startsWith("|") ) {
 											Map = value.substring(0, value.lastIndexOf("\n"))

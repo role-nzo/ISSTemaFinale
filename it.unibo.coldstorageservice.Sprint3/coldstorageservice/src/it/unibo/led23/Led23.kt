@@ -18,6 +18,7 @@ class Led23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scop
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		val interruptedStateTransitions = mutableListOf<Transition>()
+		var Msg = "" 
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -43,7 +44,9 @@ class Led23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scop
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						val Msg = currentMsg.msgContent().split("(")[1].split(")")[0] 
+						Msg = currentMsg.msgContent().split(", ")[1].split("(")[1].split(")")[0] 
+								 println(Msg)
+								 println(currentMsg.msgContent())
 								 if(Msg == "stopped"){
 						emit("ledstatuschange", "ledstatuschange(stopped)" ) 
 						

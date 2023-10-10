@@ -41,8 +41,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t027",targetState="elabStoreFood",cond=whenRequest("storefood"))
-					transition(edgeName="t028",targetState="elabClearColdRoom",cond=whenRequest("clearColdRoom"))
+					 transition(edgeName="t030",targetState="elabStoreFood",cond=whenRequest("storefood"))
+					transition(edgeName="t031",targetState="elabClearColdRoom",cond=whenRequest("clearColdRoom"))
 				}	 
 				state("elabStoreFood") { //this:State
 					action { //it:State
@@ -60,8 +60,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t129",targetState="elabStoreFoodAccepted",cond=whenReply("storefoodaccepted"))
-					transition(edgeName="t130",targetState="elabStoreFoodRejected",cond=whenReply("storefoodrejected"))
+					 transition(edgeName="t132",targetState="elabStoreFoodAccepted",cond=whenReply("storefoodaccepted"))
+					transition(edgeName="t133",targetState="elabStoreFoodRejected",cond=whenReply("storefoodrejected"))
 				}	 
 				state("elabStoreFoodAccepted") { //this:State
 					action { //it:State
@@ -98,7 +98,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t231",targetState="elabLoadDone",cond=whenRequest("loaddone"))
+					 transition(edgeName="t234",targetState="elabLoadDone",cond=whenRequest("loaddone"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -119,7 +119,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t332",targetState="elabChargeTaken",cond=whenReply("waitLoadDone"))
+					 transition(edgeName="t335",targetState="elabChargeTaken",cond=whenReply("waitLoadDone"))
 				}	 
 				state("elabChargeTaken") { //this:State
 					action { //it:State
@@ -142,7 +142,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFs
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t433",targetState="elabDepositDone",cond=whenDispatch("depositdone"))
+					 transition(edgeName="t436",targetState="elabDepositDone",cond=whenDispatch("depositdone"))
 				}	 
 				state("elabDepositDone") { //this:State
 					action { //it:State

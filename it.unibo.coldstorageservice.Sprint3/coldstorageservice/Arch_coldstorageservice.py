@@ -42,12 +42,13 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
      transporttrolley >> Edge(color='magenta', style='solid', xlabel='moverobot', fontcolor='magenta') >> basicrobot
      sys >> Edge(color='red', style='dashed', xlabel='stopevent', fontcolor='red') >> transporttrolley
      transporttrolley >> Edge( xlabel='alarm', **eventedgeattr, fontcolor='red') >> sys
-     transporttrolley >> Edge(color='blue', style='solid', xlabel='robotstop', fontcolor='blue') >> sonar23
      transporttrolley >> Edge(color='blue', style='solid', xlabel='robotstopfailed', fontcolor='blue') >> sonar23
+     transporttrolley >> Edge(color='blue', style='solid', xlabel='robotstop', fontcolor='blue') >> sonar23
      sys >> Edge(color='red', style='dashed', xlabel='resumevent', fontcolor='red') >> transporttrolley
      transporttrolley >> Edge(color='blue', style='solid', xlabel='robotresume', fontcolor='blue') >> sonar23
      transporttrolley >> Edge(color='blue', style='solid', xlabel='depositdone', fontcolor='blue') >> coldstorageservice
      coldstorageservice >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> statusservice
+     transporttrolley >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> statusservice
      statusservice >> Edge(color='blue', style='solid', xlabel='goMoveToHome', fontcolor='blue') >> transporttrolley
      emptycoldroom >> Edge(color='magenta', style='solid', xlabel='clearColdRoom', fontcolor='magenta') >> coldstorageservice
      coldstorageservice >> Edge(color='magenta', style='solid', xlabel='storefood', fontcolor='magenta') >> ticketservice
