@@ -5,19 +5,21 @@
  Reads data from the InputStream of p and, for each value,
  emits the event   sonar : distance( V ).
  */
-import alice.tuprologx.pj.model.Bool
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import it.unibo.kactor.ActorBasic
+import it.unibo.kactor.ActorBasicFsm
+import kotlinx.coroutines.delay
 import it.unibo.kactor.MsgUtil
-import it.unibo.kactor.QakContext
-import kotlinx.coroutines.*
+import kotlinx.coroutines.runBlocking
 import unibo.basicomm23.interfaces.IApplMessage
 import unibo.basicomm23.utils.CommUtils
 import java.lang.Thread.sleep
+import kotlinx.coroutines.CoroutineScope
 
-
-class sonarHCSR04Support23 ( name : String, scope: CoroutineScope, discardMessages: Boolean ) : ActorBasic( name ) {
+class sonarHCSR04Support23Old (name : String, scope: CoroutineScope ) : ActorBasicFsm( name, scope ) {
 	lateinit var reader : BufferedReader
 	//var coapSupport = javacode.CoapSupport("coap://localhost:8028","ctxsonarresource/sonarresource")
 	init{
@@ -25,7 +27,8 @@ class sonarHCSR04Support23 ( name : String, scope: CoroutineScope, discardMessag
 		runBlocking{  autoMsg("sonarstart","do") }
 	}
 
-    override suspend fun actorBody(msg : IApplMessage){
+	override fun getBody(): ActorBasicFsm.() -> Unit {
+
  		//println("$tt $name | received  $msg "  )  //RICEVE GLI EVENTI!!!
 		if( msg.msgId() == "sonarstart"){
 			//println("sonarHCSR04Support23 STARTING") //AVOID SINCE pipe ...
@@ -54,13 +57,12 @@ class sonarHCSR04Support23 ( name : String, scope: CoroutineScope, discardMessag
 		var last = 0
 		val limit = 10
 		//GlobalScope.launch{	//to allow message handling
-
-		//QakContext.scope22.launch{
+		scope.launch{
 		while( true ){
 				var data = reader.readLine()
 
 				if( data != null ){
-					//println("SonarKt: " + data)
+					println("SonarKt: " + data)
 					try{
 						val vd = data.toFloat()
 						val v  = vd.toInt()
@@ -85,6 +87,6 @@ class sonarHCSR04Support23 ( name : String, scope: CoroutineScope, discardMessag
 				}
 				//delay( 250 ) 	//Avoid too fast generation
  		}
-		//}
+		}
 	}
 }

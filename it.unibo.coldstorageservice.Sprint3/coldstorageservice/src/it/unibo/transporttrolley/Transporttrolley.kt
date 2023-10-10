@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-	
-class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
+import it.unibo.kactor.sysUtil.createActor   //Sept2023
+class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : ActorBasicFsm( name, scope, confined=isconfined ){
 
 	override fun getInitialState() : String{
 		return "s0"
@@ -24,7 +24,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				var Mint = 5000
 				var AlarmCondition = false
 				var MoveAlarm = " "
-		return { //this:ActionBasciFsm
+				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outblue("transporttrolley starts")
@@ -202,6 +202,13 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					action { //it:State
 						CommUtils.outblack("Resuming")
 						forward("robotresume", "robotresume(_)" ,"sonar23" ) 
+						if(GoingTo == "HOME"){ 
+						updateResourceRep( "robotfree(libero)" 
+						)
+						}else{ 
+						updateResourceRep( "robotfree(occupato)" 
+						)
+						} 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -286,4 +293,4 @@ class Transporttrolley ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 			}
 		}
-}
+} 

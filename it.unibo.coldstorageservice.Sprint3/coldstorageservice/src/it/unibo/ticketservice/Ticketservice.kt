@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-	
-class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
+import it.unibo.kactor.sysUtil.createActor   //Sept2023
+class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : ActorBasicFsm( name, scope, confined=isconfined ){
 
 	override fun getInitialState() : String{
 		return "s0"
@@ -23,7 +23,7 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 			   var maxWeight = 100
 			   var TimeMax = 300
 			   var Ticketsrejected = 0
-		return { //this:ActionBasciFsm
+				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outyellow("$name | wait for request")
@@ -171,4 +171,4 @@ class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				}	 
 			}
 		}
-}
+} 

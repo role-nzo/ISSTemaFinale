@@ -1,5 +1,5 @@
 System coldstorageservice
-
+ 
 //mqttBroker "broker.hivemq.com" :  1883 eventTopic "unibo/zdel/sonar/events"
 //mqttBroker "mqtt.eclipseprojects.io" : 1883 eventTopic "unibo/sonar/events"
 
@@ -110,7 +110,11 @@ QActor led23 context ctxcoldstorageservice{
 
 	State doObserve{
 		printCurrentMessage
-		[#Msg = currentMsg.msgContent().split(", ")[1].split("(")[1].split(")")[0] 
+		[#Msg = currentMsg.msgContent().split(", ")[1] //.split("(")[1].split(")")[0]
+		 println("-" + Msg.trim() + "-")
+		 if(Msg.trim() != ")"){
+		 	Msg = Msg.split("(")[1].split(")")[0]
+		  
 		 println(Msg)
 		 println(currentMsg.msgContent())
 		 if(Msg == "stopped"){
@@ -122,7 +126,7 @@ QActor led23 context ctxcoldstorageservice{
 			emit ledstatuschange : ledstatuschange(moving) [#
 		}else {#]
 			emit ledstatuschange : ledstatuschange(home) [#
-		}#]
+		}}#]
 		  
 	}
 	Goto observing
@@ -365,6 +369,11 @@ QActor transporttrolley context ctxcoldstorageservice{
 	State resuming {
 		println("Resuming")
 		forward sonar23 -m robotresume : robotresume(_)
+		[#if(GoingTo == "HOME"){#]
+			updateResource [# "robotfree(libero)"#]
+		[#}else{#]
+			updateResource [# "robotfree(occupato)"#]	
+		[#}#]
 		
 	}Goto elabMoveIndoor if [#GoingTo == "INDOOR"#] else secondResuming
 	

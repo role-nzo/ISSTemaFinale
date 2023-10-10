@@ -46,7 +46,7 @@ dependencies {
 
 	implementation name: 'uniboInterfaces'
 	implementation name: '2p301'
-	implementation name: 'unibo.qakactor23-3.5'
+	implementation name: 'unibo.qakactor23-4.0'
 	implementation name: 'unibo.basicomm23-1.0'
 }
 

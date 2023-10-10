@@ -1,3 +1,4 @@
+### conda install diagrams
 from diagrams import Cluster, Diagram, Edge
 from diagrams.custom import Custom
 import os
@@ -19,6 +20,7 @@ eventedgeattr = {
 with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=graphattr) as diag:
   with Cluster('env'):
      sys = Custom('','./qakicons/system.png')
+### see https://renenyffenegger.ch/notes/tools/Graphviz/attributes/label/HTML-like/index
      with Cluster('ctxbasicrobot', graph_attr=nodeattr):
           basicrobot=Custom('basicrobot(ext)','./qakicons/externalQActor.png')
           robotposendosimbiotico=Custom('robotposendosimbiotico(ext)','./qakicons/externalQActor.png')
@@ -32,28 +34,20 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
           coldstorageservice=Custom('coldstorageservice','./qakicons/symActorSmall.png')
           sonar=Custom('sonar(coded)','./qakicons/codedQActor.png')
           led=Custom('led(coded)','./qakicons/codedQActor.png')
-     transporttrolley >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> led23
-     led23 >> Edge( xlabel='ledstatuschange', **eventedgeattr, fontcolor='red') >> sys
-     sys >> Edge(color='red', style='dashed', xlabel='sonardata', fontcolor='red') >> sonar23
-     sys >> Edge(color='red', style='dashed', xlabel='obstacle', fontcolor='red') >> sonar23
-     sonar23 >> Edge( xlabel='stopevent', **eventedgeattr, fontcolor='red') >> sys
-     sonar23 >> Edge( xlabel='resumevent', **eventedgeattr, fontcolor='red') >> sys
-     transporttrolley >> Edge(color='magenta', style='solid', xlabel='engage', fontcolor='magenta') >> basicrobot
-     transporttrolley >> Edge(color='magenta', style='solid', xlabel='moverobot', fontcolor='magenta') >> basicrobot
-     sys >> Edge(color='red', style='dashed', xlabel='stopevent', fontcolor='red') >> transporttrolley
-     transporttrolley >> Edge( xlabel='alarm', **eventedgeattr, fontcolor='red') >> sys
-     transporttrolley >> Edge(color='blue', style='solid', xlabel='robotstopfailed', fontcolor='blue') >> sonar23
-     transporttrolley >> Edge(color='blue', style='solid', xlabel='robotstop', fontcolor='blue') >> sonar23
-     sys >> Edge(color='red', style='dashed', xlabel='resumevent', fontcolor='red') >> transporttrolley
-     transporttrolley >> Edge(color='blue', style='solid', xlabel='robotresume', fontcolor='blue') >> sonar23
-     transporttrolley >> Edge(color='blue', style='solid', xlabel='depositdone', fontcolor='blue') >> coldstorageservice
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> statusservice
-     transporttrolley >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> statusservice
-     statusservice >> Edge(color='blue', style='solid', xlabel='goMoveToHome', fontcolor='blue') >> transporttrolley
-     emptycoldroom >> Edge(color='magenta', style='solid', xlabel='clearColdRoom', fontcolor='magenta') >> coldstorageservice
-     coldstorageservice >> Edge(color='magenta', style='solid', xlabel='storefood', fontcolor='magenta') >> ticketservice
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='goMoveToIndoor', fontcolor='blue') >> transporttrolley
-     coldstorageservice >> Edge(color='magenta', style='solid', xlabel='waitLoad', fontcolor='magenta') >> transporttrolley
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='goMoveToHome', fontcolor='blue') >> transporttrolley
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='updatevirtualweight', fontcolor='blue') >> ticketservice
+     led23 >> Edge( label='ledstatuschange', **eventedgeattr, fontcolor='red') >> sys
+     sonar23 >> Edge( label='stopevent', **eventedgeattr, fontcolor='red') >> sys
+     sonar23 >> Edge( label='resumevent', **eventedgeattr, fontcolor='red') >> sys
+     transporttrolley >> Edge( label='alarm', **eventedgeattr, fontcolor='red') >> sys
+     coldstorageservice >> Edge(color='magenta', style='solid', decorate='true', label='<waitLoad &nbsp; >',  fontcolor='magenta') >> transporttrolley
+     transporttrolley >> Edge(color='magenta', style='solid', decorate='true', label='<engage &nbsp; moverobot &nbsp; >',  fontcolor='magenta') >> basicrobot
+     coldstorageservice >> Edge(color='magenta', style='solid', decorate='true', label='<storefood &nbsp; >',  fontcolor='magenta') >> ticketservice
+     emptycoldroom >> Edge(color='magenta', style='solid', decorate='true', label='<clearColdRoom &nbsp; >',  fontcolor='magenta') >> coldstorageservice
+     coldstorageservice >> Edge(color='blue', style='solid',  label='<goMoveToIndoor &nbsp; goMoveToHome &nbsp; >',  fontcolor='blue') >> transporttrolley
+     transporttrolley >> Edge(color='blue', style='solid',  label='<coapUpdate &nbsp; >',  fontcolor='blue') >> led23
+     coldstorageservice >> Edge(color='blue', style='solid',  label='<coapUpdate &nbsp; >',  fontcolor='blue') >> statusservice
+     transporttrolley >> Edge(color='blue', style='solid',  label='<coapUpdate &nbsp; >',  fontcolor='blue') >> statusservice
+     transporttrolley >> Edge(color='blue', style='solid',  label='<depositdone &nbsp; >',  fontcolor='blue') >> coldstorageservice
+     statusservice >> Edge(color='blue', style='solid',  label='<goMoveToHome &nbsp; >',  fontcolor='blue') >> transporttrolley
+     coldstorageservice >> Edge(color='blue', style='solid',  label='<updatevirtualweight &nbsp; >',  fontcolor='blue') >> ticketservice
+     transporttrolley >> Edge(color='blue', style='solid',  label='<robotstopfailed &nbsp; robotstop &nbsp; robotresume &nbsp; >',  fontcolor='blue') >> sonar23
 diag

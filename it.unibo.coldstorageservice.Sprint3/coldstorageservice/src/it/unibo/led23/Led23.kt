@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-	
-class Led23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
+import it.unibo.kactor.sysUtil.createActor   //Sept2023
+class Led23 ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : ActorBasicFsm( name, scope, confined=isconfined ){
 
 	override fun getInitialState() : String{
 		return "s0"
@@ -19,7 +19,7 @@ class Led23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scop
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		val interruptedStateTransitions = mutableListOf<Transition>()
 		var Msg = "" 
-		return { //this:ActionBasciFsm
+				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outblack("led23 | start  ")
@@ -44,7 +44,11 @@ class Led23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scop
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						Msg = currentMsg.msgContent().split(", ")[1].split("(")[1].split(")")[0] 
+						Msg = currentMsg.msgContent().split(", ")[1] //.split("(")[1].split(")")[0]
+								 println("-" + Msg.trim() + "-")
+								 if(Msg.trim() != ")"){
+								 	Msg = Msg.split("(")[1].split(")")[0]
+								  
 								 println(Msg)
 								 println(currentMsg.msgContent())
 								 if(Msg == "stopped"){
@@ -57,7 +61,7 @@ class Led23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scop
 								}else { 
 						emit("ledstatuschange", "ledstatuschange(home)" ) 
 						
-								} 
+								}} 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -67,4 +71,4 @@ class Led23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scop
 				}	 
 			}
 		}
-}
+} 

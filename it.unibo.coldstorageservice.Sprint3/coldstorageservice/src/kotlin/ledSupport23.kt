@@ -2,12 +2,9 @@ import alice.tuprolog.Struct
 import alice.tuprolog.Term
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import it.unibo.kactor.ActorBasic
-import kotlinx.coroutines.delay
 import it.unibo.kactor.MsgUtil
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import unibo.basicomm23.interfaces.IApplMessage
 import unibo.basicomm23.utils.CommUtils
 import java.io.BufferedWriter
@@ -19,7 +16,7 @@ import java.io.PipedOutputStream
 import java.lang.Thread.sleep
 import java.net.Socket
 
-class ledSupport23 ( name : String ) : ActorBasic( name ){
+class ledSupport23 (name : String, scope: CoroutineScope, discardMessages: Boolean ) : ActorBasic( name ){
     lateinit var writer : BufferedWriter
     val socket : Socket
 //@kotlinx.coroutines.ObsoleteCoroutinesApi
