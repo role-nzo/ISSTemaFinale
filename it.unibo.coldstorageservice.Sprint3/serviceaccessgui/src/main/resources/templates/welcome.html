@@ -1,57 +1,106 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Welcome</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-</head>
-<body>
-<h1>Welcome (in templates)</h1>
-<p>Welcome to <b><span th:text="${arg}">Our Arg</span></b>.</p>
-<h3>Peso occupato nella coldroom:</h3>
-<span id="fw_real"></span>
-<h3>Richiesta nuovo ticket:</h3>
-<form action="/newticket" method="post">
-    <label for="requestFw">Fw:</label><br>
-    <input type="text" id="requestFw" name="requestFw"><br>
-    <input type="submit" value="Submit">
-</form>
-<p>Ticekt id: <b><span th:text="${newticket}" id="ticket_id">Our Arg</span></b></p>
-<h3>Presenta il ticket: </h3>
-<form action="/showticket" method="post">
-    <label for="requestTicket">Ticket id:</label><br>
-    <input type="text" id="requestTicket" name="requestTicket"><br>
-    <label for="requestShowTicketFw">Fw:</label><br>
-    <input type="text" id="requestShowTicketFw" name="requestShowTicketFw"><br>
-    <input type="submit" value="Submit">
-</form>
-<p>Complete: <b><span th:text="${showticket}" id="show_ticket">Our Arg</span></b></p>
-<script src="wsminimal.js"></script>
-<script>
+    <head>
+        <title>Welcome</title>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+                integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+                crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="col-3">
+                <div class="card">
+                    <h5 class="card-header">Richiesta nuovo ticket</h5>
+                    <div class="card-body">
+                        <form action="/newticket" method="post">
+                            <div class="mb-3">
+                                <label for="requestFw" class="form-label">Peso</label>
+                                <input type="text" class="form-control" id="requestFw" name="requestFw">
+                            </div>
 
-// this is the id of the form
-$("form").submit(function(e) {
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
 
-    e.preventDefault(); // avoid to execute the actual submit of the form.
+                        <div id="newTicketAlertPlaceholder"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-1 d-flex justify-content-center align-items-center fs-3">
+                <i class="bi bi-arrow-right"></i>
+            </div>
+            <div class="col-3">
+                <div class="card">
+                    <h5 class="card-header">Presenta il ticket</h5>
+                    <div class="card-body">
+                        <form action="/showticket" method="post">
+                            <div class="mb-3">
+                                <label for="requestTicket" class="form-label">Ticket ID</label>
+                                <input type="text" class="form-control" id="requestTicket" name="requestTicket" th:text="${newticket}">
+                            </div>
 
-    var form = $(this);
-    var actionUrl = form.attr('action');
+                            <div class="mb-3">
+                                <label for="requestShowTicketFw">Peso</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="requestShowTicketFw" name="requestShowTicketFw">
+                                    <div class="input-group-text">Kg</div>
+                                </div>
+                            </div>
 
-    $.ajax({
-        type: "POST",
-        url: actionUrl,
-        data: form.serialize(), // serializes the form's elements.
-        success: (data) => {
-            if(actionUrl=="/newticket"){
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
 
-                $("#ticket_id").html(data)
+                        <div id="showTicketAlertPlaceholder"></div>
+                    </div>
+                </div>
+
+                <p>Complete: <b><span th:text="${showticket}" id="show_ticket">Our Arg</span></b></p>
+            </div>
+        </div>
+
+        <script src="wsminimal.js"></script>
+        <script>
+
+            // this is the id of the form
+            $("form").submit(function (e) {
+
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                var form = $(this);
+                var actionUrl = form.attr('action');
+
+                $.ajax({
+                    type: "POST",
+                    url: actionUrl,
+                    data: form.serialize(), // serializes the form's elements.
+                    success: (data) => {
+                        if (actionUrl == "/newticket") {
+                            appendAlert(data, 'success', 'newTicketAlertPlaceholder')
+                            //$("#ticket_id").html(data)
+                        } else if (actionUrl == "/showticket") {
+                            appendAlert(data, 'success', 'showTicketAlertPlaceholder')
+                            $("#show_ticket").html(data)
+                        }
+                    }
+                });
+
+            });
+
+            const appendAlert = (message, type, parentId) => {
+                const wrapper = document.createElement('div')
+                wrapper.innerHTML = [
+                    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+                    `   <div>${message}</div>`,
+                    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                    '</div>'
+                ].join('')
+
+                document.querySelector('#' + parentId).append(wrapper)
             }
-            else if(actionUrl=="/showticket"){
 
-                $("#show_ticket").html(data)
-            }
-        }
-    });
-
-});
-
-</script>
-</body>
+        </script>
+    </body>
 </html>
