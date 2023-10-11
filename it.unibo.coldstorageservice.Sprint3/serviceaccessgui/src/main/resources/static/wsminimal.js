@@ -37,6 +37,7 @@ wsminimal.js
             var message = fullMessage.split(",");
             var currentWeightReal = message[message.length - 2];
             document.getElementById("fw_real").innerHTML = currentWeightReal;
+            document.getElementById("progressBar").style.width = currentWeightReal + "%";
          };
     }//connect
 
