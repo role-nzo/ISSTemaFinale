@@ -39,7 +39,7 @@
                         <form action="/showticket" method="post">
                             <div class="mb-3">
                                 <label for="requestTicket" class="form-label">Ticket ID</label>
-                                <input type="text" class="form-control" id="requestTicket" name="requestTicket" th:text="${newticket}">
+                                <input type="text" class="form-control" id="requestTicket" name="requestTicket">
                             </div>
 
                             <div class="mb-3">
@@ -72,33 +72,44 @@
                 var form = $(this);
                 var actionUrl = form.attr('action');
 
+                if(actionUrl === '/showticket')
+                    newAlert("<div class=\"spinner-border\" role=\"status\">\n" +
+                        "  <span class=\"visually-hidden\">Loading...</span>\n" +
+                        "</div>", 'info', 'showTicketAlertPlaceholder', false)
+
                 $.ajax({
                     type: "POST",
                     url: actionUrl,
                     data: form.serialize(), // serializes the form's elements.
                     success: (data) => {
-                        if (actionUrl == "/newticket") {
-                            appendAlert(data, 'success', 'newTicketAlertPlaceholder')
-                            //$("#ticket_id").html(data)
-                        } else if (actionUrl == "/showticket") {
-                            appendAlert(data, 'success', 'showTicketAlertPlaceholder')
-                            $("#show_ticket").html(data)
+                        if (actionUrl === "/newticket") {
+                            if(data == "Error") {
+                                newAlert('Errore', 'danger', 'newTicketAlertPlaceholder')
+                            } else {
+                                $("#ticket_id").val(data)
+                            }
+                        } else if (actionUrl === "/showticket") {
+                            newAlert(data == "chargeTaken" ? 'Carico preso' : 'Errore', data == 'Error' ? 'danger' : 'success', 'showTicketAlertPlaceholder')
                         }
                     }
                 });
 
             });
 
-            const appendAlert = (message, type, parentId) => {
+            const deleteAlert = (parentId) => {
+                document.querySelector('#' + parentId).html("")
+            }
+
+            const newAlert = (message, type, parentId, dismissible = true) => {
                 const wrapper = document.createElement('div')
                 wrapper.innerHTML = [
-                    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+                    `<div class="alert alert-${type} ${dismissible ? 'alert-dismissible' : ''}" role="alert">`,
                     `   <div>${message}</div>`,
                     '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
                     '</div>'
                 ].join('')
 
-                document.querySelector('#' + parentId).append(wrapper)
+                document.querySelector('#' + parentId).html(wrapper)
             }
 
         </script>
