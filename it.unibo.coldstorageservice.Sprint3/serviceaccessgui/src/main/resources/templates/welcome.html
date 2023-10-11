@@ -56,13 +56,13 @@
                         <div id="showTicketAlertPlaceholder"></div>
                     </div>
                 </div>
-
-                <p>Complete: <b><span th:text="${showticket}" id="show_ticket">Our Arg</span></b></p>
             </div>
         </div>
 
         <script src="wsminimal.js"></script>
         <script>
+
+            let prevFw;
 
             // this is the id of the form
             $("form").submit(function (e) {
@@ -72,7 +72,10 @@
                 var form = $(this);
                 var actionUrl = form.attr('action');
 
-                if(actionUrl === '/showticket')
+                if(actionUrl === '/newticket') {
+                    deleteAlert('newTicketAlertPlaceholder')
+                    prevFw = $("#requestFw").val()
+                } else if(actionUrl === '/showticket')
                     newAlert("<div class=\"spinner-border\" role=\"status\">\n" +
                         "  <span class=\"visually-hidden\">Loading...</span>\n" +
                         "</div>", 'info', 'showTicketAlertPlaceholder', false)
@@ -86,10 +89,11 @@
                             if(data == "Error") {
                                 newAlert('Errore', 'danger', 'newTicketAlertPlaceholder')
                             } else {
-                                $("#ticket_id").val(data)
+                                $("#requestTicket").val(data)
+                                $("#requestShowTicketFw").val(prevFw)
                             }
                         } else if (actionUrl === "/showticket") {
-                            newAlert(data == "chargeTaken" ? 'Carico preso' : 'Errore', data == 'Error' ? 'danger' : 'success', 'showTicketAlertPlaceholder')
+                            newAlert(data == "chargetaken" ? 'Carico preso' : 'Errore', data == 'chargetaken' ? 'success' : 'danger', 'showTicketAlertPlaceholder')
                         }
                     }
                 });
@@ -97,19 +101,19 @@
             });
 
             const deleteAlert = (parentId) => {
-                document.querySelector('#' + parentId).html("")
+                $('#' + parentId).html("")
             }
 
             const newAlert = (message, type, parentId, dismissible = true) => {
                 const wrapper = document.createElement('div')
                 wrapper.innerHTML = [
-                    `<div class="alert alert-${type} ${dismissible ? 'alert-dismissible' : ''}" role="alert">`,
+                    `<div class="alert alert-${type} ${dismissible ? 'alert-dismissible' : 'd-flex align-items-center justify-content-center'}" role="alert">`,
                     `   <div>${message}</div>`,
-                    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                    dismissible ? '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : '',
                     '</div>'
                 ].join('')
 
-                document.querySelector('#' + parentId).html(wrapper)
+                $('#' + parentId).html(wrapper.innerHTML)
             }
 
         </script>
