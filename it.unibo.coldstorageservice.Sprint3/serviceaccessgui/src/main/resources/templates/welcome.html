@@ -11,50 +11,63 @@
                 crossorigin="anonymous"></script>
     </head>
     <body>
-        <div class="d-flex justify-content-center align-items-center h-100">
-            <div class="col-3">
-                <div class="card">
-                    <h5 class="card-header">Richiesta nuovo ticket</h5>
-                    <div class="card-body">
-                        <form action="/newticket" method="post">
-                            <div class="mb-3">
-                                <label for="requestFw" class="form-label">Peso</label>
-                                <input type="text" class="form-control" id="requestFw" name="requestFw">
-                            </div>
+        <div class="d-flex flex-column h-100 w-100 justify-content-center align-items-center">
+            <div class="d-flex justify-content-center align-items-center w-100">
+                <div class="col-5 col-xl-4 col-xxl-3">
+                    <div class="card">
+                        <h5 class="card-header">Richiesta nuovo ticket</h5>
+                        <div class="card-body">
+                            <form action="/newticket" method="post">
+                                <div class="mb-3">
+                                    <label for="requestFw" class="form-label">Peso</label>
+                                    <input type="text" class="form-control" id="requestFw" name="requestFw">
+                                </div>
 
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
+                                <button type="submit" class="btn btn-primary">Invia</button>
+                            </form>
 
-                        <div id="newTicketAlertPlaceholder"></div>
+                            <div id="newTicketAlertPlaceholder"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-1 d-flex justify-content-center align-items-center fs-3">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+                <div class="col-5 col-xl-4 col-xxl-3">
+                    <div class="card">
+                        <h5 class="card-header">Presenta il ticket</h5>
+                        <div class="card-body">
+                            <form action="/showticket" method="post">
+                                <div class="mb-3">
+                                    <label for="requestTicket" class="form-label">Ticket ID</label>
+                                    <input type="text" class="form-control" id="requestTicket" name="requestTicket">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="requestShowTicketFw">Peso</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="requestShowTicketFw" name="requestShowTicketFw">
+                                        <div class="input-group-text">Kg</div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Invia</button>
+                            </form>
+
+                            <div id="showTicketAlertPlaceholder"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-1 d-flex justify-content-center align-items-center fs-3">
-                <i class="bi bi-arrow-right"></i>
-            </div>
-            <div class="col-3">
-                <div class="card">
-                    <h5 class="card-header">Presenta il ticket</h5>
-                    <div class="card-body">
-                        <form action="/showticket" method="post">
-                            <div class="mb-3">
-                                <label for="requestTicket" class="form-label">Ticket ID</label>
-                                <input type="text" class="form-control" id="requestTicket" name="requestTicket">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="requestShowTicketFw">Peso</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="requestShowTicketFw" name="requestShowTicketFw">
-                                    <div class="input-group-text">Kg</div>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
-
-                        <div id="showTicketAlertPlaceholder"></div>
-                    </div>
+            <div class="mt-5 w-100 d-flex justify-content-center align-items-center">
+                <div class="col-5 col-xl-4 col-xxl-3 fs-3 d-flex justify-content-center align-items-center">
+                    <i class="bi bi-arrow-90deg-up"></i>
+                </div>
+                <div class="col-1 d-flex justify-content-center align-items-center">
+                    <button class="btn btn-secondary" id="reset">Reset</button>
+                </div>
+                <div class="col-5 col-xl-4 col-xxl-3 fs-3 d-flex justify-content-center align-items-center">
+                    <i class="bi bi-arrow-return-left"></i>
                 </div>
             </div>
         </div>
@@ -63,6 +76,12 @@
         <script>
 
             let prevFw;
+
+            $("#reset").on('click', function (e) {
+                $("form").trigger('reset');
+                deleteAlert('newTicketAlertPlaceholder')
+                deleteAlert('showTicketAlertPlaceholder')
+            });
 
             // this is the id of the form
             $("form").submit(function (e) {
@@ -93,7 +112,7 @@
                                 $("#requestShowTicketFw").val(prevFw)
                             }
                         } else if (actionUrl === "/showticket") {
-                            newAlert(data == "chargetaken" ? 'Carico preso' : 'Errore', data == 'chargetaken' ? 'success' : 'danger', 'showTicketAlertPlaceholder')
+                            newAlert(data == "chargetaken" ? 'Carico preso' : (data == "ticket rifiutato" ? "Ticket rifiutato" : 'Errore'), data == 'chargetaken' ? 'success' : 'danger', 'showTicketAlertPlaceholder')
                         }
                     }
                 });
