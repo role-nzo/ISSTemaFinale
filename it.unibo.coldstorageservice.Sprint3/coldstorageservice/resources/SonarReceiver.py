@@ -11,7 +11,7 @@ n         = 1
 #client.connect(brokerAddr, 1883, 60)
 
 host_ip = "192.168.1.140"
-port = 6524
+port = 6526
 stopped = False
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
