@@ -66,6 +66,9 @@ class sonarHCSR04Support23 ( name : String, scope: CoroutineScope, discardMessag
 						val v  = vd.toInt()
 						//CommUtils.outyellow("$name with python: data = $data"   )
 						if( v <= 300 ){	//A first filter ...
+							//last rappreseta l'ultimo valore letto dal sonar fisico
+							//v rappresenta il valore attuale letto dal sonar fisico
+							//limit rappresenta DLIMT
 							if((last <= limit && v > limit) || (last > limit && v <= limit)){
 								//var res = if(v > limit) "HIGH" else "LOW"
 								val m1 = "distance(${if(v > limit) "HIGH" else "LOW"})"

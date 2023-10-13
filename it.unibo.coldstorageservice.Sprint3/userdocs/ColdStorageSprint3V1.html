@@ -1,0 +1,530 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<!--
+    <link rel="stylesheet" type="text/css" href="../css/issStyle1.css">
+    <script type="text/javascript" src="../css/issStyle.js"></script>
+-->
+<style type="text/css">
+    body
+    {
+        margin-left:  30px;
+        margin-right: 30px;
+    };
+    
+    P
+    {
+        font-family: Tahoma;
+        font-size: 10pt;
+    };
+    
+    a, a:visited, a:active, a:link, a:hover {
+        text-decoration: underline;
+        color: #545454;
+        background-color: transparent;
+        font-size: 93%;
+    }
+    
+    a:hover {
+        background-color: #cccccc;
+    }
+    
+    
+    hr {
+        clear: both;
+        height: 1px;
+        color: #242424;
+        background-color: transparent;
+    }
+    
+    h1, h2, h3 {
+        color: #242424;
+        clear: left;
+        font: 100% Tahoma, Helvetica, Arial, sans-serif;
+        margin-bottom: 0.5em;
+        padding-top: 0.5em;
+        border-radius: 10px;
+        padding: 5px;
+    }
+    
+    top {
+        width: 100%;
+    }
+    
+    
+    #i {
+        color: #ff1010;
+    }
+    tt{
+        font-family: "Arial";
+        font-size: 90%;
+        color: #006600;
+    }
+    em{
+        font-family: "Arial";
+        font-size: 80%;
+        font-weight: bold;
+        border-style:solid;
+        border-color: #abe876;
+        color: #1632cc;
+    }
+    bc{
+        font-family: "Arial";
+        font-size: 90%;
+        font-weight: bold;
+        color: #990000;
+        background-color: #fcf8c7;
+    }
+    ks{
+        font-family: "Arial";
+        font-weight: bold;
+        color: #0000CD	;
+        font-size: 90%;
+    }
+    kc{
+        font-family: "Arial";
+        font-weight: bold;
+        color: #008000	;
+        font-size: 90%;
+    }
+    pre{
+        font-family: "Consolas";
+        font-size: 85%;
+        background-color: #f5f5f5;
+        border: 1.5px solid silver;
+        padding: 5px;
+    }
+    m{
+        font-family: "Helvetica";
+        line-height: 100%;
+        font-size: 75%;
+    }
+    div.body{
+        
+        font-size: 18px;
+    }
+    k{
+        color: #990000;
+        font-weight: bold;
+        font-size: 90%;
+    }
+    h1 {
+        font-size: 150%;
+        background-color: #b2c0ff;
+        padding: 10px;
+    }
+    
+    h2 {
+        background-color: #9ed8ff;
+        font-size: 130%;
+    }
+    
+    h3 {
+        background-color: #e6ccff;
+        font-size: 100%;
+    }
+    h4 {
+        background-color: #ccffcc;
+        font-size: 100%;
+        width: 95%;
+        border-radius: 5px;
+        padding: 2px;
+    }
+    h5 {
+        background-color: #d5ffb0;
+        font-size: 100%;
+        
+    }
+    div.req{
+        background-color: #d9ffb3;
+        font-size: 18px;
+        width: 700px;
+        border: 3px solid green;
+        padding: 15px;
+        margin: 10px;
+    }
+    div.remark{
+        background-color: #E3F2FD;
+        border: 1.5px solid #d5f2ed;
+        padding: 15px;
+        margin: 10px;
+        border-radius: 25px;
+    }
+    
+    .remark i {
+        font-weight: 600;
+    }
+    
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    
+    ol, ul, li {
+        margin: 0;
+        margin-left: 10px;
+        padding: 0;
+        padding-bottom: 5px;
+    }
+    
+    table, th, td {
+        border: 1px solid black;
+    }
+    
+    img {
+        border: 1.5px solid #d5f2ed
+        
+    }
+    
+    a, a:visited, a:active, a:link, a:hover {
+        text-decoration: underline;
+        color: #545454;
+        background-color: transparent;
+    }
+    
+    div.wrapdesc{
+        width: 90%;
+        margin: auto;
+    }
+    
+    div.imagedesc{
+        width: 85%;
+        margin: auto;
+    }
+
+    table {
+        font: 100% Tahoma, Helvetica, Arial, sans-serif;
+    }
+
+    table th, table td {
+        padding: 5px;
+    }
+</style>
+
+<head>
+    
+    <title>ColdStorageSprint3V1</title></head>
+    
+    <body>
+        <div id="top">
+            <h1>ColdStorageSprint3V1</h1>
+        </div>  
+        
+        <div class="body"> 
+            <h2>Introduction</h2>
+            <div class="remark">
+                Lo Sprint2 ha prodotto la seguente architettura:
+                <br>
+                <img src="..\userdocs\images\coldstorageservicearchsprint1finaleV2.png" width="60%"> 
+                <br>
+
+            </div>
+            
+            <h2>Requirements</h2>
+            <div class="remark">
+
+                The system includes a a Sonar and a Led connected to a RaspnerryPi.
+
+                The Sonar is used as an ‘alarm device’: when it measures a distance less that a prefixed value DLIMT, the transport trolley must be stopped; it will be resumed when Sonar detects again a distance higher than DLIMT.
+
+                The Led is used as a warning devices, according to the following scheme:
+                <ul>
+                    <li>the Led is off when the transport trolley is at HOME</li>
+                    <li>the Led blinks while the transport trolley is moving</li>
+                    <li>the Led is on when transport trolley is stopped.</li>
+                </ul>
+                [...]
+
+                <ul>
+                    <li>While the transport trolley is moving, the Alarm requirements should be satisfied. However, the transport trolley should not be stopped if some prefixed amount of time (MINT msecs) is not passed from the previous stop.</li>
+                </ul>
+               
+                <br>
+                <b>Goal di questo sprint:</b>
+                <ul>
+                    <li>realizzazione degli Alarm Requirements (componenti Sonar e Led)</li>
+                </ul>
+            </div>
+            
+            <h2>Requirement analysis</h2>
+            <div class="remark">
+
+                Dall'analisi dei requisiti si evince che:
+                <ul>
+                    <li>DLIMT è un rappresentato con un valore intero positivo </li>
+                    <li>Il led deve lampeggiare durante tutta la durata della deposit action </li>
+                    <li>Il led sarà attivo nel caso in cui il robot venga fermato dal sonar, il quale ha rilevato una distanza minore di DLIMT,
+                        o nel caso in cui ci sia una collisione </li>
+                    <li>MINT è un valore intero positivo che rappresenta il tempo minimo che deve intercorrere tra due allarmi emessi dal sonar</li>
+                </ul>
+                Dai requisiti del led si possono identificare tre stati in cui si può trovare il transporttrolley:
+                <ul>
+                    <li>Home, il robot si trova fermo in home (coordinate 0,0)</li>
+                    <li>Moving, il robot è in movimento e sta eseguendo una deposit action</li>
+                    <li>Stopped, il robot è stato fermato dal sonar o ha avuto una collisione</li>
+                </ul>
+            </div>
+
+            <h2>Analisi del Problema</h2>
+                <div class="remark">
+
+                    <h3>Led e sonar fisici</h3>
+                    Su un RaspberryPi sono collegati un sonar e un led fisici e che vengono utilizzati rispettivamente come alarm e warning devices.
+
+                    <h3>Led</h3>
+                    Questo attore si occupa di gestire il led fisico. Riceve dall'attore <b>Led</b> le informazioni sui cambiamenti di stato (Home, moving, stopped)
+                    del transporttrolley. Tali informazioni verranno utilizzate per accedere/spegnere il led fisico.
+
+
+                    <h3>Sonar</h3>
+                    Questo attore si occupa di gestire il sonar fisico. Riceve da questo le misure rilevate che vengono utilizzate per inviare all'attore
+                    <b>Sonar23</b> un'apposita informazione che indica se è stata letta una distanza minore o maggiore di DLIMT.
+                    
+
+                    <h3>Led23</h3>
+                    Questo attore riceve delle informazioni ogni volta che il transporttrolley cambia di stato (Home, moving, stopped).
+                    Queste informazioni vengono poi inoltrate all'attore <b>Led</b>.
+
+                    <h3>Sonar23</h3>
+                    Viene modellato questo attore per comunicare al transporttrolley quando fermarsi o meno.
+                    Per farlo riceve dall'attore <b>Sonar</b> delle informazioni e, in base allo stato attuale del robot, invia al transporttrolley il comando
+                    di fermarsi o di riprendere il movimento.
+
+                    
+                </div>
+
+                <h2>Architettura logica</h2>
+                <div class="remark">
+                    <img src="../userdocs/images/coldstorageservicearchserviceaccessguiSprint2.png " width="60%">
+                    <br>
+                    Dall'architettua logica possiamo evidenziare i seguenti componenti:
+                    <ul>
+                        <li>ColdStorageService: riceve dal fridge truck le richieste di verifica di validità dei ticket che vengono successivamente
+                            inoltrate al TicketService, riceve le richieste di svuotamento dall'EmptyColdRoom e invia i messaggi al TransportTrolley per iniziare la deposit action
+                        </li>
+                        <li>TransportTrolley: invia al BasicRobot i messaggi necessari per eseguire la deposit action</li>
+                        <li>TicketService: si occupa di gestire le richieste per l'emissione di nuovi ticket e di verificarne la validità nel momento in cui viene presentato dal fridge truck </li>
+                        <li>EmptyColdRoom: si occupa di svuotare periodicamente la coldroom inviando un apposito messaggio al ColdStorageService</li>
+                        <li>Serviceaccessgui: è la gui utilizzata dal truck per richiedere l'emissione di nuovi ticket e per richiedere un'operazione di deposito</li>
+                        <li>Statusservice: si occupa di inivare i dati aggiornati alle gui</li>
+                        <li>BasicRobot: esegue i comandi ricevuti dal TransportTrolley</li>
+                        <li>Robotposendosimbiotico: utilizzato per ottenere aggiornamenti riguardanti la mappa e la posizione del robot</li>
+                        <li>Sonar:</li>
+                        <li>Sonar23:</li>
+                        <li>Led:</li>
+                        <li>Led23:</li>
+                    </ul>
+                   
+                </div>
+
+                <h2>Progettazione</h2>
+                <div class="remark">
+
+                    
+                    <h2>Contesto RaspberryPi</h2>
+                    <h3>Sonar fisico</h3>
+                    Per la progettazione del sonar fisico si è seguito il principio di singola responsabilità. Per farlo sono stati sviluppati due script python:
+                    <ul>
+                        <li>SonarDevice.py (link all'implementazione): si occupa di leggere i dati prodotti dal sonar fisico e di comunicarli al SonarController.py</li>
+                        <li>SonarController.py (link all'implementazione): riceve le misurazioni dal SonarDevice.py, le quali vengono inviate tramite socket
+                            all'attore Sonar in esecuzione sul contesto ColdStorageService
+                        </li>
+                    </ul>
+                    La comunicazione tra SonarDevice.py e SonarController.py viene realizzata tramite pipe.
+
+                    <h3>Led fisico</h3>
+                    Anche per la progettazione del led fisico è stato seguito il principio di singola responsabilità. Anche per la gestione del led fisico sono stati sviluppati
+                    due script python:
+                    <ul>
+                        <li>LedReceiver.py: si occupa di ricevere, tramite socket, una stringa che rappresenta lo stato attuale del robot (Home, moving, stopped). Quest'informazione
+                            viene ricevuta dall'attore Led (in esecuzione sul contesto ColdStorageService) e viene inoltrata al LedDevice.py
+                        </li>
+                        <li>LedDevice.py: in base allo stato ricevuto gestisce il led fisico (accesso, spento, lampeggiante)</li>
+                    </ul>
+                    La comunicazione tra LedReceiver.py e LedDevice.py viene realizzata tramite pipe.
+
+                    <h2>Contesto ColdStorageService</h2>
+                    <h3>Eventi emessi</h3>
+                    Parlare di eventi sonardata (esempio dire a cosa serve, cosa indicano "LOW" e "HIGH", ...), stopevent, resumevent, ledstatuschange
+
+                    <h3>Sonar</h3>
+                    CodedQActor che esegue codice Python per la gestione di un sonar fisico SONAR HC-SR04 (classe Kotlin sonarHCSR04Support23.kt).
+                    <ul>
+                        <li>Il codice python (SonarReceiver.py) è connesso tramite socket al componente SonarController.py, da cui riceve le misurazioni del sonar fisico</li>
+                        <li>Queste misurazioni vengono, successivamente, lette dall'attore Sonar e utilizzate, da quest'ultimo, per emettere l'evento locale <pre>Event sonardata : distance(D)</pre> usando la primitiva emitLocalStreamEvent.
+                        </li>
+                        <li>
+                            L'attore Sonar si occupa anche di filtrare le misurazioni ricevute tramite il seguente controllo:
+<pre>
+    //last rappreseta l'ultimo valore letto dal sonar fisico
+    //v rappresenta il valore attuale letto dal sonar fisico
+    //limit rappresenta DLIMT
+    if((last <= limit && v > limit) || (last > limit && v <= limit))
+</pre>
+                            Grazie a questo vengono scartate tutte le misurazioni che non provocano l'emissione dell'evento sonardata.
+                        </li>
+                    </ul>
+                    <h3>Sonar23</h3>
+                    Tale attore si iscrive al <b>Sonar</b> utilizzando la primitiva subscribeToLocalActor, in questo modo riceve gli eventi sonardata emessi da esso.
+                    In particolare, ogni volta che riceve tale evento transita nello stato handlesonardata:
+<pre>
+State handlesonardata{
+    onMsg(sonardata : distance(D)){
+        [#
+            var d = payloadArg(0)
+            if (d == "LOW" && !Stopped){
+                
+            #]
+                println("INVIO STOP")
+                emit stopevent : stopevent(_)
+            [#}
+            else if(d == "HIGH" && Stopped) {
+                
+            #]
+                println("INVIO RESUME")
+                emit resumevent : resumevent(_)
+            [#}
+        
+        #]	
+    }
+}
+</pre>
+                   Dove in base allo stato attuale del transporttrolley viene inviato l'evente stopevent o resumevent per, rispettivamente, bloccare e riattivare il robot.
+
+
+                   <h3>Led23</h3>
+                   Tale attore osserva il transporttrolley tramite la primitiva observeResource in modo tale da ricevere i messaggi di updateResource inviati da esso. Il messaggio di updateResource viene inviato dal
+                   transporttrolley ogni volta che cambia di stato e ha la seguente struttura:
+<pre>
+updateResource [# "transporttrolleystatus(Status)"#]
+</pre>
+                   dove Status può assumere i valori home, moving e stopped.
+                    In particolare, ogni volta che riceve tale messaggio transita nello stato doObserve nel quale distingue lo stato attuale del transporttrolley per emettere il 
+                    corretto evento ledstatuschange:
+<pre>
+    State doObserve{
+        printCurrentMessage
+        [#Msg = currentMsg.msgContent().split(", ")[1]
+            println("-" + Msg.trim() + "-")
+            if(Msg.trim() != ")"){
+                Msg = Msg.split("(")[1].split(")")[0]
+            
+            println(Msg)
+            println(currentMsg.msgContent())
+            if(Msg == "stopped"){
+        #]
+            emit ledstatuschange : ledstatuschange(stopped) [#
+        }		
+            if(Msg == "moving"){
+        #]
+            emit ledstatuschange : ledstatuschange(moving) [#
+        }else {#]
+            emit ledstatuschange : ledstatuschange(home) [#
+        }}#]
+            
+    }
+</pre>
+                  
+
+                   <h3>Led</h3>
+                   CodedQActor per la gestione del led fisico (classe Kotlin ledSupport23.kt) ed è connesso tramite socket al componente LedReceiver.py.
+                   <ul>
+                    <li>Tale attore si iscive al Led23 tramite la primitiva subscribeToLocalActor, in modo tale da ricevere gli eventi ledstatuschange</li>
+                    <li>Grazie a tale evento entra a conoscenza dello stato del robot (Home, moving, stopped) e invia tale informazione al componente LedReceiver.py</li>
+                   </ul>
+
+                   
+                   <h3>TransportTrolley - Gestione di stopevent e resumevent</h3>
+                   L'attore transporttrolley si iscrive al sonar23, tramite la primitiva subscribeToLocalActor, in modo da poter ricevere gli eventi stopevent e resumevent.
+                   Nel caso in cui il robot sia in movimento e riceva l'evento stopevent transita nello stato checkSonarData e opera come segue:
+<pre>
+State checkSonarData {
+    [#
+        val currentTime = java.time.Instant.now().epochSecond
+        AlarmCondition = (currentTime - LastStopTime)*1000 > Mint
+        if(AlarmCondition){ MoveAlarm = "STOP"#]
+                
+            emit alarm : alarm(stop)
+            println("alarm emitted")
+            
+            
+        [#}
+        else{
+                MoveAlarm = "WAIT"
+                #]	   		
+                forward sonar23 -m robotstopfailed : robotstopfailed(_)
+                println("Stop failed: not enough time from last stop")
+        [#}			
+    #]		
+}
+Transition t3 whenReply moverobotfailed -> stopped
+                whenReply moverobotdone -> planFinishSwitch
+
+State stopped{
+    println("Sono fermo")
+    [#LastStopTime = java.time.Instant.now().epochSecond#]
+    forward sonar23 -m robotstop : robotstop(_)
+    updateResource [# "transporttrolleystatus(stopped)"#]
+    updateResource [# "robotfree(fermo)"#]
+}
+Transition t2 whenEvent resumevent -> resuming
+</pre>
+                    Quindi, nello stato checkSonarData controlla se è passato un tempo maggiore di DLIMT dall'ultimo allarme ricevuto:
+                    <ul>
+                        <li>In caso affermativo invia l'evento alarm al BasicRobot, il quale farà fermare il robot. Successivamente, se il robot si è realmente fermato, il transporttrolley transita
+                            nello stato stopped dove rimane in attesa dell'evento resumevent per poter riprendere l'esecuzione.
+                        </li>
+                        <li>Altrimenti, l'allarme viene ignorato e il transporttrolley prosegue con quello che stava facendo.</li>
+                    </ul>
+                    Invece, nel caso in cui il robot si trovi nello stato stopped e ricevi l'evento resumevent, esso transita nello stato resuming:
+<pre>
+    State resuming {
+        println("Resuming")
+        forward sonar23 -m robotresume : robotresume(_)
+        [#if(GoingTo == "HOME"){#]
+            updateResource [# "robotfree(libero)"#]
+        [#}else{#]
+            updateResource [# "robotfree(occupato)"#]	
+        [#}#]
+        
+    }Goto elabMoveIndoor if [#GoingTo == "INDOOR"#] else secondResuming
+    
+    State secondResuming{
+        
+    }Goto elabMoveColdRoom if [#GoingTo == "COLDROOM"#] else elabMoveHome
+</pre>
+                    In esso, sfrutta la variabile GoingTo per permettere al transporttrolley di riprendere la corretta esecuzione.
+                     
+                </div>
+
+                <h2>Architettura logica finale</h2>
+                <div class="remark">
+                    <a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak">Metamodello qak</a><br>
+                    <img src="../userdocs/images/coldstorageservicearchsprint2V2finale.png" width="60%">
+                </div>
+            </div>  
+            
+            <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+                By Ziosi Lorenzo email: lorenzo.ziosi3@studio.unibo.it, 
+                GIT repo: https://github.com/role-nzo/ISSZiosiLorenzo/
+            </div>
+            <img src="./images/lziosi.jpg" alt="mbot" width="10%" height="10%">
+            <br>
+            <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+                By Dominici Luca email: luca.dominici3@studio.unibo.it, 
+                GIT repo: https://github.com/lucaDomo/Iss23DominiciLuca
+            </div> 
+            <img src="./images/ldominici.jpeg" alt="mbot" width="10%" height="10%">
+            <br>
+            <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+                By Zacchiroli Enrico email: enrico.zacchiroli@studio.unibo.it, 
+                GIT repo: https://github.com/zack-99/IssLab2023EnricoZacchiroli
+            </div> 
+            <img src="./images/ezacchiroli.jpg" alt="mbot" width="10%" height="10%">
+            <br>
+            <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+                Tema finale GIT repo: https://github.com/role-nzo/ISSTemaFinale/
+            </div>
+        </body>
+        </html>
+        
