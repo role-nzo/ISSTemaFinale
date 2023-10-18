@@ -215,7 +215,7 @@
             <div class="remark">
                 Lo Sprint2 ha prodotto la seguente architettura:
                 <br>
-                <img src="..\userdocs\images\coldstorageservicearchsprint1finaleV2.png" width="60%"> 
+                <img src="..\userdocs\images\coldstorageservicearchsprint2finale.png" width="60%"> 
                 <br>
 
             </div>
@@ -251,17 +251,17 @@
 
                 Dall'analisi dei requisiti si evince che:
                 <ul>
-                    <li>DLIMT è un rappresentato con un valore intero positivo </li>
+                    <li>DLIMT è rappresentato con un valore intero positivo </li>
                     <li>Il led deve lampeggiare durante tutta la durata della deposit action </li>
-                    <li>Il led sarà attivo nel caso in cui il robot venga fermato dal sonar, il quale ha rilevato una distanza minore di DLIMT,
+                    <li>Il led sarà attivo nel caso in cui il robot venga fermato dal sonar (il quale ha rilevato una distanza minore di DLIMT)
                         o nel caso in cui ci sia una collisione </li>
-                    <li>MINT è un valore intero positivo che rappresenta il tempo minimo che deve intercorrere tra due allarmi emessi dal sonar</li>
+                    <li>MINT è un valore intero positivo che rappresenta il tempo minimo che deve intercorrere tra due allarmi emessi dal sonar (Alarm Condition)</li>
                 </ul>
                 Dai requisiti del led si possono identificare tre stati in cui si può trovare il transporttrolley:
                 <ul>
-                    <li>Home, il robot si trova fermo in home (coordinate 0,0)</li>
-                    <li>Moving, il robot è in movimento e sta eseguendo una deposit action</li>
-                    <li>Stopped, il robot è stato fermato dal sonar o ha avuto una collisione</li>
+                    <li><b>home</b>, il robot si trova fermo in home (coordinate (0,0))</li>
+                    <li><b>moving</b>, il robot è in movimento e sta eseguendo una deposit action</li>
+                    <li><b>stopped</b>, il robot è stato fermato dal sonar o ha avuto una collisione</li>
                 </ul>
             </div>
 
@@ -271,31 +271,26 @@
                     <h3>Led e sonar fisici</h3>
                     Su un RaspberryPi sono collegati un sonar e un led fisici e che vengono utilizzati rispettivamente come alarm e warning devices.
 
-                    <h3>Led</h3>
-                    Questo attore si occupa di gestire il led fisico. Riceve dall'attore <b>Led</b> le informazioni sui cambiamenti di stato (Home, moving, stopped)
-                    del transporttrolley. Tali informazioni verranno utilizzate per accedere/spegnere il led fisico.
+                    <h3>LedSupport</h3>
+                    Questo attore si occupa di gestire il led fisico. Utilizza le informazioni sui cambiamenti di stato del transporttrolley (home, moving, stopped) per accedere/spegnere il led fisico.
 
-
-                    <h3>Sonar</h3>
-                    Questo attore si occupa di gestire il sonar fisico. Riceve da questo le misure rilevate che vengono utilizzate per inviare all'attore
-                    <b>Sonar23</b> un'apposita informazione che indica se è stata letta una distanza minore o maggiore di DLIMT.
-                    
-
-                    <h3>Led23</h3>
-                    Questo attore riceve delle informazioni ogni volta che il transporttrolley cambia di stato (Home, moving, stopped).
+                    <h3>SonarSupport</h3>
+                    Questo attore si occupa di gestire il sonar fisico. Riceve da quest'ultimo le misure rilevate che vengono utilizzate per inviare un'apposita informazione che indica se è stata letta una distanza minore o maggiore di DLIMT.            
+                    <!--<h3>LedObserver</h3>
+                    Questo attore riceve delle informazioni ogni volta che il transporttrolley cambia di stato (home, moving, stopped).
                     Queste informazioni vengono poi inoltrate all'attore <b>Led</b>.
 
-                    <h3>Sonar23</h3>
+                    <h3>SonarHandler</h3>
                     Viene modellato questo attore per comunicare al transporttrolley quando fermarsi o meno.
                     Per farlo riceve dall'attore <b>Sonar</b> delle informazioni e, in base allo stato attuale del robot, invia al transporttrolley il comando
-                    di fermarsi o di riprendere il movimento.
+                    di fermarsi o di riprendere il movimento. -->
 
                     
                 </div>
 
                 <h2>Architettura logica</h2>
                 <div class="remark">
-                    <img src="../userdocs/images/coldstorageservicearchserviceaccessguiSprint2.png " width="60%">
+                    <img src="../userdocs/images/coldstorageservicearchsprint3analisiV3.png" width="60%">
                     <br>
                     Dall'architettua logica possiamo evidenziare i seguenti componenti:
                     <ul>
@@ -309,10 +304,10 @@
                         <li>Statusservice: si occupa di inivare i dati aggiornati alle gui</li>
                         <li>BasicRobot: esegue i comandi ricevuti dal TransportTrolley</li>
                         <li>Robotposendosimbiotico: utilizzato per ottenere aggiornamenti riguardanti la mappa e la posizione del robot</li>
-                        <li>Sonar:</li>
-                        <li>Sonar23:</li>
-                        <li>Led:</li>
-                        <li>Led23:</li>
+                        <li>Sonar: componente fisico situato su RaspberryPi che si occupa di rilevare distanze ed utilizzato come alarm device</li>
+                        <li>Led: componente fisico situato su RaspberryPi usato come warning device</li>
+                        <li>SonarSupport: attore utilizzato per gestire le interazioni tra transporttrolley e Sonar</li>
+                        <li>LedSupport: attore utilizzato per gestire le interazioni tra transporttrolley e Led</li>
                     </ul>
                    
                 </div>
@@ -327,17 +322,17 @@
                     <ul>
                         <li>SonarDevice.py (link all'implementazione): si occupa di leggere i dati prodotti dal sonar fisico e di comunicarli al SonarController.py</li>
                         <li>SonarController.py (link all'implementazione): riceve le misurazioni dal SonarDevice.py, le quali vengono inviate tramite socket
-                            all'attore Sonar in esecuzione sul contesto ColdStorageService
+                            all'attore SonarSupport(spiegato in seguito) in esecuzione sul contesto ColdStorageService
                         </li>
                     </ul>
                     La comunicazione tra SonarDevice.py e SonarController.py viene realizzata tramite pipe.
 
                     <h3>Led fisico</h3>
-                    Anche per la progettazione del led fisico è stato seguito il principio di singola responsabilità. Anche per la gestione del led fisico sono stati sviluppati
+                    Anche per la progettazione del led fisico è stato seguito il principio di singola responsabilità. Per la gestione del led fisico sono stati sviluppati
                     due script python:
                     <ul>
-                        <li>LedReceiver.py: si occupa di ricevere, tramite socket, una stringa che rappresenta lo stato attuale del robot (Home, moving, stopped). Quest'informazione
-                            viene ricevuta dall'attore Led (in esecuzione sul contesto ColdStorageService) e viene inoltrata al LedDevice.py
+                        <li>LedReceiver.py: si occupa di ricevere, tramite socket, una stringa che rappresenta lo stato attuale del robot (home, moving, stopped). Quest'informazione
+                            viene ricevuta dall'attore LedSupport (in esecuzione sul contesto ColdStorageService) e viene inoltrata a LedDevice.py
                         </li>
                         <li>LedDevice.py: in base allo stato ricevuto gestisce il led fisico (accesso, spento, lampeggiante)</li>
                     </ul>
@@ -345,16 +340,30 @@
 
                     <h2>Contesto ColdStorageService</h2>
                     <h3>Eventi emessi</h3>
-                    Parlare di eventi sonardata (esempio dire a cosa serve, cosa indicano "LOW" e "HIGH", ...), stopevent, resumevent, ledstatuschange
-
-                    <h3>Sonar</h3>
+                    <pre>
+Event alarm      : alarm(X)
+Event sonardata  : distance(D)
+Event stopevent  : stopevent(_)
+Event resumevent : resumevent(_)
+Event ledstatuschange : ledstatuschange(STATUS)
+                    </pre>
+                    <ul>
+                        <li>alarm: viene inviato dal transporttrolley al BasicRobot per interrompere l'esecuzione del robot, tale evento viene inviato solamente se viene rispettata la Alarm Condition</li>
+                        <li>sonardata: viene inviato quando è stata rilevata una distanza che può provocare l'interruzione o la ripresa dell'esecuzione del robot. L'evento viene inviato con un parametro stringa che può assumere i valori "HIGH" o "LOW".
+                            "HIGH" viene inviato quando il valore rilevato è superiore a DLIMT, altrimenti viene inviato "LOW"
+                        </li>
+                        <li>stopevent: viene inviato da SonarHandler (spiegato in seguito) al transporttrolley, solamente dopo aver ricevuto <pre>sonardata : sonardata("HIGH")</pre></li>
+                        <li>resumevent: viene inviato da SonarHandler al transporttrolley, solamente dopo aver ricevuto <pre>sonardata : sonardata("LOW")</pre></li>
+                        <li>ledstatuschange: viene inviato da LedObserver (spiegato in seguito) all'attore LedSupport per poter gestire correttamente i cambiamenti di stato del led fisico</li>
+                    </ul>
+                    <h3>SonarSupport</h3>
                     CodedQActor che esegue codice Python per la gestione di un sonar fisico SONAR HC-SR04 (classe Kotlin sonarHCSR04Support23.kt).
                     <ul>
                         <li>Il codice python (SonarReceiver.py) è connesso tramite socket al componente SonarController.py, da cui riceve le misurazioni del sonar fisico</li>
-                        <li>Queste misurazioni vengono, successivamente, lette dall'attore Sonar e utilizzate, da quest'ultimo, per emettere l'evento locale <pre>Event sonardata : distance(D)</pre> usando la primitiva emitLocalStreamEvent.
+                        <li>Queste misurazioni vengono, successivamente, lette dall'attore SonarSupport e utilizzate, da quest'ultimo, per emettere l'evento locale <pre>Event sonardata : distance(D)</pre> usando la primitiva emitLocalStreamEvent.
                         </li>
                         <li>
-                            L'attore Sonar si occupa anche di filtrare le misurazioni ricevute tramite il seguente controllo:
+                            L'attore SonarSupport si occupa anche di filtrare le misurazioni ricevute tramite il seguente controllo:
 <pre>
     //last rappreseta l'ultimo valore letto dal sonar fisico
     //v rappresenta il valore attuale letto dal sonar fisico
@@ -364,7 +373,7 @@
                             Grazie a questo vengono scartate tutte le misurazioni che non provocano l'emissione dell'evento sonardata.
                         </li>
                     </ul>
-                    <h3>Sonar23</h3>
+                    <h3>SonarHandler</h3>
                     Tale attore si iscrive al <b>Sonar</b> utilizzando la primitiva subscribeToLocalActor, in questo modo riceve gli eventi sonardata emessi da esso.
                     In particolare, ogni volta che riceve tale evento transita nello stato handlesonardata:
 <pre>
@@ -389,10 +398,10 @@ State handlesonardata{
     }
 }
 </pre>
-                   Dove in base allo stato attuale del transporttrolley viene inviato l'evente stopevent o resumevent per, rispettivamente, bloccare e riattivare il robot.
+                   Dove in base allo stato attuale del transporttrolley viene inviato l'evento stopevent o resumevent per, rispettivamente, bloccare e riattivare il robot.
 
 
-                   <h3>Led23</h3>
+                   <h3>LedObserver</h3>
                    Tale attore osserva il transporttrolley tramite la primitiva observeResource in modo tale da ricevere i messaggi di updateResource inviati da esso. Il messaggio di updateResource viene inviato dal
                    transporttrolley ogni volta che cambia di stato e ha la seguente struttura:
 <pre>
@@ -426,16 +435,16 @@ updateResource [# "transporttrolleystatus(Status)"#]
 </pre>
                   
 
-                   <h3>Led</h3>
+                   <h3>LedSupport</h3>
                    CodedQActor per la gestione del led fisico (classe Kotlin ledSupport23.kt) ed è connesso tramite socket al componente LedReceiver.py.
                    <ul>
-                    <li>Tale attore si iscive al Led23 tramite la primitiva subscribeToLocalActor, in modo tale da ricevere gli eventi ledstatuschange</li>
-                    <li>Grazie a tale evento entra a conoscenza dello stato del robot (Home, moving, stopped) e invia tale informazione al componente LedReceiver.py</li>
+                    <li>Tale attore si iscive al LedObserver tramite la primitiva subscribeToLocalActor, in modo tale da ricevere gli eventi ledstatuschange</li>
+                    <li>Grazie a tale evento entra a conoscenza dello stato del robot (home, moving, stopped) e invia tale informazione al componente LedReceiver.py</li>
                    </ul>
 
                    
                    <h3>TransportTrolley - Gestione di stopevent e resumevent</h3>
-                   L'attore transporttrolley si iscrive al sonar23, tramite la primitiva subscribeToLocalActor, in modo da poter ricevere gli eventi stopevent e resumevent.
+                   L'attore transporttrolley si iscrive al SonarHandler, tramite la primitiva subscribeToLocalActor, in modo da poter ricevere gli eventi stopevent e resumevent.
                    Nel caso in cui il robot sia in movimento e riceva l'evento stopevent transita nello stato checkSonarData e opera come segue:
 <pre>
 State checkSonarData {
@@ -452,7 +461,7 @@ State checkSonarData {
         else{
                 MoveAlarm = "WAIT"
                 #]	   		
-                forward sonar23 -m robotstopfailed : robotstopfailed(_)
+                forward SonarHandler -m robotstopfailed : robotstopfailed(_)
                 println("Stop failed: not enough time from last stop")
         [#}			
     #]		
@@ -463,7 +472,7 @@ Transition t3 whenReply moverobotfailed -> stopped
 State stopped{
     println("Sono fermo")
     [#LastStopTime = java.time.Instant.now().epochSecond#]
-    forward sonar23 -m robotstop : robotstop(_)
+    forward SonarHandler -m robotstop : robotstop(_)
     updateResource [# "transporttrolleystatus(stopped)"#]
     updateResource [# "robotfree(fermo)"#]
 }
@@ -480,7 +489,7 @@ Transition t2 whenEvent resumevent -> resuming
 <pre>
     State resuming {
         println("Resuming")
-        forward sonar23 -m robotresume : robotresume(_)
+        forward SonarHandler -m robotresume : robotresume(_)
         [#if(GoingTo == "HOME"){#]
             updateResource [# "robotfree(libero)"#]
         [#}else{#]
@@ -500,7 +509,7 @@ Transition t2 whenEvent resumevent -> resuming
                 <h2>Architettura logica finale</h2>
                 <div class="remark">
                     <a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak">Metamodello qak</a><br>
-                    <img src="../userdocs/images/coldstorageservicearchsprint2V2finale.png" width="60%">
+                    <img src="../userdocs/images/coldstorageservicearchsprint3finaleV3.png" width="60%">
                 </div>
             </div>  
             
