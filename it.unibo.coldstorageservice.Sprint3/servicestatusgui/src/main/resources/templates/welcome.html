@@ -1,52 +1,92 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Welcome</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
-</head>
-<body>
-<h1>Welcome (in templates)</h1>
-<p>Welcome to <b><span th:text="${arg}">Our Arg</span></b>.</p>
-<h3>Map:</h3>
-<canvas id="map"></canvas>
-<h3>Stato robot: </h3><span id="stato"></span>
-<h3>Posizione robot:</h3> <span id="posizione"></span>
-<h3>Peso occupato nella coldroom:</h3><span id="fw_real"></span>
-<h3>Numero richieste rifiutate:</h3><span id="rifiuti"></span>
+    <head>
+        <title>Welcome</title>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+                integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+                crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div class="d-flex flex-column h-100 w-100 justify-content-center align-items-center">
+            <div class="d-flex justify-content-center align-items-center w-100">
+                <div class="col-5 col-xl-4 col-xxl-3">
+                    <div class="card">
+                        <h5 class="card-header">Mappa</h5>
+                        <div class="card-body">
+                            <canvas id="map"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-1 d-flex justify-content-center align-items-center fs-3">
+                    <!--<i class="bi bi-arrow-right"></i>-->
+                </div>
+                <div class="col-5 col-xl-4 col-xxl-3">
+                    <div class="card">
+                        <h5 class="card-header">Stato</h5>
+                        <div class="card-body">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Stato robot</th>
+                                        <td><span id="stato"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Posizione robot</th>
+                                        <td><span id="posizione"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Peso occupato nella coldroom</th>
+                                        <td><span id="fw_real"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Numero richieste rifiutate</th>
+                                        <td><span id="rifiuti"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div style="display:none;">
-    <img id="source" src="robot.png" width="134" height="134" />
-</div>
+        <div style="display:none;">
+            <img id="source" src="robot.png" width="134" height="134" />
+        </div>
 
-<script src="wsminimal.js"></script>
-<script>
+        <script src="wsminimal.js"></script>
+        <script>
 
-// this is the id of the form
-$("form").submit(function(e) {
+        // this is the id of the form
+        $("form").submit(function(e) {
 
-    e.preventDefault(); // avoid to execute the actual submit of the form.
+            e.preventDefault(); // avoid to execute the actual submit of the form.
 
-    var form = $(this);
-    var actionUrl = form.attr('action');
+            var form = $(this);
+            var actionUrl = form.attr('action');
 
-    $.ajax({
-        type: "POST",
-        url: actionUrl,
-        data: form.serialize(), // serializes the form's elements.
-        success: (data) => {
-            if(actionUrl=="/newticket"){
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: form.serialize(), // serializes the form's elements.
+                success: (data) => {
+                    if(actionUrl=="/newticket"){
 
-                $("#ticket_id").html(data)
-            }
-            else if(actionUrl=="/showticket"){
+                        $("#ticket_id").html(data)
+                    }
+                    else if(actionUrl=="/showticket"){
 
-                $("#show_ticket").html(data)
-            }
-        }
-    });
+                        $("#show_ticket").html(data)
+                    }
+                }
+            });
 
-});
+        });
 
-</script>
-</body>
+        </script>
+    </body>
 </html>

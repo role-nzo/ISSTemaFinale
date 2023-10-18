@@ -41,29 +41,31 @@ connect();
 
 
 //testing
-//parse({data: "status(|r, 1, 1, 1, 1, X,\n|1, 1, 1, 1, 1, X,\n|1, 1, X, 1, 1, X,\n|X, X, X, X, X, X,  0, 0, libero, 0, 0)"})
+
 const canvas = document.getElementById("map");
 const ctx = canvas.getContext("2d");
-var map = ""
+
+let map = ""
+let posX = 0;
+let posY = 0;
+
+
+//parse({data: "status(|r, 1, 1, 1, 1, X,\n|1, 1, 1, 1, 1, X,\n|1, 1, X, 1, 1, X,\n|X, X, X, X, X, X,  2, 1, libero, 10, 3)"})
 
 function parse (event) {
-    //alert(`Got Message: ${event.data}`);
-    msg = event.data;
-    //alert(`Got Message: ${msg}`);
+    let msg = event.data;
     console.log("ws-status:" + msg);
-
-
 
     /*if( msg.includes("plan") ) setMessageToWindow(planexecDisplay,msg);
     else setMessageToWindow(robotDisplay,msg);*/
 
-    var fullMessage = msg.split("(")[1].split(")")[0];
-    var message = fullMessage.split(",");
-    var rejectedTickets = message[message.length - 1];
-    var currentWeightReal = message[message.length - 2];
-    var robotFree = message[message.length - 3];
-    var posY = message[message.length - 4];
-    var posX = message[message.length - 5];
+    const fullMessage = msg.split("(")[1].split(")")[0];
+    const message = fullMessage.split(",");
+    const rejectedTickets = message[message.length - 1];
+    const currentWeightReal = message[message.length - 2];
+    const robotFree = message[message.length - 3];
+    posY = message[message.length - 4];
+    posX = message[message.length - 5];
 
 
     document.getElementById("stato").innerHTML = robotFree;
@@ -73,28 +75,41 @@ function parse (event) {
 
 
 
-
     if(message.length > 5) {
         map = fullMessage.split(posX)[0].slice(0, -1);
     }
-    var rows = map.split("|")
 
-    canvas.height  = rows.length * 100;
+    writeCanvas();
+}
+
+
+window.onresize = writeCanvas
+
+function writeCanvas() {
+    let rows = map.split("|")
+
+    let cellWidth = 0;
+    let padding = 2;
 
     for (let i = 1; i < rows.length; i++) {
         let cells = rows[i].trim().split(",").filter(elem => elem !== '').map(elem => elem.trim())
 
-        if(i === 1)
-            canvas.width  = cells.length * 100;
+        if(i === 1) {
+            const computedStyle = getComputedStyle(canvas.parentElement);
+
+            cellWidth = (canvas.parentElement.getBoundingClientRect().width - parseFloat(computedStyle.paddingLeft) - parseFloat(computedStyle.paddingRight)) / cells.length;
+            canvas.width = cells.length * cellWidth;
+            canvas.height  = (rows.length-1) * cellWidth;
+        }
 
         for (let j = 0; j < cells.length; j++) {
             ctx.fillStyle = cells[j] === 'X' ? "#2f5f2f" : "#a4b85f";
-            ctx.fillRect(100 * j + 5, 100 * (i-1) + 5, 90, 90);
+            ctx.fillRect(cellWidth * j + ((cellWidth/100 * padding)/2), cellWidth * (i-1) + ((cellWidth/100 * padding)/2), cellWidth - ((cellWidth/100 * padding) * 2), cellWidth - ((cellWidth/100 * padding) * 2));
         }
 
     }
 
-    ctx.drawImage(document.getElementById("source"), 100 * posX + 5, 100 * posY + 5, 90, 90)
+    padding++;
+    ctx.drawImage(document.getElementById("source"), cellWidth * posX + ((cellWidth/100 * padding)/2), cellWidth * posY + ((cellWidth/100 * padding)/2), cellWidth - ((cellWidth/100 * padding) * 2), cellWidth - ((cellWidth/100 * padding) * 2))
 
-
- };
+}
