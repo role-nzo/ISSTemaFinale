@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-	
-class Sonarhandler ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
+import it.unibo.kactor.sysUtil.createActor   //Sept2023
+class Sonarhandler ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : ActorBasicFsm( name, scope, confined=isconfined ){
 
 	override fun getInitialState() : String{
 		return "s0"
@@ -22,11 +22,11 @@ class Sonarhandler ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( nam
 			   var  Stopped = false
 			   var  Limit = 10
 			   	
-		return { //this:ActionBasciFsm
+				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outblack("sonar23 | start with appl: $ApplAlso")
-						 subscribeToLocalActor("sonar")  
+						 subscribeToLocalActor("sonarsupport")  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -119,4 +119,4 @@ class Sonarhandler ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( nam
 				}	 
 			}
 		}
-}
+} 

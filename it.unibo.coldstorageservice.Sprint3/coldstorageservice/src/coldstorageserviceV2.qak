@@ -93,7 +93,7 @@ CodedQActor sonarsupport  context ctxcoldstorageservice className "sonarHCSR04Su
 QActor ledobserver context ctxcoldstorageservice{
 	[#var Msg = ""#]
 	State s0 initial{  
-		println("led23 | start  ") 
+		println("ledObserver | start  ") 
 		observeResource transporttrolley
 	}
 	Goto observing 
@@ -138,7 +138,7 @@ QActor sonarhandler context ctxcoldstorageservice{
 	State s0 initial{  
 		println("sonar23 | start with appl: $ApplAlso") 
 		//[# subscribeToLocalActor("distancefilter").subscribeToLocalActor("datacleaner").subscribeToLocalActor("sonar") #]  //.subscribeToLocalActor("sonar")
-		[# subscribeToLocalActor("sonar") #]
+		[# subscribeToLocalActor("sonarsupport") #]
 	}
 	Goto work
 	 
