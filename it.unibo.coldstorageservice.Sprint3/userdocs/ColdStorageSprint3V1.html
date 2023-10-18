@@ -290,7 +290,7 @@
 
                 <h2>Architettura logica</h2>
                 <div class="remark">
-                    <img src="../userdocs/images/coldstorageservicearchsprint3analisiV3.png" width="60%">
+                    <img src="../userdocs/images/coldstorageservicearchsprint3analisiV3.png" width="80%">
                     <br>
                     Dall'architettua logica possiamo evidenziare i seguenti componenti:
                     <ul>
@@ -301,6 +301,7 @@
                         <li>TicketService: si occupa di gestire le richieste per l'emissione di nuovi ticket e di verificarne la validità nel momento in cui viene presentato dal fridge truck </li>
                         <li>EmptyColdRoom: si occupa di svuotare periodicamente la coldroom inviando un apposito messaggio al ColdStorageService</li>
                         <li>Serviceaccessgui: è la gui utilizzata dal truck per richiedere l'emissione di nuovi ticket e per richiedere un'operazione di deposito</li>
+                        <li>Servicestatusgui: è la gui utilizzata dal Service-manager per tenere traccia dello stato del servizio</li>
                         <li>Statusservice: si occupa di inivare i dati aggiornati alle gui</li>
                         <li>BasicRobot: esegue i comandi ricevuti dal TransportTrolley</li>
                         <li>Robotposendosimbiotico: utilizzato per ottenere aggiornamenti riguardanti la mappa e la posizione del robot</li>
@@ -320,8 +321,8 @@
                     <h3>Sonar fisico</h3>
                     Per la progettazione del sonar fisico si è seguito il principio di singola responsabilità. Per farlo sono stati sviluppati due script python:
                     <ul>
-                        <li>SonarDevice.py (link all'implementazione): si occupa di leggere i dati prodotti dal sonar fisico e di comunicarli al SonarController.py</li>
-                        <li>SonarController.py (link all'implementazione): riceve le misurazioni dal SonarDevice.py, le quali vengono inviate tramite socket
+                        <li>SonarDevice.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberry/SonarDevice.py">link all'implementazione</a>): si occupa di leggere i dati prodotti dal sonar fisico e di comunicarli al SonarController.py</li>
+                        <li>SonarController.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberry/SonarController.py">link all'implementazione</a>): riceve le misurazioni dal SonarDevice.py, le quali vengono inviate tramite socket
                             all'attore SonarSupport(spiegato in seguito) in esecuzione sul contesto ColdStorageService
                         </li>
                     </ul>
@@ -331,10 +332,10 @@
                     Anche per la progettazione del led fisico è stato seguito il principio di singola responsabilità. Per la gestione del led fisico sono stati sviluppati
                     due script python:
                     <ul>
-                        <li>LedReceiver.py: si occupa di ricevere, tramite socket, una stringa che rappresenta lo stato attuale del robot (home, moving, stopped). Quest'informazione
+                        <li>LedReceiver.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberry/LedReceiver.py">link all'implementazione</a>): si occupa di ricevere, tramite socket, una stringa che rappresenta lo stato attuale del robot (home, moving, stopped). Quest'informazione
                             viene ricevuta dall'attore LedSupport (in esecuzione sul contesto ColdStorageService) e viene inoltrata a LedDevice.py
                         </li>
-                        <li>LedDevice.py: in base allo stato ricevuto gestisce il led fisico (accesso, spento, lampeggiante)</li>
+                        <li>LedDevice.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberry/LedDevice.py">link all'implementazione</a>): in base allo stato ricevuto gestisce il led fisico (accesso, spento, lampeggiante)</li>
                     </ul>
                     La comunicazione tra LedReceiver.py e LedDevice.py viene realizzata tramite pipe.
 
@@ -345,7 +346,7 @@ Event alarm      : alarm(X)
 Event sonardata  : distance(D)
 Event stopevent  : stopevent(_)
 Event resumevent : resumevent(_)
-Event ledstatuschange : ledstatuschange(STATUS)
+Event ledstatuschange : ledstatuschange(STATUS) //STATUS può assumere i valori: home, moving, stopped
                     </pre>
                     <ul>
                         <li>alarm: viene inviato dal transporttrolley al BasicRobot per interrompere l'esecuzione del robot, tale evento viene inviato solamente se viene rispettata la Alarm Condition</li>
@@ -374,7 +375,7 @@ Event ledstatuschange : ledstatuschange(STATUS)
                         </li>
                     </ul>
                     <h3>SonarHandler</h3>
-                    Tale attore si iscrive al <b>Sonar</b> utilizzando la primitiva subscribeToLocalActor, in questo modo riceve gli eventi sonardata emessi da esso.
+                    Tale attore si iscrive a <b>SonarSupport</b> utilizzando la primitiva subscribeToLocalActor, in questo modo riceve gli eventi sonardata emessi da esso.
                     In particolare, ogni volta che riceve tale evento transita nello stato handlesonardata:
 <pre>
 State handlesonardata{
@@ -509,7 +510,11 @@ Transition t2 whenEvent resumevent -> resuming
                 <h2>Architettura logica finale</h2>
                 <div class="remark">
                     <a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak">Metamodello qak</a><br>
-                    <img src="../userdocs/images/coldstorageservicearchsprint3finaleV3.png" width="60%">
+                    <img src="../userdocs/images/coldstorageservicearchsprint3finaleV3.png" width="80%">
+                </div>
+                <h2>Esecuzione sistema</h2>
+                <div class="remark">
+                    Per poter eseguire il sistema è necessario avviare nel seguente ordine i vari componenti: BasicRobot, su RaspberryPi eseguire <pre style="margin: 0; display: inline-block;">LedReceiver.py | python LedDevice.py</pre>, ctxcoldstorageservice, le due GUI Serviceaccessgui e Servicestatusgui e infine su RaspberryPi eseguire <pre style="margin: 0; display: inline-block;">python sonar.py | python ControllerSonar.py</pre>
                 </div>
             </div>  
             
