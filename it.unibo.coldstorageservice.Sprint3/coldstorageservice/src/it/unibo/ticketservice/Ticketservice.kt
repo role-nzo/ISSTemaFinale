@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import it.unibo.kactor.sysUtil.createActor   //Sept2023
-class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : ActorBasicFsm( name, scope, confined=isconfined ){
+	
+class Ticketservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
 
 	override fun getInitialState() : String{
 		return "s0"
@@ -23,7 +23,7 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 			   var maxWeight = 100
 			   var TimeMax = 300
 			   var Ticketsrejected = 0
-				return { //this:ActionBasciFsm
+		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outyellow("$name | wait for request")
@@ -34,9 +34,9 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t027",targetState="elabNewTicket",cond=whenRequest("newticket"))
-					transition(edgeName="t028",targetState="elabStoreFood",cond=whenRequest("storefood"))
-					transition(edgeName="t029",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
+					 transition(edgeName="t026",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					transition(edgeName="t027",targetState="elabStoreFood",cond=whenRequest("storefood"))
+					transition(edgeName="t028",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
 				}	 
 				state("elabNewTicket") { //this:State
 					action { //it:State
@@ -171,4 +171,4 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 				}	 
 			}
 		}
-} 
+}

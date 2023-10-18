@@ -21,9 +21,6 @@ class Sonar ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scop
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outblue("transporttrolley starts")
-						emit("alarm", "alarm(arg)" ) 
-						emit("resume", "resume(arg)" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

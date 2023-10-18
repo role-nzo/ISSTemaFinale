@@ -79,52 +79,31 @@ Event ledstatuschange : ledstatuschange(STATUS)
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
-//Context ctxraspberry 		  ip [host="192.168.1.35" port=8023]
+
 //FOR IMAGE
-//Context ctxserviceaccessgui ip [host="localhost" port=8023]
-//Context ctxservicestatusgui ip [host="localhost" port=8024]
+Context ctxserviceaccessgui ip [host="localhost" port=8023]
+Context ctxservicestatusgui ip [host="localhost" port=8024]
+Context ctxraspberry 		  ip [host="192.168.1.35" port=8023]
 
 
 ExternalQActor basicrobot context ctxbasicrobot
 ExternalQActor robotposendosimbiotico context ctxbasicrobot
 
-CodedQActor sonarsupport  context ctxcoldstorageservice className "sonarHCSR04Support23"  
+//CodedQActor sonar  context ctxcoldstorageservice className "sonarSimulator"           //IN LOCALE
 
-QActor ledobserver context ctxcoldstorageservice{
+//CodedQActor led context ctxcoldstorageservice className "ledSupport23"
+
+//CodedQActor datacleaner    context ctxcoldstorageservice className "rx.dataCleaner"
+//CodedQActor distancefilter context ctxcoldstorageservice className "rx.distanceFilter"
+
+//CodedQActor sonarsupport  context ctxcoldstorageservice className "sonarHCSR04Support23"   //SU RASP
+
+/*QActor ledobserver context ctxcoldstorageservice{
 	[#var Msg = ""#]
 	State s0 initial{  
 		println("led23 | start  ") 
-		observeResource transporttrolley
+		//observeResource transporttrolley
 	}
-	Goto observing 
-	
-	State observing{
-			
-	}
-	Transition t0 whenMsg coapUpdate -> doObserve
-
-	State doObserve{
-		printCurrentMessage
-		[#Msg = currentMsg.msgContent().split(", ")[1] //.split("(")[1].split(")")[0]
-		 println("-" + Msg.trim() + "-")
-		 if(Msg.trim() != ")"){
-		 	Msg = Msg.split("(")[1].split(")")[0]
-		  
-		 println(Msg)
-		 println(currentMsg.msgContent())
-		 if(Msg == "stopped"){
-		#]
-			emit ledstatuschange : ledstatuschange(stopped) [#
-		}		
-		 if(Msg == "moving"){
-		#]
-			emit ledstatuschange : ledstatuschange(moving) [#
-		}else {#]
-			emit ledstatuschange : ledstatuschange(home) [#
-		}}#]
-		  
-	}
-	Goto observing
 }
 
 CodedQActor ledsupport context ctxcoldstorageservice className "ledSupport23"
@@ -140,63 +119,31 @@ QActor sonarhandler context ctxcoldstorageservice{
 		//[# subscribeToLocalActor("distancefilter").subscribeToLocalActor("datacleaner").subscribeToLocalActor("sonar") #]  //.subscribeToLocalActor("sonar")
 		[# subscribeToLocalActor("sonar") #]
 	}
-	Goto work
-	 
-	State work{
-		//println("sonar23 | waits ... ") 		
-		//updateResource [# "sonar23 waiting ..." #]
-	}
-	Transition t0 whenEvent sonardata -> handlesonardata 
-	              whenMsg robotstop -> handlerobotstop
-				  whenMsg robotstopfailed -> handlerobotstopfailed
-				  whenMsg robotresume -> handlerobotresume
+}   */
 
-	
-	State handlesonardata{		
-		printCurrentMessage
-		onMsg(sonardata : distance(D)){
-			[#
-				var d = payloadArg(0)
-				if (d == "LOW" && !Stopped){
-					
-				#]
-					println("INVIO STOP")	
-					emit stopevent : stopevent(_)
-				[#}
-				else if(d == "HIGH" && Stopped) {
-					
-				#]
-					println("INVIO RESUME")
-					emit resumevent : resumevent(_)
-				[#}
-			
-			#]	
-		}
+QActor sonar context ctxraspberry{
+	State s0 initial{
 		
 	}
-	Transition t1 whenTime 100 -> work
-				  whenMsg robotstop -> handlerobotstop
-				  whenMsg robotstopfailed -> handlerobotstopfailed
-				  whenMsg robotresume -> handlerobotresume
-	
-	State handlerobotstop{
-		[#Stopped = true #]
-	}Goto work
-	
-	State handlerobotstopfailed{
-		[#Stopped = false #]
-	}Goto work
-	
-	State handlerobotresume{
-		[#Stopped = false #]
-	}Goto work
-	
-	
-	State sonar23{
-		println("$name BYE")
-	}
-}   
+}
 
+QActor led context ctxraspberry{
+	State s0 initial{
+		
+	}
+}
+
+QActor sonarsupport context ctxcoldstorageservice{
+	State s0 initial{
+		
+	}
+}
+
+QActor ledsupport context ctxcoldstorageservice{
+	State s0 initial{
+		
+	}
+} 
 
 QActor transporttrolley context ctxcoldstorageservice{
 	[#
@@ -220,7 +167,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	
 	State init{
 		println("transporttrolley init") color blue
-		[# subscribeToLocalActor("sonarhandler")#] 
+		//[# subscribeToLocalActor("sonar23")#]  //.subscribeToLocalActor("sonar")
 	} Goto waitcoldstorageservicerequest
 	
 	
@@ -256,11 +203,9 @@ QActor transporttrolley context ctxcoldstorageservice{
 		println("Wait robot")
 		updateResource [# "transporttrolleystatus(moving)"#]
 	}
-	Transition t1 whenEvent stopevent -> checkSonarData
-				  //whenReply moverobotfailed -> waitcoldstorageservicerequest
+	Transition t1 //whenEvent stopevent -> checkSonarData
 				  whenReply moverobotfailed -> robothit
 				  whenReply moverobotdone -> planFinishSwitch
-				  //whenMsg stop -> checkSonarData
 	
 	State robothit{
 		printCurrentMessage
@@ -283,7 +228,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 		   AlarmCondition = (currentTime - LastStopTime)*1000 > Mint
 		   if(AlarmCondition){ MoveAlarm = "STOP"#]
 		   		
-				emit alarm : alarm(stop)
+				//emit alarm : alarm(stop)
 				println("alarm emitted")
 				
 				
@@ -291,28 +236,27 @@ QActor transporttrolley context ctxcoldstorageservice{
 		   else{
 		   		MoveAlarm = "WAIT"
 		   		#]	   		
-		   		forward sonarhandler -m robotstopfailed : robotstopfailed(_)
+		   		//forward sonar23 -m robotstopfailed : robotstopfailed(_)
 		   		println("Stop failed: not enough time from last stop")
 		   [#}			
 		#]		
 	}
-	//Goto stopped if [# MoveAlarm == "STOP" #] else waitRobot
 	Transition t3 whenReply moverobotfailed -> stopped
 				  whenReply moverobotdone -> planFinishSwitch
 	
 	State stopped{
 		println("Sono fermo")
 		[#LastStopTime = java.time.Instant.now().epochSecond#]
-		forward sonarhandler -m robotstop : robotstop(_)
+		//forward sonar23 -m robotstop : robotstop(_)
 		updateResource [# "transporttrolleystatus(stopped)"#]
 		updateResource [# "robotfree(fermo)"#]
 	}
-	Transition t2 whenEvent resumevent -> resuming
-				 //whenMsg resume -> resuming
+	Transition t2 //whenEvent resumevent -> resuming
+				 
 	
 	State resuming {
 		println("Resuming")
-		forward sonarhandler -m robotresume : robotresume(_)
+		//forward sonar23 -m robotresume : robotresume(_)
 		[#if(GoingTo == "HOME"){#]
 			updateResource [# "robotfree(libero)"#]
 		[#}else{#]
@@ -722,7 +666,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 
 
 //FOR IMAGE
-/*QActor serviceaccessgui context ctxserviceaccessgui{
+QActor serviceaccessgui context ctxserviceaccessgui{
 	State s0 initial {
 		println("fridgetruck starts") color red
 		
@@ -762,6 +706,6 @@ QActor servicestatusgui context ctxservicestatusgui{
 		observeResource statusservice
 		
 	}
-}*/
+}
 
 

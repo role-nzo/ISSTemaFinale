@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import it.unibo.kactor.sysUtil.createActor   //Sept2023
-class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : ActorBasicFsm( name, scope, confined=isconfined ){
+	
+class Coldstorageservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
 
 	override fun getInitialState() : String{
 		return "s0"
@@ -21,7 +21,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 		 var CurrentWeightReal = 0
 			   var CurrentTicketFW = 0
 			   var Ticketsrejected = 0
-				return { //this:ActionBasciFsm
+		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outgreen("coldstorageservice starts")
@@ -41,8 +41,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t030",targetState="elabStoreFood",cond=whenRequest("storefood"))
-					transition(edgeName="t031",targetState="elabClearColdRoom",cond=whenRequest("clearColdRoom"))
+					 transition(edgeName="t029",targetState="elabStoreFood",cond=whenRequest("storefood"))
+					transition(edgeName="t030",targetState="elabClearColdRoom",cond=whenRequest("clearColdRoom"))
 				}	 
 				state("elabStoreFood") { //this:State
 					action { //it:State
@@ -60,8 +60,8 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t132",targetState="elabStoreFoodAccepted",cond=whenReply("storefoodaccepted"))
-					transition(edgeName="t133",targetState="elabStoreFoodRejected",cond=whenReply("storefoodrejected"))
+					 transition(edgeName="t131",targetState="elabStoreFoodAccepted",cond=whenReply("storefoodaccepted"))
+					transition(edgeName="t132",targetState="elabStoreFoodRejected",cond=whenReply("storefoodrejected"))
 				}	 
 				state("elabStoreFoodAccepted") { //this:State
 					action { //it:State
@@ -98,7 +98,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t234",targetState="elabLoadDone",cond=whenRequest("loaddone"))
+					 transition(edgeName="t233",targetState="elabLoadDone",cond=whenRequest("loaddone"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -119,7 +119,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t335",targetState="elabChargeTaken",cond=whenReply("waitLoadDone"))
+					 transition(edgeName="t334",targetState="elabChargeTaken",cond=whenReply("waitLoadDone"))
 				}	 
 				state("elabChargeTaken") { //this:State
 					action { //it:State
@@ -142,7 +142,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t436",targetState="elabDepositDone",cond=whenDispatch("depositdone"))
+					 transition(edgeName="t435",targetState="elabDepositDone",cond=whenDispatch("depositdone"))
 				}	 
 				state("elabDepositDone") { //this:State
 					action { //it:State
@@ -198,4 +198,4 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 				}	 
 			}
 		}
-} 
+}

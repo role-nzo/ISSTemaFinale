@@ -79,16 +79,34 @@ Event ledstatuschange : ledstatuschange(STATUS)
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
-//Context ctxraspberry 		  ip [host="192.168.1.35" port=8023]
+
 //FOR IMAGE
-//Context ctxserviceaccessgui ip [host="localhost" port=8023]
-//Context ctxservicestatusgui ip [host="localhost" port=8024]
+Context ctxserviceaccessgui ip [host="localhost" port=8023]
+Context ctxservicestatusgui ip [host="localhost" port=8024]
+Context ctxraspberry 		  ip [host="192.168.1.35" port=8023]
 
 
 ExternalQActor basicrobot context ctxbasicrobot
 ExternalQActor robotposendosimbiotico context ctxbasicrobot
 
+//CodedQActor sonar  context ctxcoldstorageservice className "sonarSimulator"           //IN LOCALE
 CodedQActor sonarsupport  context ctxcoldstorageservice className "sonarHCSR04Support23"  
+//CodedQActor led context ctxcoldstorageservice className "ledSupport23"
+
+//CodedQActor datacleaner    context ctxcoldstorageservice className "rx.dataCleaner"
+//CodedQActor distancefilter context ctxcoldstorageservice className "rx.distanceFilter"
+
+QActor sonar context ctxraspberry{
+	State s0 initial{
+		
+	}
+}
+
+QActor led context ctxraspberry{
+	State s0 initial{
+		
+	}
+}
 
 QActor ledobserver context ctxcoldstorageservice{
 	[#var Msg = ""#]
@@ -147,6 +165,7 @@ QActor sonarhandler context ctxcoldstorageservice{
 		//updateResource [# "sonar23 waiting ..." #]
 	}
 	Transition t0 whenEvent sonardata -> handlesonardata 
+	              //whenEvent obstacle  -> handleobstacle
 	              whenMsg robotstop -> handlerobotstop
 				  whenMsg robotstopfailed -> handlerobotstopfailed
 				  whenMsg robotresume -> handlerobotresume
@@ -161,6 +180,7 @@ QActor sonarhandler context ctxcoldstorageservice{
 					
 				#]
 					println("INVIO STOP")	
+				//forward transporttrolley -m stop : stop(_)
 					emit stopevent : stopevent(_)
 				[#}
 				else if(d == "HIGH" && Stopped) {
@@ -168,11 +188,13 @@ QActor sonarhandler context ctxcoldstorageservice{
 				#]
 					println("INVIO RESUME")
 					emit resumevent : resumevent(_)
+				//forward transporttrolley -m resume : resume(_)
 				[#}
 			
 			#]	
 		}
 		
+		//updateResource [# "sonar23 handles $currentMsg" #]
 	}
 	Transition t1 whenTime 100 -> work
 				  whenMsg robotstop -> handlerobotstop
@@ -191,12 +213,58 @@ QActor sonarhandler context ctxcoldstorageservice{
 		[#Stopped = false #]
 	}Goto work
 	
+	/*State handleobstacle{
+		onMsg( obstacle : obstacle(D)){			
+			println("$name handleobstacle ALARM ${payloadArg(0)}") color magenta
+			//emit alarm : alarm(obstacle)			
+		}
+		
+	}
+	Goto sonar23 if [# ApplAlso == true #]  else work*/  
 	
 	State sonar23{
 		println("$name BYE")
 	}
 }   
 
+//Si può eliminare
+/*
+QActor sonar23observer context ctxcoldstorageservice{
+	State s0 initial{  
+		println("sonar23observer | start  ") 
+		observeResource sonar23
+	}
+	Goto observing 
+	
+	State observing{
+		
+	}
+	Transition t0 whenMsg coapUpdate -> doObserve
+
+	State doObserve{
+		printCurrentMessage
+	}
+	Goto observing
+	
+} */
+
+
+ 
+/*
+QActor sendevent context ctxcoldstorageservice{
+	
+	State s0 initial {
+		
+		
+		delay 27000
+		println("mancano 3 sec") color blue
+		delay 3000
+		println("sendevent starts") color blue
+		emit sonardata : sonardata(obstacle)
+		delay 3000
+		emit resume : resume(_) 			
+	}
+}*/
 
 QActor transporttrolley context ctxcoldstorageservice{
 	[#
@@ -220,7 +288,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	
 	State init{
 		println("transporttrolley init") color blue
-		[# subscribeToLocalActor("sonarhandler")#] 
+		[# subscribeToLocalActor("sonarhandler")#]  //.subscribeToLocalActor("sonar")
 	} Goto waitcoldstorageservicerequest
 	
 	
@@ -284,6 +352,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 		   if(AlarmCondition){ MoveAlarm = "STOP"#]
 		   		
 				emit alarm : alarm(stop)
+	            //forward sonar23 -m robotstop : robotstop(_)
 				println("alarm emitted")
 				
 				
@@ -722,7 +791,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 
 
 //FOR IMAGE
-/*QActor serviceaccessgui context ctxserviceaccessgui{
+QActor serviceaccessgui context ctxserviceaccessgui{
 	State s0 initial {
 		println("fridgetruck starts") color red
 		
@@ -762,6 +831,6 @@ QActor servicestatusgui context ctxservicestatusgui{
 		observeResource statusservice
 		
 	}
-}*/
+}
 
 
