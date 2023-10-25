@@ -60,7 +60,8 @@ Reply coldRoomCleared : coldRoomCleared(_)
 Dispatch sendmap 	: sendmap(_)
 
 //sonar e led
-Event sonardata : distance(D)   //emitted  by distancefilter
+//Event sonardata : distance(D)   //emitted  by distancefilter
+Dispatch sonardata : sonardata(D)
 Event obstacle  : obstacle(D)   //emitted as stream by distancefilter
 Dispatch resume    : resume( _ ) 
 Dispatch stop : stop(D) //stop da inviare al transporttrolley
@@ -74,8 +75,8 @@ Dispatch robotstopfailed : robotstopfailed(_)
 Dispatch robotresume : robotresume(_) 
 
 //Eventi led
-Event ledstatuschange : ledstatuschange(STATUS)
-
+//Event ledstatuschange : ledstatuschange(STATUS)
+Dispatch ledstatuschange : ledstatuschange(STATUS)
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
@@ -106,27 +107,29 @@ QActor ledobserver context ctxcoldstorageservice{
 	State doObserve{
 		printCurrentMessage
 		[#Msg = currentMsg.msgContent().split(", ")[1] //.split("(")[1].split(")")[0]
-		 println("-" + Msg.trim() + "-")
-		 if(Msg.trim() != ")"){
-		 	Msg = Msg.split("(")[1].split(")")[0]
-		  
-		 println(Msg)
-		 println(currentMsg.msgContent())
-		 if(Msg == "stopped"){
-		#]
-			emit ledstatuschange : ledstatuschange(stopped) [#
-		}		
-		 if(Msg == "moving"){
-		#]
-			emit ledstatuschange : ledstatuschange(moving) [#
-		}else {#]
-			emit ledstatuschange : ledstatuschange(home) [#
-		}}#]
+		 if(Msg.startsWith("transporttrolleystatus")){
+		 	
+			 if(Msg.trim() != ")"){
+			 	Msg = Msg.split("(")[1].split(")")[0]
+			  
+				if(Msg == "stopped"){
+			#]
+					forward ledsupport -m ledstatuschange : ledstatuschange(stopped) [#
+				}		
+			 	else if(Msg == "moving"){
+				#]
+					forward ledsupport -m ledstatuschange : ledstatuschange(moving) [#
+				}else {#]
+					forward ledsupport -m ledstatuschange : ledstatuschange(home) [#
+				}
+			}
+		}#]
 		  
 	}
 	Goto observing
 }
 
+//CodedQActor sonarhandler context ctxcoldstorageservice className "Sonarhandler"
 CodedQActor ledsupport context ctxcoldstorageservice className "ledSupport23"
 
 QActor sonarhandler context ctxcoldstorageservice{ 
@@ -138,7 +141,7 @@ QActor sonarhandler context ctxcoldstorageservice{
 	State s0 initial{  
 		println("sonar23 | start with appl: $ApplAlso") 
 		//[# subscribeToLocalActor("distancefilter").subscribeToLocalActor("datacleaner").subscribeToLocalActor("sonar") #]  //.subscribeToLocalActor("sonar")
-		[# subscribeToLocalActor("sonarsupport") #]
+		//[# subscribeToLocalActor("sonarsupport") #]
 	}
 	Goto work
 	 
@@ -146,7 +149,7 @@ QActor sonarhandler context ctxcoldstorageservice{
 		//println("sonar23 | waits ... ") 		
 		//updateResource [# "sonar23 waiting ..." #]
 	}
-	Transition t0 whenEvent sonardata -> handlesonardata 
+	Transition t0 whenMsg sonardata -> handlesonardata 
 	              whenMsg robotstop -> handlerobotstop
 				  whenMsg robotstopfailed -> handlerobotstopfailed
 				  whenMsg robotresume -> handlerobotresume
@@ -154,20 +157,21 @@ QActor sonarhandler context ctxcoldstorageservice{
 	
 	State handlesonardata{		
 		printCurrentMessage
-		onMsg(sonardata : distance(D)){
+		onMsg(sonardata : sonardata(D)){
 			[#
 				var d = payloadArg(0)
+				println(d)
 				if (d == "LOW" && !Stopped){
 					
 				#]
 					println("INVIO STOP")	
-					emit stopevent : stopevent(_)
+					emitlocalstream stopevent : stopevent(_)
 				[#}
 				else if(d == "HIGH" && Stopped) {
 					
 				#]
 					println("INVIO RESUME")
-					emit resumevent : resumevent(_)
+					emitlocalstream resumevent : resumevent(_)
 				[#}
 			
 			#]	
@@ -196,7 +200,7 @@ QActor sonarhandler context ctxcoldstorageservice{
 		println("$name BYE")
 	}
 }   
-
+ 
 
 QActor transporttrolley context ctxcoldstorageservice{
 	[#

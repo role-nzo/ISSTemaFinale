@@ -10,9 +10,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-	
-class Sonar23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
+import java.net.InetSocketAddress
+import java.net.Socket
 
+class Sonar23 ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
 	override fun getInitialState() : String{
 		return "s0"
 	}

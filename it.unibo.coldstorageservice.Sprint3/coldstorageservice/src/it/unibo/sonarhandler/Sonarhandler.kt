@@ -26,7 +26,6 @@ class Sonarhandler ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outblack("sonar23 | start with appl: $ApplAlso")
-						 subscribeToLocalActor("sonarsupport")  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -41,7 +40,7 @@ class Sonarhandler ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t01",targetState="handlesonardata",cond=whenEvent("sonardata"))
+					 transition(edgeName="t01",targetState="handlesonardata",cond=whenDispatch("sonardata"))
 					transition(edgeName="t02",targetState="handlerobotstop",cond=whenDispatch("robotstop"))
 					transition(edgeName="t03",targetState="handlerobotstopfailed",cond=whenDispatch("robotstopfailed"))
 					transition(edgeName="t04",targetState="handlerobotresume",cond=whenDispatch("robotresume"))
@@ -50,19 +49,20 @@ class Sonarhandler ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						if( checkMsgContent( Term.createTerm("distance(D)"), Term.createTerm("distance(D)"), 
+						if( checkMsgContent( Term.createTerm("sonardata(D)"), Term.createTerm("sonardata(D)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								
 												var d = payloadArg(0)
+												println(d)
 												if (d == "LOW" && !Stopped){
 													
 								CommUtils.outblack("INVIO STOP")
-								emit("stopevent", "stopevent(_)" ) 
+								emitLocalStreamEvent("stopevent", "stopevent(_)" ) 
 								}
 												else if(d == "HIGH" && Stopped) {
 													
 								CommUtils.outblack("INVIO RESUME")
-								emit("resumevent", "resumevent(_)" ) 
+								emitLocalStreamEvent("resumevent", "resumevent(_)" ) 
 								}
 											
 						}

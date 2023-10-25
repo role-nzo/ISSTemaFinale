@@ -20,7 +20,7 @@ dispatch( depositdone, depositdone(_) ).
 dispatch( updatevirtualweight, updatevirtualweight(FW) ).
 request( clearColdRoom, clearColdRoom(_) ).
 dispatch( sendmap, sendmap(_) ).
-event( sonardata, distance(D) ).
+dispatch( sonardata, sonardata(D) ).
 event( obstacle, obstacle(D) ).
 dispatch( resume, resume(_) ).
 dispatch( stop, stop(D) ).
@@ -29,7 +29,7 @@ event( resumevent, resumevent(_) ).
 dispatch( robotstop, robotstop(_) ).
 dispatch( robotstopfailed, robotstopfailed(_) ).
 dispatch( robotresume, robotresume(_) ).
-event( ledstatuschange, ledstatuschange(STATUS) ).
+dispatch( ledstatuschange, ledstatuschange(STATUS) ).
 %====================================================================================
 context(ctxbasicrobot, "127.0.0.1",  "TCP", "8020").
 context(ctxcoldstorageservice, "localhost",  "TCP", "8022").

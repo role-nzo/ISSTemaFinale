@@ -15,17 +15,55 @@ import kotlinx.coroutines.*
 import unibo.basicomm23.interfaces.IApplMessage
 import unibo.basicomm23.utils.CommUtils
 import java.lang.Thread.sleep
+import java.net.ServerSocket
+import java.net.Socket
 
 
 class sonarHCSR04Support23 ( name : String, scope: CoroutineScope, discardMessages: Boolean ) : ActorBasic( name ) {
+	var hostAddress = "192.168.1.141"
+	lateinit var socket: Socket
+	lateinit var serverSocket: ServerSocket
 	lateinit var reader : BufferedReader
 	//var coapSupport = javacode.CoapSupport("coap://localhost:8028","ctxsonarresource/sonarresource")
 	init{
 		//autostart
+		serverSocket = ServerSocket(6527)
+		socket = serverSocket.accept()
 		runBlocking{  autoMsg("sonarstart","do") }
 	}
 
-    override suspend fun actorBody(msg : IApplMessage){
+	override suspend fun actorBody(msg : IApplMessage){
+		//println("$tt $name | received  $msg "  )  //RICEVE GLI EVENTI!!!
+		if( msg.msgId() == "sonarstart"){
+
+			reader = BufferedReader(  InputStreamReader(socket.getInputStream() ))
+			println("Do Read")
+			doRead(   )
+		}
+	}
+
+	suspend fun doRead(   ){
+		var counter = 0
+		//GlobalScope.launch{    //to allow message handling
+
+		//QakContext.scope22.launch{
+		while( true ){
+			var data = reader.readLine()
+			println(data)
+			if( data != null ){
+				try{
+					forward( "sonardata","sonardata($data)", "sonarhandler" )        //not propagated to remote actors
+					CommUtils.outyellow("sonarHCSR04Support23 doRead emits ${counter++}: sonardata(${data})"   )
+
+				}catch(e: Exception){
+					CommUtils.outred("sonarHCSR04Support23 doRead ERROR: $e "   )
+				}
+			}
+			//delay( 250 )     //Avoid too fast generation
+		}
+		//}
+	}
+    /*override suspend fun actorBody(msg : IApplMessage){
  		//println("$tt $name | received  $msg "  )  //RICEVE GLI EVENTI!!!
 		if( msg.msgId() == "sonarstart"){
 			//println("sonarHCSR04Support23 STARTING") //AVOID SINCE pipe ...
@@ -47,9 +85,10 @@ class sonarHCSR04Support23 ( name : String, scope: CoroutineScope, discardMessag
 				println("WARNING: $name does not find low-level code")
 			}
  		}
-     }
+     }*/
+
 		
-	suspend fun doRead(   ){
+	/*suspend fun doRead(   ){
  		var counter = 0
 		var last = 0
 		val limit = 10
@@ -89,5 +128,5 @@ class sonarHCSR04Support23 ( name : String, scope: CoroutineScope, discardMessag
 				//delay( 250 ) 	//Avoid too fast generation
  		}
 		//}
-	}
+	}*/
 }

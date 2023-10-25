@@ -26,7 +26,7 @@ class ledSupport23 (name : String, scope: CoroutineScope, discardMessages: Boole
         //runBlocking{  autoMsg("ledstart","do") }
         socket = Socket("192.168.1.35", 6525)
         println("ledSupport23 sono attivo")
-        subscribeToLocalActor("ledobserver")
+        //subscribeToLocalActor("ledobserver")
     }
 
     override suspend fun actorBody(msg : IApplMessage){

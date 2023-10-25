@@ -10,8 +10,8 @@ n         = 1
 #client    = paho.Client("controller")
 #client.connect(brokerAddr, 1883, 60)
 
-host_ip = "192.168.1.140"
-port = 6526
+host_ip = "192.168.1.141"
+port = 6527
 stopped = False
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 

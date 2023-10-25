@@ -45,23 +45,24 @@ class Ledobserver ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
 						Msg = currentMsg.msgContent().split(", ")[1] //.split("(")[1].split(")")[0]
-								 println("-" + Msg.trim() + "-")
-								 if(Msg.trim() != ")"){
-								 	Msg = Msg.split("(")[1].split(")")[0]
-								  
-								 println(Msg)
-								 println(currentMsg.msgContent())
-								 if(Msg == "stopped"){
-						emit("ledstatuschange", "ledstatuschange(stopped)" ) 
+								 if(Msg.startsWith("transporttrolleystatus")){
+								 	
+									 if(Msg.trim() != ")"){
+									 	Msg = Msg.split("(")[1].split(")")[0]
+									  
+										if(Msg == "stopped"){
+						forward("ledstatuschange", "ledstatuschange(stopped)" ,"ledsupport" ) 
 						
-								}		
-								 if(Msg == "moving"){
-						emit("ledstatuschange", "ledstatuschange(moving)" ) 
+										}		
+									 	else if(Msg == "moving"){
+						forward("ledstatuschange", "ledstatuschange(moving)" ,"ledsupport" ) 
 						
-								}else { 
-						emit("ledstatuschange", "ledstatuschange(home)" ) 
+										}else { 
+						forward("ledstatuschange", "ledstatuschange(home)" ,"ledsupport" ) 
 						
-								}} 
+										}
+									}
+								} 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

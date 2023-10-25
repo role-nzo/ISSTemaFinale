@@ -1,4 +1,5 @@
 {"actor":"ledobserver", "msgType":"dispatch", "curstate":"observing", "nextstate":"doObserve", "msgId":"coapUpdate"}
+{"actor":"sonarhandler", "msgType":"dispatch", "curstate":"work", "nextstate":"handlesonardata", "msgId":"sonardata"}
 {"actor":"sonarhandler", "msgType":"dispatch", "curstate":"work", "nextstate":"handlerobotstop", "msgId":"robotstop"}
 {"actor":"sonarhandler", "msgType":"dispatch", "curstate":"work", "nextstate":"handlerobotstopfailed", "msgId":"robotstopfailed"}
 {"actor":"sonarhandler", "msgType":"dispatch", "curstate":"work", "nextstate":"handlerobotresume", "msgId":"robotresume"}
