@@ -1,4 +1,4 @@
-# File: ControllerMqtt.py
+# File: SonarController.py
 import time
 import sys
 import socket
@@ -34,4 +34,4 @@ for line in sys.stdin:
 
 
 ### USAGE
-### python sonar.py | python ControllerMqtt.py | python LedDevice.py
+### python SonarDevice.py | python ControllerMqtt.py | python LedDevice.py

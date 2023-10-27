@@ -37,4 +37,4 @@ for line in sys.stdin:
 
 
 ### USAGE
-### python sonar.py | python ControllerSonar.py
+### python SonarDevice.py | python SonarController.py

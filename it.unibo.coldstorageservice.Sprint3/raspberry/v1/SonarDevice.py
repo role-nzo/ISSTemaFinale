@@ -1,4 +1,4 @@
-# File: sonar.py
+# File: SonarDevice.py
 import RPi.GPIO as GPIO
 import time
 
