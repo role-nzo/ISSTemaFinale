@@ -1,3 +1,4 @@
+### conda install diagrams
 from diagrams import Cluster, Diagram, Edge
 from diagrams.custom import Custom
 import os
@@ -19,6 +20,7 @@ eventedgeattr = {
 with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=graphattr) as diag:
   with Cluster('env'):
      sys = Custom('','./qakicons/system.png')
+### see https://renenyffenegger.ch/notes/tools/Graphviz/attributes/label/HTML-like/index
      with Cluster('ctxbasicrobot', graph_attr=nodeattr):
           basicrobot=Custom('basicrobot(ext)','./qakicons/externalQActor.png')
           robotposendosimbiotico=Custom('robotposendosimbiotico(ext)','./qakicons/externalQActor.png')
@@ -28,15 +30,20 @@ with Diagram('coldstorageserviceArch', show=False, outformat='png', graph_attr=g
           emptycoldroom=Custom('emptycoldroom','./qakicons/symActorSmall.png')
           ticketservice=Custom('ticketservice','./qakicons/symActorSmall.png')
           coldstorageservice=Custom('coldstorageservice','./qakicons/symActorSmall.png')
-     transporttrolley >> Edge(color='magenta', style='solid', xlabel='engage', fontcolor='magenta') >> basicrobot
-     transporttrolley >> Edge(color='magenta', style='solid', xlabel='moverobot', fontcolor='magenta') >> basicrobot
-     transporttrolley >> Edge(color='blue', style='solid', xlabel='depositdone', fontcolor='blue') >> coldstorageservice
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='coapUpdate', fontcolor='blue') >> statusservice
-     statusservice >> Edge(color='blue', style='solid', xlabel='goMoveToHome', fontcolor='blue') >> transporttrolley
-     emptycoldroom >> Edge(color='magenta', style='solid', xlabel='clearColdRoom', fontcolor='magenta') >> coldstorageservice
-     coldstorageservice >> Edge(color='magenta', style='solid', xlabel='storefood', fontcolor='magenta') >> ticketservice
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='goMoveToIndoor', fontcolor='blue') >> transporttrolley
-     coldstorageservice >> Edge(color='magenta', style='solid', xlabel='waitLoad', fontcolor='magenta') >> transporttrolley
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='goMoveToHome', fontcolor='blue') >> transporttrolley
-     coldstorageservice >> Edge(color='blue', style='solid', xlabel='updatevirtualweight', fontcolor='blue') >> ticketservice
+     with Cluster('ctxserviceaccessgui', graph_attr=nodeattr):
+          serviceaccessgui=Custom('serviceaccessgui','./qakicons/symActorSmall.png')
+     with Cluster('ctxservicestatusgui', graph_attr=nodeattr):
+          servicestatusgui=Custom('servicestatusgui','./qakicons/symActorSmall.png')
+     coldstorageservice >> Edge(color='magenta', style='solid', decorate='true', label='<waitLoad &nbsp; >',  fontcolor='magenta') >> transporttrolley
+     transporttrolley >> Edge(color='magenta', style='solid', decorate='true', label='<engage &nbsp; moverobot &nbsp; >',  fontcolor='magenta') >> basicrobot
+     serviceaccessgui >> Edge(color='magenta', style='solid', decorate='true', label='<newticket &nbsp; storefood &nbsp; loaddone &nbsp; >',  fontcolor='magenta') >> coldstorageservice
+     coldstorageservice >> Edge(color='magenta', style='solid', decorate='true', label='<storefood &nbsp; >',  fontcolor='magenta') >> ticketservice
+     emptycoldroom >> Edge(color='magenta', style='solid', decorate='true', label='<clearColdRoom &nbsp; >',  fontcolor='magenta') >> coldstorageservice
+     coldstorageservice >> Edge(color='blue', style='solid',  label='<goMoveToIndoor &nbsp; goMoveToHome &nbsp; >',  fontcolor='blue') >> transporttrolley
+     statusservice >> Edge(color='blue', style='solid',  label='<coapUpdate &nbsp; >',  fontcolor='blue') >> servicestatusgui
+     coldstorageservice >> Edge(color='blue', style='solid',  label='<coapUpdate &nbsp; >',  fontcolor='blue') >> statusservice
+     statusservice >> Edge(color='blue', style='solid',  label='<coapUpdate &nbsp; >',  fontcolor='blue') >> serviceaccessgui
+     transporttrolley >> Edge(color='blue', style='solid',  label='<depositdone &nbsp; >',  fontcolor='blue') >> coldstorageservice
+     statusservice >> Edge(color='blue', style='solid',  label='<goMoveToHome &nbsp; >',  fontcolor='blue') >> transporttrolley
+     coldstorageservice >> Edge(color='blue', style='solid',  label='<updatevirtualweight &nbsp; >',  fontcolor='blue') >> ticketservice
 diag

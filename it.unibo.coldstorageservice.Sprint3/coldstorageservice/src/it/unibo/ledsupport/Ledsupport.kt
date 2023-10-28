@@ -10,17 +10,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-	
-class Ledsupport ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
+import it.unibo.kactor.sysUtil.createActor   //Sept2023
+class Ledsupport ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : ActorBasicFsm( name, scope, confined=isconfined ){
 
 	override fun getInitialState() : String{
 		return "s0"
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		val interruptedStateTransitions = mutableListOf<Transition>()
-		return { //this:ActionBasciFsm
+				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
+						forward("ledstatuschange", "ledstatuschange(_)" ,"led" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -29,4 +30,4 @@ class Ledsupport ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name,
 				}	 
 			}
 		}
-}
+} 

@@ -220,7 +220,7 @@
             <div class="remark">
                 Lo Sprint2 ha prodotto la seguente architettura:
                 <br>
-                <img src="..\userdocs\images\coldstorageservicearchsprint2finale.png" width="60%"> 
+                <img src="..\userdocs\images\coldstorageservicearchsprint2finaleV2.png" width="60%"> 
                 <br>
 
             </div>
@@ -315,7 +315,8 @@
 
                 <h2>Architettura logica</h2>
                 <div class="remark">
-                    <img src="../userdocs/images/coldstorageservicearchsprint3analisiV3.png" width="80%">
+                    <img src="../userdocs/images/coldstorageservicearchsprint3analisiV4.png" width="90%">
+                    <br>*gli eventi locali <pre class="inline">stopevent</pre> e <pre class="inline">resumevent</pre> sono stati rappresentati come dispatch per poterli visualizzare nell'immagine.
                     <br>
                     Dall'architettua logica possiamo evidenziare i nuovi componenti:
                     <ul>
@@ -377,9 +378,9 @@ if((last <= limit and v > limit) or (last > limit and v <= limit))
                             messaggio inviato da LedObserver (spiegato in seguito) all'attore LedSupport per poter gestire correttamente i cambiamenti di stato del led fisico</li>
                     </ul>
                     <h3>SonarSupport</h3>
-                    CodedQActor che esegue codice Python per la gestione di un sonar fisico SONAR HC-SR04 (classe Kotlin <pre class="inline">sonarHCSR04Support23.kt</pre>).
+                    CodedQActor che implementa la logica necessaria per la gestione di un sonar fisico SONAR HC-SR04 (classe Kotlin <pre class="inline">sonarHCSR04Support23.kt</pre>).
                     <ul>
-                        <li>Il codice python (<pre class="inline">SonarReceiver.py</pre>) è connesso tramite socket al componente <pre class="inline">SonarController.py</pre>, da cui riceve le misurazioni del sonar fisico</li>
+                        <li>Tale attore si connette tramite socket al componente <pre class="inline">SonarController.py</pre>, da cui riceve le misurazioni del sonar fisico</li>
                         <li>Queste misurazioni vengono, successivamente, lette dall'attore SonarSupport e utilizzate, da quest'ultimo, per emettere il messaggio <pre class="inline">dispatch sonardata : sonardata(D)</pre>.
                         </li>
                     </ul>
@@ -426,7 +427,7 @@ updateResource [# "transporttrolleystatus(Status)"#]
                 <h2>Architettura logica finale</h2>
                 <div class="remark">
                     <a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak">Modello qak</a><br>
-                    <img src="../userdocs/images/coldstorageservicearchsprint3finaleV4.png" width="80%">
+                    <img src="../userdocs/images/coldstorageservicearchsprint3finaleV4.png" width="90%">
                     <br>*gli eventi locali <pre class="inline">stopevent</pre> e <pre class="inline">resumevent</pre> sono stati rappresentati come dispatch per poterli visualizzare nell'immagine.
                 </div>
                 <h2>Esecuzione sistema</h2>

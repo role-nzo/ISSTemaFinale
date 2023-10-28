@@ -10,15 +10,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-	
-class Serviceaccessgui ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
+import it.unibo.kactor.sysUtil.createActor   //Sept2023
+class Serviceaccessgui ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : ActorBasicFsm( name, scope, confined=isconfined ){
 
 	override fun getInitialState() : String{
 		return "s0"
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		val interruptedStateTransitions = mutableListOf<Transition>()
-		return { //this:ActionBasciFsm
+				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outred("fridgetruck starts")
@@ -29,7 +29,7 @@ class Serviceaccessgui ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t025",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
+					 transition(edgeName="t027",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
 				}	 
 				state("elabTicketAccepted") { //this:State
 					action { //it:State
@@ -47,7 +47,7 @@ class Serviceaccessgui ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t126",targetState="elabLoadDone",cond=whenReply("storefoodaccepted"))
+					 transition(edgeName="t128",targetState="elabLoadDone",cond=whenReply("storefoodaccepted"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -57,7 +57,7 @@ class Serviceaccessgui ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t127",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
+					 transition(edgeName="t129",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
 				}	 
 				state("elabChargeTaken") { //this:State
 					action { //it:State
@@ -71,4 +71,4 @@ class Serviceaccessgui ( name: String, scope: CoroutineScope  ) : ActorBasicFsm(
 				}	 
 			}
 		}
-}
+} 

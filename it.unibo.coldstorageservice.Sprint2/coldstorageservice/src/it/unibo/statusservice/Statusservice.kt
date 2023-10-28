@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-	
-class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( name, scope ){
+import it.unibo.kactor.sysUtil.createActor   //Sept2023
+class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : ActorBasicFsm( name, scope, confined=isconfined ){
 
 	override fun getInitialState() : String{
 		return "s0"
@@ -25,7 +25,7 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				var RobotFree = "libero"
 				var CurrentWeightReal = 0 
 				var RejectedTickets = 0  
-		return { //this:ActionBasciFsm
+				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						
@@ -105,4 +105,4 @@ class Statusservice ( name: String, scope: CoroutineScope  ) : ActorBasicFsm( na
 				}	 
 			}
 		}
-}
+} 

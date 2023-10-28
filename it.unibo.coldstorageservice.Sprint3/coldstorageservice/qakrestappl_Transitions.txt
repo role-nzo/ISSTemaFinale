@@ -1,11 +1,3 @@
-{"actor":"ledobserver", "msgType":"dispatch", "curstate":"observing", "nextstate":"doObserve", "msgId":"coapUpdate"}
-{"actor":"sonarhandler", "msgType":"dispatch", "curstate":"work", "nextstate":"handlesonardata", "msgId":"sonardata"}
-{"actor":"sonarhandler", "msgType":"dispatch", "curstate":"work", "nextstate":"handlerobotstop", "msgId":"robotstop"}
-{"actor":"sonarhandler", "msgType":"dispatch", "curstate":"work", "nextstate":"handlerobotstopfailed", "msgId":"robotstopfailed"}
-{"actor":"sonarhandler", "msgType":"dispatch", "curstate":"work", "nextstate":"handlerobotresume", "msgId":"robotresume"}
-{"actor":"sonarhandler", "msgType":"dispatch", "curstate":"handlesonardata", "nextstate":"handlerobotstop", "msgId":"robotstop"}
-{"actor":"sonarhandler", "msgType":"dispatch", "curstate":"handlesonardata", "nextstate":"handlerobotstopfailed", "msgId":"robotstopfailed"}
-{"actor":"sonarhandler", "msgType":"dispatch", "curstate":"handlesonardata", "nextstate":"handlerobotresume", "msgId":"robotresume"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveIndoor", "msgId":"goMoveToIndoor"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveColdRoom", "msgId":"goMoveToColdRoom"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveHome", "msgId":"goMoveToHome"}
