@@ -1,0 +1,55 @@
+System raspberry
+
+Dispatch stopevent : stopevent(_)
+Dispatch resumevent : resumevent(_)
+Dispatch ledstatuschange: ledstatuschange(STATUS)
+Dispatch coapUpdate: coapUpdate(RESOURCE, VALUE)
+
+Context ctxcoldstorageservice ip [host="127.0.0.1" port=8022]
+Context ctxraspberry ip [host="localhost" port=8023]
+
+ExternalQActor transporttrolley context ctxcoldstorageservice
+
+CodedQActor sonar  context ctxraspberry className "Sonar"
+CodedQActor led  context ctxraspberry className "Led"
+
+/* 
+QActor sonar context ctxraspberry{
+	State s0 initial{
+		println("sonar starts") color blue
+	}
+	Goto work
+	
+	State work{
+		//TUTTO QUELLO CHE LEGGO INVIO
+		
+		forward transporttrolley -m stopevent : stopevent(_)
+		forward transporttrolley -m resumevent : resumevent(_)
+		
+	}
+	Goto work
+}
+
+QActor led context ctxraspberry{
+	State s0 initial{
+		println("led starts") color blue
+	}
+	Goto work
+	
+	State work{
+		//RICEVE DAL TRANSPORTROLLEY GLI STATI
+		
+		
+	}
+	Transition t1 whenMsg ledstatuschange   -> elabledstatuschange
+	
+	State elabledstatuschange{
+		onMsg( ledstatuschange : ledstatuschange(STATUS)){
+				[#
+					var statusLed = payloadArg(0)  //Home, Moving, Stopped
+				#]
+				
+			}
+	}
+	Goto work
+}*/

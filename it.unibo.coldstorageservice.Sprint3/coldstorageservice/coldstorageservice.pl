@@ -21,31 +21,25 @@ dispatch( updatevirtualweight, updatevirtualweight(FW) ).
 request( clearColdRoom, clearColdRoom(_) ).
 dispatch( sendmap, sendmap(_) ).
 dispatch( sonardata, sonardata(D) ).
-event( stopevent, stopevent(_) ).
-event( resumevent, resumevent(_) ).
+event( obstacle, obstacle(D) ).
+dispatch( resume, resume(_) ).
+dispatch( stop, stop(D) ).
 dispatch( stopevent, stopevent(_) ).
 dispatch( resumevent, resumevent(_) ).
 dispatch( robotstop, robotstop(_) ).
 dispatch( robotstopfailed, robotstopfailed(_) ).
 dispatch( robotresume, robotresume(_) ).
 dispatch( ledstatuschange, ledstatuschange(STATUS) ).
-dispatch( sonarstatuschange, sonarstatuschange(STATUS) ).
 %====================================================================================
 context(ctxbasicrobot, "127.0.0.1",  "TCP", "8020").
 context(ctxcoldstorageservice, "localhost",  "TCP", "8022").
-context(ctxserviceaccessgui, "localhost",  "TCP", "8023").
-context(ctxservicestatusgui, "localhost",  "TCP", "8024").
-context(ctxraspberry, "192.168.1.35",  "TCP", "8023").
+context(ctxraspberry, "127.0.0.1",  "TCP", "8023").
  qactor( basicrobot, ctxbasicrobot, "external").
   qactor( robotposendosimbiotico, ctxbasicrobot, "external").
-  qactor( ledsupport, ctxcoldstorageservice, "it.unibo.ledsupport.Ledsupport").
-  qactor( sonarsupport, ctxcoldstorageservice, "it.unibo.sonarsupport.Sonarsupport").
+  qactor( led, ctxraspberry, "external").
+  qactor( sonar, ctxraspberry, "external").
   qactor( transporttrolley, ctxcoldstorageservice, "it.unibo.transporttrolley.Transporttrolley").
   qactor( statusservice, ctxcoldstorageservice, "it.unibo.statusservice.Statusservice").
   qactor( emptycoldroom, ctxcoldstorageservice, "it.unibo.emptycoldroom.Emptycoldroom").
   qactor( ticketservice, ctxcoldstorageservice, "it.unibo.ticketservice.Ticketservice").
   qactor( coldstorageservice, ctxcoldstorageservice, "it.unibo.coldstorageservice.Coldstorageservice").
-  qactor( serviceaccessgui, ctxserviceaccessgui, "it.unibo.serviceaccessgui.Serviceaccessgui").
-  qactor( servicestatusgui, ctxservicestatusgui, "it.unibo.servicestatusgui.Servicestatusgui").
-  qactor( sonar, ctxraspberry, "it.unibo.sonar.Sonar").
-  qactor( led, ctxraspberry, "it.unibo.led.Led").

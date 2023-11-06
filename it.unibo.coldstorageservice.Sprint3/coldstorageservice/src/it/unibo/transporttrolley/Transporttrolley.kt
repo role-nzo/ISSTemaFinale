@@ -24,12 +24,13 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 				var Mint = 5000
 				var AlarmCondition = false
 				var MoveAlarm = " "
+				var Stopped = false
+				var Limit = 10
 				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outblue("transporttrolley starts")
 						request("engage", "engage(transporttrolley,330)" ,"basicrobot" )  
-						forward("ledstatuschange", "ledstatuschange(_)" ,"ledsupport" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -50,7 +51,6 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 				state("init") { //this:State
 					action { //it:State
 						CommUtils.outblue("transporttrolley init")
-						 subscribeToLocalActor("sonarhandler") 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -119,7 +119,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t15",targetState="checkSonarData",cond=whenEvent("stopevent"))
+					 transition(edgeName="t15",targetState="checkSonarData",cond=whenDispatch("stopevent"))
 					transition(edgeName="t16",targetState="robothit",cond=whenReply("moverobotfailed"))
 					transition(edgeName="t17",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
 				}	 
@@ -166,12 +166,11 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 						
 								   val currentTime = java.time.Instant.now().epochSecond
 								   AlarmCondition = (currentTime - LastStopTime)*1000 > Mint
-								   if(AlarmCondition){ MoveAlarm = "STOP" 
+								   if(AlarmCondition){ 
 						emit("alarm", "alarm(stop)" ) 
 						CommUtils.outblack("alarm emitted")
 						 println(AlarmCondition)}
 								   else{
-								   		MoveAlarm = "WAIT"
 						CommUtils.outblack("Stop failed: not enough time from last stop")
 						}			
 						//genTimer( actor, state )
@@ -195,7 +194,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t210",targetState="resuming",cond=whenEvent("resumevent"))
+					 transition(edgeName="t210",targetState="resuming",cond=whenDispatch("resumevent"))
 				}	 
 				state("resuming") { //this:State
 					action { //it:State
