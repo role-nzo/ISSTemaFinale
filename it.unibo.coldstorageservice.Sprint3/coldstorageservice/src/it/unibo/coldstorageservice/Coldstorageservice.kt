@@ -20,7 +20,6 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 		val interruptedStateTransitions = mutableListOf<Transition>()
 		 var CurrentWeightReal = 0
 			   var CurrentTicketFW = 0
-			   var Ticketsrejected = 0
 				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -79,8 +78,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						 Ticketsrejected++  
-						updateResourceRep( "ticketrejected($Ticketsrejected)"  
+						updateResourceRep( "ticketrejected(_)"  
 						)
 						answer("storefood", "storefoodrejected", "storefoodrejected(invalid)"   )  
 						//genTimer( actor, state )

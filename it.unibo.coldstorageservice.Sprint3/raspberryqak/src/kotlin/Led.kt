@@ -31,7 +31,7 @@ class Led ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						CoapObserverSupport(myself, "127.0.0.1","8022","ctxcoldstorageservice","transporttrolley")
 						//genTimer( actor, state )
 
-
+/*
 						val pythonEnrico = "C://Users//zacen//AppData//Local//Programs//Python//Python311//python "
 						val eseguibileEnrico = "C://Users//zacen//OneDrive//Desktop//ISSTemaFinale//it.unibo.coldstorageservice.Sprint3//coldstorageservice//resources//SonarReceiver.py "
 
@@ -39,7 +39,7 @@ class Led ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						val testLucaSonarSimulator = "//Users//lucadominici//Desktop//IngegneriaSoftware//ProgettoFinale//ISSTemaFinale//it.unibo.coldstorageservice.Sprint3//coldstorageservice//resources//SonarSimulator.py"
 						val p  = Runtime.getRuntime().exec(pythonEnrico + eseguibileEnrico )
 						//val p  = Runtime.getRuntime().exec( testLucaPython + testLucaSonarSimulator )
-						//Thread.sleep(5000)
+						//Thread.sleep(5000)*/
 						writer = BufferedWriter(  OutputStreamWriter (System.out ))
 
 					}

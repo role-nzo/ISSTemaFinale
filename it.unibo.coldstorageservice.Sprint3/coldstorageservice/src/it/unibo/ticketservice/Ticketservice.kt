@@ -22,13 +22,10 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 			   var currentWeightVirtual = 0 
 			   var maxWeight = 100
 			   var TimeMax = 300
-			   var Ticketsrejected = 0
 				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outyellow("$name | wait for request")
-						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
-						 	   
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -40,7 +37,6 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 				}	 
 				state("elabNewTicket") { //this:State
 					action { //it:State
-						CommUtils.outyellow("$name | elab new ticket")
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
 						if( checkMsgContent( Term.createTerm("newticket(FW)"), Term.createTerm("newticket(FW)"), 
@@ -74,8 +70,6 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 												
 												ticketList.add(ticket)
 												
-												println(ticket)
-												
 											
 								answer("newticket", "newticketaccepted", "newticketaccepted($Id)"   )  
 								
@@ -93,9 +87,6 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 				}	 
 				state("elabUpdateVirtualWeight") { //this:State
 					action { //it:State
-						CommUtils.outyellow("$name | virtual weight update")
-						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
-						 	   
 						if( checkMsgContent( Term.createTerm("updatevirtualweight(FW)"), Term.createTerm("updatevirtualweight(FW)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								
@@ -111,7 +102,6 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 				}	 
 				state("elabStoreFood") { //this:State
 					action { //it:State
-						CommUtils.outyellow("$name | elab ticket request")
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
 						if( checkMsgContent( Term.createTerm("storefood(TICKET,FW)"), Term.createTerm("storefood(TICKET,FW)"), 
@@ -152,11 +142,6 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 								
 													} else{
 														currentWeightVirtual -= ticket!!.fw
-														println("ticketservice " + Ticketsrejected)
-														//TODO: "Ticketsrejected" non serve su "coldstorageservice" ma solo su "statusservice"
-														Ticketsrejected++
-								updateResourceRep( " ticketrejected($Ticketsrejected)"  
-								)
 								answer("storefood", "storefoodrejected", "storefoodrejected(invalid)"   )  
 								
 											  		}

@@ -53,10 +53,8 @@ class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 				}	 
 				state("sendMap") { //this:State
 					action { //it:State
-						CommUtils.outblack("$Map")
 						updateResourceRep( "status($Map, $PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)"  
 						)
-						CommUtils.outblack("$Map")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -92,9 +90,7 @@ class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 											PosY = temp.split(",")[1].toInt()
 										}
 									}
-									
-									println(resource)
-									println(value) 
+									 
 						updateResourceRep( "status($PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)"  
 						)
 						//genTimer( actor, state )

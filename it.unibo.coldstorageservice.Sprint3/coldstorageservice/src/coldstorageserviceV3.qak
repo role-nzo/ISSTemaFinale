@@ -1,7 +1,4 @@
 System coldstorageservice
- 
-//mqttBroker "broker.hivemq.com" :  1883 eventTopic "unibo/zdel/sonar/events"
-//mqttBroker "mqtt.eclipseprojects.io" : 1883 eventTopic "unibo/sonar/events"
 
 Dispatch coapUpdate: coapUpdate(RESOURCE, VALUE)
 Event alarm           : alarm(X)
@@ -11,14 +8,6 @@ Reply   engagedone    : engagedone(ARG)
 Reply   engagerefused : engagerefused(ARG)
 
 Dispatch disengage    : disengage(ARG)
-
-Dispatch setrobotstate: setpos(X,Y,D)
-Dispatch setdirection : dir( D )  //D =up|down!left|right
-
-Request  doplan   : doplan( PATH, OWNER, STEPTIME )
-Reply doplandone  : doplandone( ARG )
-Reply doplanfailed  : doplanfailed( PLANDONE, PLANTODO )
-
 
 Request moverobot    :  moverobot(TARGETX, TARGETY)
 Reply moverobotdone  :  moverobotok(ARG)
@@ -41,7 +30,6 @@ Request storefood 		: storefood( TICKET, FW )
 Reply storefoodaccepted : storefoodaccepted( MESSAGE )
 Reply storefoodrejected : storefoodrejected( REASON )
 
-
 Request loaddone	: loaddone(FW)
 Reply chargetaken	: chargetaken(MESSAGE)
 Reply chargefailure : chargefailure(REASON)
@@ -60,35 +48,19 @@ Reply coldRoomCleared : coldRoomCleared(_)
 Dispatch sendmap 	: sendmap(_)
 
 //sonar e led
-//Event sonardata : distance(D)   //emitted  by distancefilter
-Dispatch sonardata : sonardata(D)
-Event obstacle  : obstacle(D)   //emitted as stream by distancefilter
-Dispatch resume    : resume( _ ) 
-Dispatch stop : stop(D) //stop da inviare al transporttrolley
-
 //Eventi sonar
 Dispatch stopevent : stopevent(_)
 Dispatch resumevent : resumevent(_)
-
-Dispatch robotstop : robotstop(_)
-Dispatch robotstopfailed : robotstopfailed(_)
-Dispatch robotresume : robotresume(_) 
-
 Dispatch ledstatuschange : ledstatuschange(STATUS)
 
 Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
 Context ctxraspberry 		  ip [host="127.0.0.1" port=8023]
 
-
-
 ExternalQActor basicrobot context ctxbasicrobot
 ExternalQActor robotposendosimbiotico context ctxbasicrobot
-
 ExternalQActor led context ctxraspberry
 ExternalQActor sonar context ctxraspberry
-
-
 
 QActor transporttrolley context ctxcoldstorageservice{
 	[#
@@ -123,12 +95,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	}
 	Transition t0 whenMsg goMoveToIndoor   -> elabMoveIndoor
 				  whenMsg goMoveToColdRoom -> elabMoveColdRoom
-				  whenMsg goMoveToHome     -> elabMoveHome
-	 
-	/*
-	 Testare messaggio stopevent in coda -> inviarlo quando il robot è fermo (HOME) (o quando non dovrebbe riceverlo), farlo
-	 * partire e vedere se il robot gestisce lo stop
-	 */ 
+				  whenMsg goMoveToHome     -> elabMoveHome 
 	 
 	State elabMoveIndoor {	
 		printCurrentMessage color blue	
@@ -156,20 +123,10 @@ QActor transporttrolley context ctxcoldstorageservice{
 		updateResource [# "transporttrolleystatus(moving)"#]
 	}
 	Transition t1 whenMsg stopevent -> checkSonarData
-				  //whenReply moverobotfailed -> waitcoldstorageservicerequest
 				  whenReply moverobotfailed -> robothit
 				  whenReply moverobotdone -> planFinishSwitch
-				  //whenMsg stop -> checkSonarData
-				  
-	/* Possibile bug: se robot riceve stop, attende per il resume e riceve secondo stop dop
-	 attesa maggiore di Mint, una volta ricevuto il resume questo fa passare il transportrolley allo stato
-	 waitrobot e se il messaggio dello stop è stato messo in coda questo provocherebbe il cambio di stato in checkSonarData e
-	 l'immediato stop del robot -> questo è un problema perchè il messaggio di robot era già fermo
-	  */
-	  
 	
 	State robothit{
-		printCurrentMessage
 		println("Robot hit")
 		updateResource [# "transporttrolleystatus(stopped)"#]
 	}
@@ -193,7 +150,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 				println("alarm emitted")
 				
 				
-		 [# println(AlarmCondition)}
+		 [#}
 		   else{
 		   		#]	   		
 		   		println("Stop failed: not enough time from last stop")
@@ -299,9 +256,7 @@ QActor statusservice context ctxcoldstorageservice {
 	
 	State sendMap{
 		
-		println("$Map")
 		updateResource [# "status($Map, $PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)" #]
-		println("$Map")
 		
 	}Goto observing
 	
@@ -331,9 +286,7 @@ QActor statusservice context ctxcoldstorageservice {
 					PosY = temp.split(",")[1].toInt()
 				}
 			}
-			
-			println(resource)
-			println(value) 
+			 
 		#]
 		updateResource [# "status($PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)" #]
 	}
@@ -359,12 +312,10 @@ QActor ticketservice context ctxcoldstorageservice {
 	   var currentWeightVirtual = 0 
 	   var maxWeight = 100
 	   var TimeMax = 300
-	   var Ticketsrejected = 0
 	#]
 	
 	State s0 initial{
 		println("$name | wait for request") color yellow
-		printCurrentMessage
 	}
 	Transition t0 whenRequest newticket -> elabNewTicket
 				 	whenRequest storefood  -> elabStoreFood
@@ -373,7 +324,6 @@ QActor ticketservice context ctxcoldstorageservice {
 
 	State elabNewTicket{
 		
-		println("$name | elab new ticket") color yellow
 		printCurrentMessage
 		onMsg( newticket : newticket( FW )){
 			
@@ -406,8 +356,6 @@ QActor ticketservice context ctxcoldstorageservice {
 				
 				ticketList.add(ticket)
 				
-				println(ticket)
-				
 			
 				#] replyTo newticket with newticketaccepted:newticketaccepted( $Id ) [#
 				} else {
@@ -420,8 +368,6 @@ QActor ticketservice context ctxcoldstorageservice {
 	Goto s0
 	
 	State elabUpdateVirtualWeight{
-			println("$name | virtual weight update") color yellow
-			printCurrentMessage
 			onMsg( updatevirtualweight : updatevirtualweight(FW)){
 				[#
 					currentWeightVirtual = currentWeightVirtual - payloadArg(0).toInt()
@@ -432,7 +378,6 @@ QActor ticketservice context ctxcoldstorageservice {
 	
 	State elabStoreFood{
 		
-		println("$name | elab ticket request") color yellow
 		printCurrentMessage
 		onMsg( storefood : storefood( TICKET, FW )) {
 			[#
@@ -473,11 +418,7 @@ QActor ticketservice context ctxcoldstorageservice {
 						[#
 					} else{
 						currentWeightVirtual -= ticket!!.fw
-						println("ticketservice " + Ticketsrejected)
-						//TODO: "Ticketsrejected" non serve su "coldstorageservice" ma solo su "statusservice"
-						Ticketsrejected++
 						#]
-						updateResource [# " ticketrejected($Ticketsrejected)" #]
 						replyTo storefood with storefoodrejected  : storefoodrejected(invalid)		 	 
 			  			[#
 			  		}
@@ -494,7 +435,6 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	[# var CurrentWeightReal = 0
 	   var CurrentTicketFW = 0
-	   var Ticketsrejected = 0
 	#]
 	
 	State s0 initial{
@@ -535,8 +475,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	
 	State elabStoreFoodRejected  {
 		printCurrentMessage
-		[# Ticketsrejected++ #]
-		updateResource [# "ticketrejected($Ticketsrejected)" #]
+		updateResource [# "ticketrejected(_)" #]
 		replyTo storefood with storefoodrejected  : storefoodrejected(invalid)
 	} Goto waitclientrequest
 	

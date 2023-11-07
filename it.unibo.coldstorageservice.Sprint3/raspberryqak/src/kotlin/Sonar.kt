@@ -31,12 +31,13 @@ class Sonar ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 
 						try{
 							//val p  = Runtime.getRuntime().exec("sudo ./SonarAlone")
+							/*
 							val pythonEnrico = "C://Users//zacen//AppData//Local//Programs//Python//Python311//python "
 							val eseguibileEnrico = "C://Users//zacen//OneDrive//Desktop//ISSTemaFinale//it.unibo.coldstorageservice.Sprint3//coldstorageservice//resources//SonarReceiver.py "
 
 							val p  = Runtime.getRuntime().exec(pythonEnrico + eseguibileEnrico )
 							//val p  = Runtime.getRuntime().exec( testLucaPython + testLucaSonarSimulator )
-
+*/
 							reader = BufferedReader(  InputStreamReader (System.`in`))
 							println("Do Read")
 						}catch( e : Exception){

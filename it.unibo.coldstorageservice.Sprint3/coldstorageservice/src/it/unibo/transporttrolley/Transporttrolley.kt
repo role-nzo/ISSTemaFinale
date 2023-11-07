@@ -125,8 +125,6 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 				}	 
 				state("robothit") { //this:State
 					action { //it:State
-						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
-						 	   
 						CommUtils.outblack("Robot hit")
 						updateResourceRep( "transporttrolleystatus(stopped)" 
 						)
@@ -169,7 +167,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 								   if(AlarmCondition){ 
 						emit("alarm", "alarm(stop)" ) 
 						CommUtils.outblack("alarm emitted")
-						 println(AlarmCondition)}
+						}
 								   else{
 						CommUtils.outblack("Stop failed: not enough time from last stop")
 						}			
