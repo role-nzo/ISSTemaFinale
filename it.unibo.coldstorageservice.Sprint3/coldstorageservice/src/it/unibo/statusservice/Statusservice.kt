@@ -30,7 +30,7 @@ class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 					action { //it:State
 						
 									//CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
-									CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotpos")
+									CoapObserverSupport(myself, "192.168.1.141","8020","ctxbasicrobot","robotpos")
 						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","coldstorageservice")
 						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","transporttrolley")
 						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
@@ -48,8 +48,8 @@ class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t015",targetState="doObserve",cond=whenDispatch("coapUpdate"))
-					transition(edgeName="t016",targetState="sendMap",cond=whenDispatch("sendmap"))
+					 transition(edgeName="t016",targetState="doObserve",cond=whenDispatch("coapUpdate"))
+					transition(edgeName="t017",targetState="sendMap",cond=whenDispatch("sendmap"))
 				}	 
 				state("sendMap") { //this:State
 					action { //it:State

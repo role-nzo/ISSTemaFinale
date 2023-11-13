@@ -122,6 +122,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 					 transition(edgeName="t15",targetState="checkSonarData",cond=whenDispatch("stopevent"))
 					transition(edgeName="t16",targetState="robothit",cond=whenReply("moverobotfailed"))
 					transition(edgeName="t17",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
+					transition(edgeName="t18",targetState="waitRobot",cond=whenDispatch("resumevent"))
 				}	 
 				state("robothit") { //this:State
 					action { //it:State
@@ -176,13 +177,13 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t38",targetState="stopped",cond=whenReply("moverobotfailed"))
-					transition(edgeName="t39",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
+					 transition(edgeName="t39",targetState="stopped",cond=whenReply("moverobotfailed"))
+					transition(edgeName="t310",targetState="planFinishSwitch",cond=whenReply("moverobotdone"))
 				}	 
 				state("stopped") { //this:State
 					action { //it:State
 						CommUtils.outblack("Sono fermo")
-						LastStopTime = java.time.Instant.now().epochSecond 
+						 LastStopTime = java.time.Instant.now().epochSecond  
 						updateResourceRep( "transporttrolleystatus(stopped)" 
 						)
 						updateResourceRep( "robotfree(fermo)" 
@@ -192,7 +193,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t210",targetState="resuming",cond=whenDispatch("resumevent"))
+					 transition(edgeName="t211",targetState="resuming",cond=whenDispatch("resumevent"))
 				}	 
 				state("resuming") { //this:State
 					action { //it:State
@@ -235,7 +236,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t111",targetState="elabWaitLoad",cond=whenRequest("waitLoad"))
+					 transition(edgeName="t112",targetState="elabWaitLoad",cond=whenRequest("waitLoad"))
 				}	 
 				state("planFailedIndoor") { //this:State
 					action { //it:State
@@ -246,7 +247,7 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t112",targetState="elabWaitLoad",cond=whenRequest("waitLoad"))
+					 transition(edgeName="t113",targetState="elabWaitLoad",cond=whenRequest("waitLoad"))
 				}	 
 				state("elabWaitLoad") { //this:State
 					action { //it:State
@@ -270,8 +271,8 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 				 	 		stateTimer = TimerActor("timer_planFinishColdRoom", 
 				 	 					  scope, context!!, "local_tout_transporttrolley_planFinishColdRoom", 4000.toLong() )
 					}	 	 
-					 transition(edgeName="t513",targetState="elabMoveHome",cond=whenTimeout("local_tout_transporttrolley_planFinishColdRoom"))   
-					transition(edgeName="t514",targetState="elabMoveIndoor",cond=whenDispatch("goMoveToIndoor"))
+					 transition(edgeName="t514",targetState="elabMoveHome",cond=whenTimeout("local_tout_transporttrolley_planFinishColdRoom"))   
+					transition(edgeName="t515",targetState="elabMoveIndoor",cond=whenDispatch("goMoveToIndoor"))
 				}	 
 				state("planFinishHome") { //this:State
 					action { //it:State

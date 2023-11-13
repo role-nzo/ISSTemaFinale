@@ -20,7 +20,7 @@ import java.net.Socket
 
 
 class sonarHCSR04Support23 ( name : String, scope: CoroutineScope, discardMessages: Boolean ) : ActorBasic( name ) {
-	var hostAddress = "192.168.1.141"
+	var hostAddress = "192.168.1.140"
 	lateinit var socket: Socket
 	lateinit var serverSocket: ServerSocket
 	lateinit var reader : BufferedReader

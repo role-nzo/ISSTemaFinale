@@ -22,11 +22,12 @@ public class ServiceAccessUseCase implements ServiceAccessUseCaseInterface {
             CommSystemConfig.tracing = true;
             String ctxqakdest       = "ctxcoldstorageservice";
             String qakdestination 	= "coldstorageservice";
-            String addr = "127.0.0.1";
+            String addr = "192.168.1.141";
             String path   = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
 
             CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/statusservice" );
             planexecconn.observeResource( new ColdRoomCoapObserver() );
+
 
             client = new Socket("localhost", 8022);
 

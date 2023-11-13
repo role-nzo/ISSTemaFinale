@@ -31,9 +31,9 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t017",targetState="elabNewTicket",cond=whenRequest("newticket"))
-					transition(edgeName="t018",targetState="elabStoreFood",cond=whenRequest("storefood"))
-					transition(edgeName="t019",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
+					 transition(edgeName="t018",targetState="elabNewTicket",cond=whenRequest("newticket"))
+					transition(edgeName="t019",targetState="elabStoreFood",cond=whenRequest("storefood"))
+					transition(edgeName="t020",targetState="elabUpdateVirtualWeight",cond=whenDispatch("updatevirtualweight"))
 				}	 
 				state("elabNewTicket") { //this:State
 					action { //it:State
