@@ -22,12 +22,14 @@ public class ServiceStatusUseCase implements ServiceStatusUseCaseInterface {
             String ctxqakdest       = "ctxcoldstorageservice";
             String qakdestination 	= "coldstorageservice";
 
-            String addr = "127.0.0.1";
+            String addr = "192.168.1.141";
             String path = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
             coapconn    = new CoapConnection(addr+":" + cssPort, path);
 
             CoapConnection statusservicecconn = new CoapConnection(addr+":" + cssPort, ctxqakdest+"/statusservice" );
             statusservicecconn.observeResource( new StatusServiceCoapObserver() );
+            CoapConnection transporttrolleycconn = new CoapConnection(addr+":" + cssPort, ctxqakdest+"/transporttrolley" );
+            transporttrolleycconn.observeResource( new StatusServiceCoapObserver() );
 
             client = new Socket("localhost", 8022);
         }catch(Exception e){

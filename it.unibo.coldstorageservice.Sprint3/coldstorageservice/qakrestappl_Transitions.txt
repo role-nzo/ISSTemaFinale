@@ -2,6 +2,7 @@
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveColdRoom", "msgId":"goMoveToColdRoom"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitcoldstorageservicerequest", "nextstate":"elabMoveHome", "msgId":"goMoveToHome"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitRobot", "nextstate":"checkSonarData", "msgId":"stopevent"}
+{"actor":"transporttrolley", "msgType":"dispatch", "curstate":"waitRobot", "nextstate":"waitRobot", "msgId":"resumevent"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"stopped", "nextstate":"resuming", "msgId":"resumevent"}
 {"actor":"transporttrolley", "msgType":"dispatch", "curstate":"planFinishColdRoom", "nextstate":"elabMoveIndoor", "msgId":"goMoveToIndoor"}
 {"actor":"statusservice", "msgType":"dispatch", "curstate":"observing", "nextstate":"doObserve", "msgId":"coapUpdate"}

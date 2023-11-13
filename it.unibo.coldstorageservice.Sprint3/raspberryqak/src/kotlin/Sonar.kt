@@ -31,14 +31,16 @@ class Sonar ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 
 						try{
 							//val p  = Runtime.getRuntime().exec("sudo ./SonarAlone")
-							/*
-							val pythonEnrico = "C://Users//zacen//AppData//Local//Programs//Python//Python311//python "
-							val eseguibileEnrico = "C://Users//zacen//OneDrive//Desktop//ISSTemaFinale//it.unibo.coldstorageservice.Sprint3//coldstorageservice//resources//SonarReceiver.py "
 
-							val p  = Runtime.getRuntime().exec(pythonEnrico + eseguibileEnrico )
+							val pythonEnrico = "/usr/bin/python3"
+							val eseguibileSonar = "/unibo.raspberry-3.0/bin/sonar.py"
+							val eseguibileSonarFilter = "/unibo.raspberry-3.0/bin/SonarFilter.py"
+							val command = arrayOf("/bin/sh","-c","/usr/bin/python3 /unibo.raspberry-3.0/bin/sonar.py | /usr/bin/python3 /unibo.raspberry-3.0/bin/SonarFilter.py")
+							//val p  = Runtime.getRuntime().exec("/usr/bin/python3 /unibo.raspberry-3.0/bin/sonar.py | /usr/bin/python3 /unibo.raspberry-3.0/bin/SonarFilter.py")
+							val p  = Runtime.getRuntime().exec(command)
 							//val p  = Runtime.getRuntime().exec( testLucaPython + testLucaSonarSimulator )
-*/
-							reader = BufferedReader(  InputStreamReader (System.`in`))
+
+							reader = BufferedReader(  InputStreamReader (p.inputStream))
 							println("Do Read")
 						}catch( e : Exception){
 							println("WARNING: $name does not find low-level code")
@@ -54,11 +56,10 @@ class Sonar ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 				state("read") { //this:State
 					action { //it:State
 
-						System.out.println("Sonar: attendo dati in input")
 						var data = reader.readLine()
-						println(data)
-						if( data != null ){
 
+						if( data != null ){
+							println(data)
 							if(data.equals("HIGH")){
 
 								forward("resumevent", "resumevent(_)" ,"transporttrolley" )

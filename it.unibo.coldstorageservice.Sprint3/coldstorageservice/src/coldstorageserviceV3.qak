@@ -53,9 +53,9 @@ Dispatch stopevent : stopevent(_)
 Dispatch resumevent : resumevent(_)
 Dispatch ledstatuschange : ledstatuschange(STATUS)
 
-Context ctxbasicrobot 		  ip [host="127.0.0.1" port=8020] 
+Context ctxbasicrobot 		  ip [host="192.168.1.141" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
-Context ctxraspberry 		  ip [host="127.0.0.1" port=8023]
+Context ctxraspberry 		  ip [host="192.168.1.35" port=8023]
 
 ExternalQActor basicrobot context ctxbasicrobot
 ExternalQActor robotposendosimbiotico context ctxbasicrobot
@@ -95,7 +95,8 @@ QActor transporttrolley context ctxcoldstorageservice{
 	}
 	Transition t0 whenMsg goMoveToIndoor   -> elabMoveIndoor
 				  whenMsg goMoveToColdRoom -> elabMoveColdRoom
-				  whenMsg goMoveToHome     -> elabMoveHome 
+				  whenMsg goMoveToHome     -> elabMoveHome
+				  //whenMsg resumevent 	   -> resuming
 	 
 	State elabMoveIndoor {	
 		printCurrentMessage color blue	
@@ -125,6 +126,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	Transition t1 whenMsg stopevent -> checkSonarData
 				  whenReply moverobotfailed -> robothit
 				  whenReply moverobotdone -> planFinishSwitch
+				  whenMsg resumevent -> waitRobot
 	
 	State robothit{
 		println("Robot hit")
@@ -162,7 +164,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	
 	State stopped{
 		println("Sono fermo")
-		[#LastStopTime = java.time.Instant.now().epochSecond#]
+		[# LastStopTime = java.time.Instant.now().epochSecond #]
 		updateResource [# "transporttrolleystatus(stopped)"#]
 		updateResource [# "robotfree(fermo)"#]
 	}
@@ -239,7 +241,7 @@ QActor statusservice context ctxcoldstorageservice {
 		
 		[#
 			//CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
-			CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotpos")
+			CoapObserverSupport(myself, "192.168.1.141","8020","ctxbasicrobot","robotpos")
 		#]
 		observeResource coldstorageservice
 		observeResource transporttrolley
