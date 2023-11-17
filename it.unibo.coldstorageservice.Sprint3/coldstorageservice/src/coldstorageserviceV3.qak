@@ -51,34 +51,16 @@ Dispatch sendmap 	: sendmap(_)
 //Eventi sonar
 Dispatch stopevent : stopevent(_)
 Dispatch resumevent : resumevent(_)
-
-//Per immagine requisiti
 //Dispatch ledstatuschange : ledstatuschange(STATUS)
 
 Context ctxbasicrobot 		  ip [host="192.168.1.141" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
 Context ctxraspberry 		  ip [host="192.168.1.35" port=8023]
-Context ctxserviceaccessgui 		  ip [host="192.168.1.35" port=8023]
-Context ctxservicestatusgui 		  ip [host="192.168.1.35" port=8023]
 
 ExternalQActor basicrobot context ctxbasicrobot
 ExternalQActor robotposendosimbiotico context ctxbasicrobot
 ExternalQActor led context ctxraspberry
 ExternalQActor sonar context ctxraspberry
-
-//For image
-/*QActor led context ctxraspberry{
-	State s0 initial{
-		
-	}
-}
-
-QActor sonar context ctxraspberry{
-	State s0 initial{
-		forward transporttrolley -m stopevent:stopevent(_)
-		forward transporttrolley -m resumevent:resumevent(_) 
-	}
-}*/
 
 QActor transporttrolley context ctxcoldstorageservice{
 	[#
@@ -139,7 +121,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	
 	State waitRobot{
 		println("Wait robot")
-		//forward led -m ledstatuschange:ledstatuschange(_)
+		updateResource [# "transporttrolleystatus(moving)"#]
 	}
 	Transition t1 whenMsg stopevent -> checkSonarData
 				  whenReply moverobotfailed -> robothit
@@ -257,16 +239,12 @@ QActor statusservice context ctxcoldstorageservice {
 	
 	State s0 initial {
 		
-		//observeResource coldstorageservice
-		observeResource transporttrolley
 		[#
 			//CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
 			CoapObserverSupport(myself, "192.168.1.141","8020","ctxbasicrobot","robotpos")
-			//CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","coldstorageservice")
 		#]
-		delay 500
 		observeResource coldstorageservice
-		
+		observeResource transporttrolley
 		//request basicrobot -m moverobot	: moverobot(0, 0)
 		forward transporttrolley -m goMoveToHome : goMoveToHome(0)
 	}
@@ -291,14 +269,14 @@ QActor statusservice context ctxcoldstorageservice {
 			val msg = currentMsg.msgContent().drop(11).dropLast(1)
 			val resource = msg.split(", ")[0]
 			val value = msg.dropWhile { it != ',' }.drop(2)
-			println("--" + value + "--")			 
+						 
 			if( resource == "coldstorageservice" || resource == "transporttrolley" ) {
 				if( value.startsWith("robotfree") ) {
 					RobotFree = value.split("(")[1].dropLast(1)
 				} else if( value.startsWith("ticketrejected") ) {
 					println("Status " + RejectedTickets)
 					RejectedTickets++
-				} else if( value.startsWith("weightupdate") ) {
+				} else if( value.startsWith("weightUpdate") ) {
 					CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()
 				}
 			} else if( resource == "robotpos" ) {
@@ -310,9 +288,8 @@ QActor statusservice context ctxcoldstorageservice {
 					PosY = temp.split(",")[1].toInt()
 				}
 			}
-		println(" " + PosX + " " + PosY + " " + RobotFree + " " + CurrentWeightReal + " " + RejectedTickets)		 
+			 
 		#]
-		
 		updateResource [# "status($PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)" #]
 	}
 	Goto observing
@@ -547,9 +524,8 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		[#
 			CurrentWeightReal += CurrentTicketFW	
 		#]
-		//updateResource [# "weightupdate(12)" #] 
-		updateResource [# "weightupdate($CurrentWeightReal)" #]
-		//updateResource [# "depositdone($CurrentWeightReal)" #]
+		updateResource [# "weightUpdate($CurrentWeightReal)" #]
+		updateResource [# "depositdone($CurrentWeightReal)" #]
 		//ROBOT libero
 		updateResource [# "robotfree(libero)" #]
 		
@@ -573,7 +549,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 		[#
 			CurrentWeightReal = 0	
 		#]
-		updateResource [# "weightupdate($CurrentWeightReal)" #]
+		updateResource [# "weightUpdate($CurrentWeightReal)" #]
 		updateResource [# "clearcoldroomdone($CurrentWeightReal )" #]
 		println("$name | coldRoom cleared - current weight real: $CurrentWeightReal") color green
 		replyTo clearColdRoom with coldRoomCleared : coldRoomCleared(0)
@@ -585,8 +561,7 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 
 
 //FOR IMAGE
-/*
-QActor serviceaccessgui context ctxserviceaccessgui{
+/*QActor serviceaccessgui context ctxserviceaccessgui{
 	State s0 initial {
 		println("fridgetruck starts") color red
 		
@@ -626,6 +601,6 @@ QActor servicestatusgui context ctxservicestatusgui{
 		observeResource statusservice
 		
 	}
-} */
+}*/
 
 
