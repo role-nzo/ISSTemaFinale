@@ -1,8 +1,6 @@
 package it.unibo.serviceaccessgui;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import unibo.basicomm23.coap.CoapConnection;
-import unibo.basicomm23.interfaces.IApplMessage;
 import unibo.basicomm23.interfaces.Interaction;
 import unibo.basicomm23.utils.CommSystemConfig;
 import unibo.basicomm23.utils.CommUtils;
@@ -25,11 +23,11 @@ public class ServiceAccessUseCase implements ServiceAccessUseCaseInterface {
             String addr = "192.168.1.141";
             String path   = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
 
-            CoapConnection planexecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/statusservice" );
-            planexecconn.observeResource( new ColdRoomCoapObserver() );
+            CoapConnection statusservicecconn = new CoapConnection(addr+":"+cssPort, ctxqakdest+"/statusservice" );
+            statusservicecconn.observeResource( new StatusServiceCoapObserver() );
 
 
-            client = new Socket("192.168.1.141", 8022);
+            client = new Socket(addr, cssPort);
 
 
         }catch(Exception e){

@@ -1,8 +1,9 @@
-package it.unibo.servicestatusgui;
+package it.unibo.serviceaccessgui;
 
 import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapResponse;
 import unibo.basicomm23.utils.CommUtils;
+
 
 public class StatusServiceCoapObserver implements CoapHandler {
     @Override

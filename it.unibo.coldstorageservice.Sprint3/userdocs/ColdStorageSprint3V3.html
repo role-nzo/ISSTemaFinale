@@ -322,8 +322,8 @@
                     <h3>Sonar</h3>
                     Per la progettazione del sonar fisico si è seguito il principio di singola responsabilità. Per farlo sono stati sviluppati due script python:
                     <ul>
-                        <li>SonarDevice.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberry/v2/SonarDevice.py">link all'implementazione</a>): si occupa di leggere i dati prodotti dal sonar fisico e di comunicarli al <pre class="inline">SonarFilter.py</pre></li>
-                        <li>SonarFilter.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberry/v2/SonarFilter.py">link all'implementazione</a>): si occupa di filtrare le misurazioni ricevute tramite il seguente controllo:
+                        <li>SonarDevice.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberryqak/resources/SonarDevice.py">link all'implementazione</a>): si occupa di leggere i dati prodotti dal sonar fisico e di comunicarli al <pre class="inline">SonarFilter.py</pre></li>
+                        <li>SonarFilter.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberryqak/resources/SonarFilter.py">link all'implementazione</a>): si occupa di filtrare le misurazioni ricevute tramite il seguente controllo:
 <pre>
 //last rappreseta l'ultimo valore letto dal sonar fisico
 //v rappresenta il valore attuale letto dal sonar fisico
@@ -339,7 +339,7 @@ if((last <= limit and v > limit) or (last > limit and v <= limit))
                     <h3>Led</h3>
                     Per la gestione del led fisico è stato sviluppato uno script python:
                     <ul>
-                        <li>LedDevice.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberry/v2/LedDevice.py">link all'implementazione</a>): in base allo stato ricevuto gestisce il led fisico (accesso, spento, lampeggiante)</li>
+                        <li>LedDevice.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberryqak/resources/LedDevice.py">link all'implementazione</a>): in base allo stato ricevuto gestisce il led fisico (accesso, spento, lampeggiante)</li>
                     </ul>
                     Il CodedQActor led osserva il transporttrolley (tramite la primitiva <pre class="inline">observeResource</pre>) mettendosi in attesa di ricevere da esso gli aggiornamenti sul cambiamento di stato (moving, home, stopped) che successivamente verranno inviate
                     al LedDevice.py, il quale si occuperà di aggiornare il led fisico.
@@ -347,20 +347,17 @@ if((last <= limit and v > limit) or (last > limit and v <= limit))
                     <h2>Contesto ColdStorageService</h2>
                     <h3>Eventi e messaggi emessi</h3>
                     <ul>
-                        <li><pre class="inline">alarm</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L7">implementazione</a>):
+                        <li><pre class="inline">alarm</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV3.qak#L4">implementazione</a>):
                             evento inviato dal transporttrolley al BasicRobot per interrompere l'esecuzione del robot; inviato solamente se viene rispettata la Alarm Condition</li>
-                        <li><pre class="inline">stopevent</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L70">implementazione</a>):
+                        <li><pre class="inline">stopevent</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV3.qak#L52">implementazione</a>):
                             dispatch inviato dall'attore sonar (in esecuzione sul RaspberryPi) al transporttrolley per interrompere la deposit action</li>
-                        <li><pre class="inline">resumevent</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L71">implementazione</a>):
+                        <li><pre class="inline">resumevent</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV3.qak#L53">implementazione</a>):
                             dispatch inviato dall'attore sonar (in esecuzione sul RaspberryPi) al transporttrolley per riprendere la deposit action</li>
-                        <li><pre class="inline">ledstatuschange</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L79">implementazione</a>):
-                            messaggio inviato dal transporttrolley all'attore led (in esecuzione sul RaspberryPi) per poter gestire correttamente i cambiamenti di stato del led fisico</li>
-                        
                     </ul>
 
                    
                     <h3>TransportTrolley - Gestione di stopevent e resumevent</h3>
-                    Nel caso in cui il robot sia in movimento e riceva il messaggio <pre class="inline">stopevent</pre> transita nello stato <pre class="inline">checkSonarData</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L284-L315">implementazione</a>).
+                    Nel caso in cui il robot sia in movimento e riceva il messaggio <pre class="inline">stopevent</pre> transita nello stato <pre class="inline">checkSonarData</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV3.qak#L145-L163">implementazione</a>).
                     <br><br>
                     Quindi, nello stato <pre class="inline">checkSonarData</pre> controlla se è passato un tempo maggiore di <b>DLIMT</b> dall'ultimo allarme ricevuto:
                     <ul>
@@ -369,20 +366,20 @@ if((last <= limit and v > limit) or (last > limit and v <= limit))
                         </li>
                         <li>Altrimenti, il messaggio viene ignorato e il transporttrolley prosegue con quello che stava facendo.</li>
                     </ul>
-                    Invece, nel caso in cui il robot si trovi nello stato <pre class="inline">stopped</pre> e riceva il messaggio <pre class="inline">resumevent</pre>, esso transita nello stato <pre class="inline">resuming</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L317-L330">implementazione</a>) in cui sfrutta la variabile <pre class="inline">GoingTo</pre> per permettere al transporttrolley di riprendere la corretta esecuzione.
+                    Invece, nel caso in cui il robot si trovi nello stato <pre class="inline">stopped</pre> e riceva il messaggio <pre class="inline">resumevent</pre>, esso transita nello stato <pre class="inline">resuming</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV3.qak#L173-L185">implementazione</a>) in cui sfrutta la variabile <pre class="inline">GoingTo</pre> per permettere al transporttrolley di riprendere la corretta esecuzione.
                      
                 </div>
 
                 <h2>Architettura logica finale</h2>
                 <div class="remark">
-                    <a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV3.qak">Modello qak</a><br>
+                    <a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV3.qak">Modello qak coldstorageservice</a><br>
+                    <a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberryqak/src/raspberryV1.qak">Modello qak raspberry</a><br>
                     <img src="../userdocs/images/coldstorageservicearchsprint3finaleV5.png" width="90%">
-                    <br>*gli eventi locali <pre class="inline">stopevent</pre> e <pre class="inline">resumevent</pre> sono stati rappresentati come dispatch per poterli visualizzare nell'immagine.
                 </div>
 
                 <h2>Test finale del sistema</h2>
                 <div class="remark">
-                    <a href="">Link al test</a>
+                    <a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/test/it/unibo/ctxcoldstorageservice/CtxColdStorageServiceTest.java">Link ai test</a><br>
                     Con il seguente test verranno testati alcune delle funzionalità chiavi dell'applicazione:
                     <ul>
                         <li>Creazione di un nuovo ticket</li>
@@ -394,8 +391,8 @@ if((last <= limit and v > limit) or (last > limit and v <= limit))
                         <li>Simulazione del sonar per l'invio di messaggio di stop che verrà ignorato non essendo passato un tempo sufficiente dall'ultimo stop</li>
                         <li>Richiesta di carico con un ticket non valido</li>
                     </ul>
-                    Per eseguire i test è necessario avviare nel seguente ordine i vari componenti: BasicRobot, il ctxraspberry e ctxcoldstorageservice.
-                    Per inibire l'invio di dati dal sonar fisico durante l'esecuzione del test (in quanto simulato) è possibile eseguire il ctxraspberry impostando la variable d'ambiente "SONAR_DISABLE". 
+                    Per eseguire i test è necessario avviare nel seguente ordine i vari componenti: BasicRobot, il ctxraspberry e ctxcoldstorageservice. <br>
+                    Per inibire l'invio di dati dal sonar fisico durante l'esecuzione del test (in quanto simulato) è possibile eseguire il ctxraspberry impostando la variable d'ambiente "SONAR_DISABLE". <br>
                     In aggiunta per poter verificare il corretto funzionamento dei CoapUpdate è possibile eseguire anche la Servicestatusgui.
                 </div>
 

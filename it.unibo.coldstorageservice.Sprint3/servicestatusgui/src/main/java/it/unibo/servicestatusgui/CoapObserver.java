@@ -1,14 +1,13 @@
-package it.unibo.serviceaccessgui;
+package it.unibo.servicestatusgui;
 
 import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapResponse;
 import unibo.basicomm23.utils.CommUtils;
 
-
-public class ColdRoomCoapObserver implements CoapHandler {
+public class CoapObserver implements CoapHandler {
     @Override
     public void onLoad(CoapResponse response) {
-        CommUtils.outcyan("PlanCoapObserver changed! " + response.getResponseText() );
+        CommUtils.outcyan("CoapObserver changed! " + response.getResponseText() );
         //send info over the websocket
         WebSocketConfiguration.wshandler.sendToAll("" + response.getResponseText());
     }
