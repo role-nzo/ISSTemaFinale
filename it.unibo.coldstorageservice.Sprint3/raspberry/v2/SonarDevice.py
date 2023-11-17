@@ -1,6 +1,11 @@
 # File: SonarDevice.py
 import RPi.GPIO as GPIO
 import time
+import os
+
+if os.getenv("SONAR_DISABLE") is not None:
+    while True:
+        pass
 
 
 GPIO.setmode(GPIO.BCM)

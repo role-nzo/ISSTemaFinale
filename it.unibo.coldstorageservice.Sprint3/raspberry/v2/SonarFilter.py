@@ -2,7 +2,7 @@ import sys
 import time
 
 limit = 10
-last = 0
+last = limit + 1
 for line in sys.stdin:
     try:
         vf = float(line)
