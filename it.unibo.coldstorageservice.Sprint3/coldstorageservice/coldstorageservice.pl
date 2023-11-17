@@ -19,7 +19,6 @@ request( clearColdRoom, clearColdRoom(_) ).
 dispatch( sendmap, sendmap(_) ).
 dispatch( stopevent, stopevent(_) ).
 dispatch( resumevent, resumevent(_) ).
-dispatch( ledstatuschange, ledstatuschange(STATUS) ).
 %====================================================================================
 context(ctxbasicrobot, "192.168.1.141",  "TCP", "8020").
 context(ctxcoldstorageservice, "localhost",  "TCP", "8022").

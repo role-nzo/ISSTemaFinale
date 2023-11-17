@@ -28,13 +28,11 @@ class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","transporttrolley")
 						
 									//CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
 									CoapObserverSupport(myself, "192.168.1.141","8020","ctxbasicrobot","robotpos")
-									//CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","coldstorageservice")
-						delay(500) 
 						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","coldstorageservice")
+						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","transporttrolley")
 						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
 						//genTimer( actor, state )
 					}
@@ -73,14 +71,14 @@ class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 									val msg = currentMsg.msgContent().drop(11).dropLast(1)
 									val resource = msg.split(", ")[0]
 									val value = msg.dropWhile { it != ',' }.drop(2)
-									println("--" + value + "--")			 
+												 
 									if( resource == "coldstorageservice" || resource == "transporttrolley" ) {
 										if( value.startsWith("robotfree") ) {
 											RobotFree = value.split("(")[1].dropLast(1)
 										} else if( value.startsWith("ticketrejected") ) {
 											println("Status " + RejectedTickets)
 											RejectedTickets++
-										} else if( value.startsWith("weightupdate") ) {
+										} else if( value.startsWith("weightUpdate") ) {
 											CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()
 										}
 									} else if( resource == "robotpos" ) {
@@ -92,7 +90,7 @@ class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 											PosY = temp.split(",")[1].toInt()
 										}
 									}
-								println(" " + PosX + " " + PosY + " " + RobotFree + " " + CurrentWeightReal + " " + RejectedTickets)		 
+									 
 						updateResourceRep( "status($PosX, $PosY, $RobotFree, $CurrentWeightReal, $RejectedTickets)"  
 						)
 						//genTimer( actor, state )

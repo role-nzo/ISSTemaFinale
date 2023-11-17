@@ -149,7 +149,9 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 						 	   
 						
 									CurrentWeightReal += CurrentTicketFW	
-						updateResourceRep( "weightupdate($CurrentWeightReal)"  
+						updateResourceRep( "weightUpdate($CurrentWeightReal)"  
+						)
+						updateResourceRep( "depositdone($CurrentWeightReal)"  
 						)
 						updateResourceRep( "robotfree(libero)"  
 						)
@@ -179,7 +181,7 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 						forward("updatevirtualweight", "updatevirtualweight($CurrentWeightReal)" ,"ticketservice" ) 
 						
 									CurrentWeightReal = 0	
-						updateResourceRep( "weightupdate($CurrentWeightReal)"  
+						updateResourceRep( "weightUpdate($CurrentWeightReal)"  
 						)
 						updateResourceRep( "clearcoldroomdone($CurrentWeightReal )"  
 						)
