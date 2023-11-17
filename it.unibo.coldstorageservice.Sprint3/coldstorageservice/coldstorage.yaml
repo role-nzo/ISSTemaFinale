@@ -1,0 +1,23 @@
+version: '3'
+services:
+  coldstorage:
+    #image: imgcxtcoldstorage
+    #image: imgcxtcoldstorage2
+    image: imgcxtcoldstorage3
+    ports:
+      - 8022:8022/tcp
+      - 8022:8022/udp
+  serviceaccess:
+    image: imgserviceaccess
+    ports:
+      - 8080:8080/tcp
+      - 8080:8080/udp
+    depends_on:
+      - coldstorage
+  servicestatus:
+    image: imgservicestatus
+    ports:
+      - 8081:8081/tcp
+      - 8081:8081/udp
+    depends_on:
+      - serviceaccess

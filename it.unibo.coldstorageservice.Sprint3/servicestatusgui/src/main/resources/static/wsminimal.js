@@ -56,18 +56,13 @@ function parse (event) {
     let msg = event.data;
     console.log("ws-status:" + msg);
 
-    if(msg.includes("transporttrolley")) {
-
-        return;
-    }
-
     /*if( msg.includes("plan") ) setMessageToWindow(planexecDisplay,msg);
     else setMessageToWindow(robotDisplay,msg);*/
 
     const fullMessage = msg.split("(")[1].split(")")[0];
     const message = fullMessage.split(",");
 
-    if(fullMessage.includes("transporttrolleystatus")) {
+    if(msg.includes("transporttrolleystatus")) {
         document.getElementById("led").setAttribute("class", message[0]);
         return;
     }

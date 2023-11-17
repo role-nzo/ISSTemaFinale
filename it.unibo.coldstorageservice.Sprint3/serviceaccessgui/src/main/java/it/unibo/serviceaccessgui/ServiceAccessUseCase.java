@@ -29,7 +29,7 @@ public class ServiceAccessUseCase implements ServiceAccessUseCaseInterface {
             planexecconn.observeResource( new ColdRoomCoapObserver() );
 
 
-            client = new Socket("localhost", 8022);
+            client = new Socket("192.168.1.141", 8022);
 
 
         }catch(Exception e){

@@ -31,7 +31,7 @@ public class ServiceStatusUseCase implements ServiceStatusUseCaseInterface {
             CoapConnection transporttrolleycconn = new CoapConnection(addr+":" + cssPort, ctxqakdest+"/transporttrolley" );
             transporttrolleycconn.observeResource( new StatusServiceCoapObserver() );
 
-            client = new Socket("localhost", 8022);
+            client = new Socket("192.168.1.141", 8022);
         }catch(Exception e){
             CommUtils.outred("RobotUtils | connectWithRobotUsingTcp ERROR:"+e.getMessage());
         }
