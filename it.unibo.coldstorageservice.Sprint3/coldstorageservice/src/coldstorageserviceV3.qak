@@ -51,16 +51,34 @@ Dispatch sendmap 	: sendmap(_)
 //Eventi sonar
 Dispatch stopevent : stopevent(_)
 Dispatch resumevent : resumevent(_)
-Dispatch ledstatuschange : ledstatuschange(STATUS)
+
+//Per immagine requisiti
+//Dispatch ledstatuschange : ledstatuschange(STATUS)
 
 Context ctxbasicrobot 		  ip [host="192.168.1.141" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
 Context ctxraspberry 		  ip [host="192.168.1.35" port=8023]
+Context ctxserviceaccessgui 		  ip [host="192.168.1.35" port=8023]
+Context ctxservicestatusgui 		  ip [host="192.168.1.35" port=8023]
 
 ExternalQActor basicrobot context ctxbasicrobot
 ExternalQActor robotposendosimbiotico context ctxbasicrobot
 ExternalQActor led context ctxraspberry
 ExternalQActor sonar context ctxraspberry
+
+//For image
+/*QActor led context ctxraspberry{
+	State s0 initial{
+		
+	}
+}
+
+QActor sonar context ctxraspberry{
+	State s0 initial{
+		forward transporttrolley -m stopevent:stopevent(_)
+		forward transporttrolley -m resumevent:resumevent(_) 
+	}
+}*/
 
 QActor transporttrolley context ctxcoldstorageservice{
 	[#
@@ -121,7 +139,7 @@ QActor transporttrolley context ctxcoldstorageservice{
 	
 	State waitRobot{
 		println("Wait robot")
-		updateResource [# "transporttrolleystatus(moving)"#]
+		//forward led -m ledstatuschange:ledstatuschange(_)
 	}
 	Transition t1 whenMsg stopevent -> checkSonarData
 				  whenReply moverobotfailed -> robothit
@@ -567,7 +585,8 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 
 
 //FOR IMAGE
-/*QActor serviceaccessgui context ctxserviceaccessgui{
+/*
+QActor serviceaccessgui context ctxserviceaccessgui{
 	State s0 initial {
 		println("fridgetruck starts") color red
 		
@@ -607,6 +626,6 @@ QActor servicestatusgui context ctxservicestatusgui{
 		observeResource statusservice
 		
 	}
-}*/
+} */
 
 

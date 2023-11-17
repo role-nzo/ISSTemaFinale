@@ -21,7 +21,8 @@ class Sonar ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						forward("sonarstatuschange", "sonarstatuschange(_)" ,"sonarsupport" ) 
+						forward("stopevent", "stopevent(_)" ,"transporttrolley" ) 
+						forward("resumevent", "resumevent(_)" ,"transporttrolley" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

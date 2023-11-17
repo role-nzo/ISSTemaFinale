@@ -19,11 +19,12 @@ request( clearColdRoom, clearColdRoom(_) ).
 dispatch( sendmap, sendmap(_) ).
 dispatch( stopevent, stopevent(_) ).
 dispatch( resumevent, resumevent(_) ).
-dispatch( ledstatuschange, ledstatuschange(STATUS) ).
 %====================================================================================
 context(ctxbasicrobot, "192.168.1.141",  "TCP", "8020").
 context(ctxcoldstorageservice, "localhost",  "TCP", "8022").
 context(ctxraspberry, "192.168.1.35",  "TCP", "8023").
+context(ctxserviceaccessgui, "192.168.1.35",  "TCP", "8023").
+context(ctxservicestatusgui, "192.168.1.35",  "TCP", "8023").
  qactor( basicrobot, ctxbasicrobot, "external").
   qactor( robotposendosimbiotico, ctxbasicrobot, "external").
   qactor( led, ctxraspberry, "external").

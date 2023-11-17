@@ -29,7 +29,7 @@ class Serviceaccessgui ( name: String, scope: CoroutineScope, isconfined: Boolea
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t027",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
+					 transition(edgeName="t028",targetState="elabTicketAccepted",cond=whenReply("newticketaccepted"))
 				}	 
 				state("elabTicketAccepted") { //this:State
 					action { //it:State
@@ -47,7 +47,7 @@ class Serviceaccessgui ( name: String, scope: CoroutineScope, isconfined: Boolea
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t128",targetState="elabLoadDone",cond=whenReply("storefoodaccepted"))
+					 transition(edgeName="t129",targetState="elabLoadDone",cond=whenReply("storefoodaccepted"))
 				}	 
 				state("elabLoadDone") { //this:State
 					action { //it:State
@@ -57,7 +57,7 @@ class Serviceaccessgui ( name: String, scope: CoroutineScope, isconfined: Boolea
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t129",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
+					 transition(edgeName="t130",targetState="elabChargeTaken",cond=whenReply("chargetaken"))
 				}	 
 				state("elabChargeTaken") { //this:State
 					action { //it:State

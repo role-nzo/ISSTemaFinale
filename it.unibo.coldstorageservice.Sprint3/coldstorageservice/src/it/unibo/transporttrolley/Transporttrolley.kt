@@ -112,8 +112,6 @@ class Transporttrolley ( name: String, scope: CoroutineScope, isconfined: Boolea
 				state("waitRobot") { //this:State
 					action { //it:State
 						CommUtils.outblack("Wait robot")
-						updateResourceRep( "transporttrolleystatus(moving)" 
-						)
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

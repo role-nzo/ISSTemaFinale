@@ -1,0 +1,437 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<!--
+    <link rel="stylesheet" type="text/css" href="../css/issStyle1.css">
+    <script type="text/javascript" src="../css/issStyle.js"></script>
+-->
+<style type="text/css">
+    body
+    {
+        margin-left:  30px;
+        margin-right: 30px;
+    };
+    
+    P
+    {
+        font-family: Tahoma;
+        font-size: 10pt;
+    };
+    
+    a, a:visited, a:active, a:link, a:hover {
+        text-decoration: underline;
+        color: #545454;
+        background-color: transparent;
+        font-size: 93%;
+    }
+    
+    a:hover {
+        background-color: #cccccc;
+    }
+    
+    
+    hr {
+        clear: both;
+        height: 1px;
+        color: #242424;
+        background-color: transparent;
+    }
+    
+    h1, h2, h3 {
+        color: #242424;
+        clear: left;
+        font: 100% Tahoma, Helvetica, Arial, sans-serif;
+        margin-bottom: 0.5em;
+        padding-top: 0.5em;
+        border-radius: 10px;
+        padding: 5px;
+    }
+    
+    top {
+        width: 100%;
+    }
+    
+    
+    #i {
+        color: #ff1010;
+    }
+    tt{
+        font-family: "Arial";
+        font-size: 90%;
+        color: #006600;
+    }
+    em{
+        font-family: "Arial";
+        font-size: 80%;
+        font-weight: bold;
+        border-style:solid;
+        border-color: #abe876;
+        color: #1632cc;
+    }
+    bc{
+        font-family: "Arial";
+        font-size: 90%;
+        font-weight: bold;
+        color: #990000;
+        background-color: #fcf8c7;
+    }
+    ks{
+        font-family: "Arial";
+        font-weight: bold;
+        color: #0000CD	;
+        font-size: 90%;
+    }
+    kc{
+        font-family: "Arial";
+        font-weight: bold;
+        color: #008000	;
+        font-size: 90%;
+    }
+    pre{
+        font-family: "Consolas";
+        font-size: 85%;
+        background-color: #f5f5f5;
+        border: 1.5px solid silver;
+        padding: 5px;
+    }
+    m{
+        font-family: "Helvetica";
+        line-height: 100%;
+        font-size: 75%;
+    }
+    div.body{
+        
+        font-size: 18px;
+    }
+    k{
+        color: #990000;
+        font-weight: bold;
+        font-size: 90%;
+    }
+    h1 {
+        font-size: 150%;
+        background-color: #b2c0ff;
+        padding: 10px;
+    }
+    
+    h2 {
+        background-color: #9ed8ff;
+        font-size: 130%;
+    }
+    
+    h3 {
+        background-color: #e6ccff;
+        font-size: 100%;
+    }
+    h4 {
+        background-color: #ccffcc;
+        font-size: 100%;
+        width: 95%;
+        border-radius: 5px;
+        padding: 2px;
+    }
+    h5 {
+        background-color: #d5ffb0;
+        font-size: 100%;
+        
+    }
+    div.req{
+        background-color: #d9ffb3;
+        font-size: 18px;
+        width: 700px;
+        border: 3px solid green;
+        padding: 15px;
+        margin: 10px;
+    }
+    div.remark{
+        background-color: #E3F2FD;
+        border: 1.5px solid #d5f2ed;
+        padding: 15px;
+        margin: 10px;
+        border-radius: 25px;
+    }
+    
+    .remark i {
+        font-weight: 600;
+    }
+    
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    
+    ol, ul, li {
+        margin: 0;
+        margin-left: 10px;
+        padding: 0;
+        padding-bottom: 5px;
+    }
+    
+    table, th, td {
+        border: 1px solid black;
+    }
+    
+    img {
+        border: 1.5px solid #d5f2ed
+        
+    }
+    
+    a, a:visited, a:active, a:link, a:hover {
+        text-decoration: underline;
+        color: #545454;
+        background-color: transparent;
+    }
+    
+    div.wrapdesc{
+        width: 90%;
+        margin: auto;
+    }
+    
+    div.imagedesc{
+        width: 85%;
+        margin: auto;
+    }
+
+    table {
+        font: 100% Tahoma, Helvetica, Arial, sans-serif;
+    }
+
+    table th, table td {
+        padding: 5px;
+    }
+
+    pre.inline {
+        margin: 0;
+        display: inline-block;
+    }
+</style>
+
+<head>
+    
+    <title>ColdStorageSprint3V2</title></head>
+    
+    <body>
+        <div id="top">
+            <h1>ColdStorageSprint3V2</h1>
+        </div>  
+        
+        <div class="body"> 
+            <h2>Introduction</h2>
+            <div class="remark">
+                Lo Sprint2 ha prodotto la seguente architettura:
+                <br>
+                <img src="..\userdocs\images\coldstorageservicearchsprint2finaleV2.png" width="60%"> 
+                <br>
+
+            </div>
+            
+            <h2>Requirements</h2>
+            <div class="remark">
+
+                The system includes a a Sonar and a Led connected to a RaspnerryPi.
+
+                The Sonar is used as an ‘alarm device’: when it measures a distance less that a prefixed value DLIMT, the transport trolley must be stopped; it will be resumed when Sonar detects again a distance higher than DLIMT.
+
+                The Led is used as a warning devices, according to the following scheme:
+                <ul>
+                    <li>the Led is off when the transport trolley is at HOME</li>
+                    <li>the Led blinks while the transport trolley is moving</li>
+                    <li>the Led is on when transport trolley is stopped.</li>
+                </ul>
+                [...]
+
+                <ul>
+                    <li>While the transport trolley is moving, the Alarm requirements should be satisfied. However, the transport trolley should not be stopped if some prefixed amount of time (MINT msecs) is not passed from the previous stop.</li>
+                </ul>
+               
+                <br>
+                <b>Goal di questo sprint:</b>
+                <ul>
+                    <li>realizzazione degli Alarm Requirements (componenti Sonar e Led)</li>
+                </ul>
+            </div>
+            
+            <h2>Requirement analysis</h2>
+            <div class="remark">
+
+                Dall'analisi dei requisiti si evince che:
+                <ul>
+                    <li><b>DLIMT</b> è rappresentato con un valore intero positivo </li>
+                    <li>Il led deve lampeggiare durante tutta la durata della deposit action </li>
+                    <li>Il led sarà attivo nel caso in cui il robot venga fermato dal sonar (il quale ha rilevato una distanza minore di <b>DLIMT</b>)
+                        o nel caso in cui ci sia una collisione </li>
+                    <li><b>MINT</b> è un valore intero positivo che rappresenta il tempo minimo che deve intercorrere tra due allarmi emessi dal sonar (Alarm Condition)</li>
+                </ul>
+                Dai requisiti del led si possono identificare tre stati in cui si può trovare il transporttrolley:
+                <ul>
+                    <li><b>home</b>, il robot si trova fermo in home (coordinate (0,0))</li>
+                    <li><b>moving</b>, il robot è in movimento e sta eseguendo una deposit action</li>
+                    <li><b>stopped</b>, il robot è stato fermato dal sonar o ha avuto una collisione</li>
+                </ul>
+            </div>
+
+            <h2>Analisi del Problema</h2>
+                <div class="remark">
+
+                    <h3>Led e sonar fisici</h3>
+                    Su un RaspberryPi esterno all'applicazione sono collegati sonar e led fisici che vengono utilizzati rispettivamente come alarm e warning devices. Tali dispositivi sono d'interesse all'applicazione coldstorageservice in quanto deve rispettivamente ricevere/inviare informazioni da/verso di essi.
+                    <br><br>
+                    <bc>KEY POINT</bc> È necessario gestire lo scambio di informazioni tra coldstorageservice, led e sonar.
+                    <br><br>
+                    Tali informazioni sono d'interesse al transporttrolley in quanto è l'unico che conosce il suo stato e l'unico che può interagire col BasicRobot.
+                    Per questo motivo si potrebbe pensare di far interagire direttamente led e sonar con esso. Questo però violerebbe il principio di singola responsabilità e renderebbe l'attore inutilmente più complesso.
+                    La soluzione migliore è quella di separare le funzionalità integrando altri due attori, LedSupport e SonarSupport, che si occuperanno di interagire con i singoli componenti. 
+
+                    <h3>Sonar</h3>
+                    Il sonar è un dispositivo esterno che rileva distanze che sono d'interesse all'applicazione.
+                    Non tutti i dati del sonar sono d'interesse all'applicazione, ma solo il passaggio da una distanza minore di <b>DLIMT</b> ad una maggiore (o viceversa).
+                    Per questo motivo si può pensare di aggiungere direttamente sul componente in esecuzione sul RaspberryPi della logica applicativa per filtrare i dati rilevati ed emettere solo quelli significativi, in questo modo può inviare direttamente
+                    un messaggio di stop o di resume in base ai dati rilevati.
+                    Così facendo si riduce il traffico generato dal RaspberryPi, avendo però come effetto collaterale una dipendenza generata dal protocollo di comunicazione stabilito tra i componenti.
+                    Dato che il traffico generato è molto elevato gli effetti positivi superano l'unico svantaggio di tale soluzione.
+                    <br>
+                    I dati significativi prodotti dal sonar verranno inviati direttamente al transporttrolley il quale li andrà a gestire.
+
+                    <h3>Led</h3>
+                    Il led è anch'esso un dispositivo esterno che indica lo stato attuale (home, moving o stopped) del transporttrolley. 
+                    Dal transporttrolley non saranno emessi i singoli segnali sul pin che dovranno poi essere inviati al led fisico ma solamente lo stato in cui dovrà transitare.
+                    Sarà quindi compito di una logica applicativa locale (al raspberry) quella di interpretare tali stati e convertirli in impulsi verso il led fisico.
+                    Anche in questo caso si costruisce una dipendenza tra il transporttrolley e il RaspberryPi ma come nel caso precedente il disaccoppiamento supera di gran lunga gli effetti negativi.
+                    <br>
+                    Anche in questo caso sono utilizzati dei messaggi per l'invio delle informazioni.
+                    
+                </div>
+
+                <h2>Architettura logica</h2>
+                <div class="remark">
+                    <img src="../userdocs/images/coldstorageservicearchsprint3analisiV5.png" width="90%">
+                    <br>
+                    Dall'architettua logica possiamo evidenziare i nuovi componenti:
+                    <ul>
+                        <li>Sonar: componente fisico situato su RaspberryPi che si occupa di rilevare distanze ed utilizzato come alarm device</li>
+                        <li>Led: componente fisico situato su RaspberryPi usato come warning device</li>
+                    </ul>
+                   
+                </div>
+
+                <h2>Progettazione</h2>
+                <div class="remark">
+
+                    
+                    <h2>Contesto RaspberryPi</h2>
+                    <h3>Sonar</h3>
+                    Per la progettazione del sonar fisico si è seguito il principio di singola responsabilità. Per farlo sono stati sviluppati due script python:
+                    <ul>
+                        <li>SonarDevice.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberry/v2/SonarDevice.py">link all'implementazione</a>): si occupa di leggere i dati prodotti dal sonar fisico e di comunicarli al <pre class="inline">SonarFilter.py</pre></li>
+                        <li>SonarFilter.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberry/v2/SonarFilter.py">link all'implementazione</a>): si occupa di filtrare le misurazioni ricevute tramite il seguente controllo:
+<pre>
+//last rappreseta l'ultimo valore letto dal sonar fisico
+//v rappresenta il valore attuale letto dal sonar fisico
+//limit rappresenta DLIMT
+if((last <= limit and v > limit) or (last > limit and v <= limit))
+</pre>
+                            Grazie a questo vengono scartate tutte le misurazioni che non provocano l'emissione del messaggio <pre class="inline">sonardata</pre>.</li>
+                    </ul>
+                    La comunicazione tra <pre class="inline">SonarDevice.py</pre>, <pre class="inline">SonarFilter.py</pre> viene realizzata tramite pipe.
+                    <br>
+                    I dati prodotti in uscita dalla pipe vengono letti dal CodedQActor Sonar (in esecuzione sul contesto raspberry) per poi essere inviati all'attore transporttrolley.
+
+                    <h3>Led</h3>
+                    Per la gestione del led fisico è stato sviluppato uno script python:
+                    <ul>
+                        <li>LedDevice.py (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/raspberry/v2/LedDevice.py">link all'implementazione</a>): in base allo stato ricevuto gestisce il led fisico (accesso, spento, lampeggiante)</li>
+                    </ul>
+                    Il CodedQActor led osserva il transporttrolley (tramite la primitiva <pre class="inline">observeResource</pre>) mettendosi in attesa di ricevere da esso gli aggiornamenti sul cambiamento di stato (moving, home, stopped) che successivamente verranno inviate
+                    al LedDevice.py, il quale si occuperà di aggiornare il led fisico.
+
+                    <h2>Contesto ColdStorageService</h2>
+                    <h3>Eventi e messaggi emessi</h3>
+                    <ul>
+                        <li><pre class="inline">alarm</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L7">implementazione</a>):
+                            evento inviato dal transporttrolley al BasicRobot per interrompere l'esecuzione del robot; inviato solamente se viene rispettata la Alarm Condition</li>
+                        <li><pre class="inline">stopevent</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L70">implementazione</a>):
+                            dispatch inviato dall'attore sonar (in esecuzione sul RaspberryPi) al transporttrolley per interrompere la deposit action</li>
+                        <li><pre class="inline">resumevent</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L71">implementazione</a>):
+                            dispatch inviato dall'attore sonar (in esecuzione sul RaspberryPi) al transporttrolley per riprendere la deposit action</li>
+                        <li><pre class="inline">ledstatuschange</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L79">implementazione</a>):
+                            messaggio inviato dal transporttrolley all'attore led (in esecuzione sul RaspberryPi) per poter gestire correttamente i cambiamenti di stato del led fisico</li>
+                        
+                    </ul>
+
+                   
+                    <h3>TransportTrolley - Gestione di stopevent e resumevent</h3>
+                    Nel caso in cui il robot sia in movimento e riceva il messaggio <pre class="inline">stopevent</pre> transita nello stato <pre class="inline">checkSonarData</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L284-L315">implementazione</a>).
+                    <br><br>
+                    Quindi, nello stato <pre class="inline">checkSonarData</pre> controlla se è passato un tempo maggiore di <b>DLIMT</b> dall'ultimo allarme ricevuto:
+                    <ul>
+                        <li>In caso affermativo invia l'evento alarm al BasicRobot, il quale farà fermare il robot. Successivamente, se il robot si è realmente fermato, il transporttrolley transita
+                            nello stato <pre class="inline">stopped</pre> dove rimane in attesa del messaggio <pre class="inline">resumevent</pre> per poter riprendere l'esecuzione.
+                        </li>
+                        <li>Altrimenti, il messaggio viene ignorato e il transporttrolley prosegue con quello che stava facendo.</li>
+                    </ul>
+                    Invece, nel caso in cui il robot si trovi nello stato <pre class="inline">stopped</pre> e riceva il messaggio <pre class="inline">resumevent</pre>, esso transita nello stato <pre class="inline">resuming</pre> (<a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV2.qak#L317-L330">implementazione</a>) in cui sfrutta la variabile <pre class="inline">GoingTo</pre> per permettere al transporttrolley di riprendere la corretta esecuzione.
+                     
+                </div>
+
+                <h2>Architettura logica finale</h2>
+                <div class="remark">
+                    <a href="https://github.com/role-nzo/ISSTemaFinale/blob/main/it.unibo.coldstorageservice.Sprint3/coldstorageservice/src/coldstorageserviceV3.qak">Modello qak</a><br>
+                    <img src="../userdocs/images/coldstorageservicearchsprint3finaleV5.png" width="90%">
+                    <br>*gli eventi locali <pre class="inline">stopevent</pre> e <pre class="inline">resumevent</pre> sono stati rappresentati come dispatch per poterli visualizzare nell'immagine.
+                </div>
+
+                <h2>Test finale del sistema</h2>
+                <div class="remark">
+                    <a href="">Link al test</a>
+                    Con il seguente test verranno testati alcune delle funzionalità chiavi dell'applicazione:
+                    <ul>
+                        <li>Creazione di un nuovo ticket</li>
+                        <li>Richiesta di carico da parte di un fridge truck driver</li>
+                        <li>Mentre viene eseguita la deposit action, viene richiesta la creazione di un secondo ticket e la relativa richiesta di carico. Questo viene fatto per verificare 
+                            che il transporttrolley (terminata la deposit action) ritorni direttamente ad indoor (senza ritornare alla home) per gestire la nuova richiesta di carico
+                        </li>
+                        <li>Simulazione del sonar per l'emissione di un messaggio di stop e di resume</li>
+                        <li>Simulazione del sonar per l'invio di messaggio di stop che verrà ignorato non essendo passato un tempo sufficiente dall'ultimo stop</li>
+                        <li>Richiesta di carico con un ticket non valido</li>
+                    </ul>
+                    Per eseguire i test è necessario avviare nel seguente ordine i vari componenti: BasicRobot, il ctxraspberry e ctxcoldstorageservice.
+                    Per inibire l'invio di dati dal sonar fisico durante l'esecuzione del test (in quanto simulato) è possibile eseguire il ctxraspberry impostando la variable d'ambiente "SONAR_DISABLE". 
+                    In aggiunta per poter verificare il corretto funzionamento dei CoapUpdate è possibile eseguire anche la Servicestatusgui.
+                </div>
+
+                <h2>Esecuzione del sistema con docker</h2>
+                <div class="remark">
+                    Si è scelto di utilizzare Docker per la distribuzione del sistema.
+                    Per avviare il sistema dovranno essere eseguiti i seguenti comandi:
+                    <ul>
+                        <li>BasicRobot: tramite il comando <pre class="inline">docker-compose -f webbasicrobot23.yaml up</pre></li>
+                        <li>RaspberryPi: tramite il comando <pre class="inline">docker-compose -f raspberry.yaml up</li>
+                        <li>ColdStorageService, e le gui Serviceaccessgui, Servicestatusgui: tramite il comando <pre class="inline">docker-compose -f coldstorage.yaml up</li>
+                    </ul>
+                </div>
+            </div>  
+            
+            <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+                By Ziosi Lorenzo email: lorenzo.ziosi3@studio.unibo.it, 
+                GIT repo: https://github.com/role-nzo/ISSZiosiLorenzo/
+            </div>
+            <img src="./images/lziosi.jpg" alt="mbot" width="10%" height="10%">
+            <br>
+            <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+                By Dominici Luca email: luca.dominici3@studio.unibo.it, 
+                GIT repo: https://github.com/lucaDomo/Iss23DominiciLuca
+            </div> 
+            <img src="./images/ldominici.jpeg" alt="mbot" width="10%" height="10%">
+            <br>
+            <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+                By Zacchiroli Enrico email: enrico.zacchiroli@studio.unibo.it, 
+                GIT repo: https://github.com/zack-99/IssLab2023EnricoZacchiroli
+            </div> 
+            <img src="./images/ezacchiroli.jpg" alt="mbot" width="10%" height="10%">
+            <br>
+            <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+                Tema finale GIT repo: https://github.com/role-nzo/ISSTemaFinale/
+            </div>
+        </body>
+        </html>
+        
