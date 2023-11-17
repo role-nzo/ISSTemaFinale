@@ -276,11 +276,8 @@
                     <h3>Led e sonar fisici</h3>
                     Su un RaspberryPi esterno all'applicazione sono collegati sonar e led fisici che vengono utilizzati rispettivamente come alarm e warning devices. Tali dispositivi sono d'interesse all'applicazione coldstorageservice in quanto deve rispettivamente ricevere/inviare informazioni da/verso di essi.
                     <br><br>
-                    <bc>KEY POINT</bc> È necessario gestire lo scambio di informazioni tra coldstorageservice, led e sonar.
+                    <bc>KEY POINT</bc> È necessario gestire lo scambio di informazioni tra transporttrolley, led e sonar.
                     <br><br>
-                    Tali informazioni sono d'interesse al transporttrolley in quanto è l'unico che conosce il suo stato e l'unico che può interagire col BasicRobot.
-                    Per questo motivo si potrebbe pensare di far interagire direttamente led e sonar con esso. Questo però violerebbe il principio di singola responsabilità e renderebbe l'attore inutilmente più complesso.
-                    La soluzione migliore è quella di separare le funzionalità integrando altri due attori, LedSupport e SonarSupport, che si occuperanno di interagire con i singoli componenti. 
 
                     <h3>Sonar</h3>
                     Il sonar è un dispositivo esterno che rileva distanze che sono d'interesse all'applicazione.
