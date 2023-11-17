@@ -1,7 +1,7 @@
 /*
  sonarHCSR04Support23
  A CodedQactor that auto-starts.
- Launches a process p that activates sonar.py.
+ Launches a process p that activates SonarDevice.py.
  Reads data from the InputStream of p and, for each value,
  emits the event   sonar : distance( V ).
  */

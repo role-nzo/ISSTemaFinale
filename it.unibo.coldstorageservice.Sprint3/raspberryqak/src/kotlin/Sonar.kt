@@ -33,10 +33,10 @@ class Sonar ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 							//val p  = Runtime.getRuntime().exec("sudo ./SonarAlone")
 
 							val pythonEnrico = "/usr/bin/python3"
-							val eseguibileSonar = "/unibo.raspberry-3.0/bin/sonar.py"
+							val eseguibileSonar = "/unibo.raspberry-3.0/bin/SonarDevice.py"
 							val eseguibileSonarFilter = "/unibo.raspberry-3.0/bin/SonarFilter.py"
-							val command = arrayOf("/bin/sh","-c","/usr/bin/python3 /unibo.raspberry-3.0/bin/sonar.py | /usr/bin/python3 /unibo.raspberry-3.0/bin/SonarFilter.py")
-							//val p  = Runtime.getRuntime().exec("/usr/bin/python3 /unibo.raspberry-3.0/bin/sonar.py | /usr/bin/python3 /unibo.raspberry-3.0/bin/SonarFilter.py")
+							val command = arrayOf("/bin/sh","-c","/usr/bin/python3 /unibo.raspberry-3.0/bin/SonarDevice.py | /usr/bin/python3 /unibo.raspberry-3.0/bin/SonarFilter.py")
+							//val p  = Runtime.getRuntime().exec("/usr/bin/python3 /unibo.raspberry-3.0/bin/SonarDevice.py | /usr/bin/python3 /unibo.raspberry-3.0/bin/SonarFilter.py")
 							val p  = Runtime.getRuntime().exec(command)
 							//val p  = Runtime.getRuntime().exec( testLucaPython + testLucaSonarSimulator )
 

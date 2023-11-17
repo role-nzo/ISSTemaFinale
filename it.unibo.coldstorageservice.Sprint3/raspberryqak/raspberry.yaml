@@ -1,0 +1,7 @@
+version: '3'
+services:
+  raspberry:
+    image: imgraspberryfinale
+    ports:
+      - 8023:8023/tcp
+      - 8023:8023/udp

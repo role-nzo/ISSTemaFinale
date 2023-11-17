@@ -1,6 +1,11 @@
-# File: sonar.py
+# File: SonarDevice.py
 import RPi.GPIO as GPIO
 import time
+import os
+
+if os.getenv("SONAR_DISABLE") is not None:
+    while True:
+        pass
 
 
 GPIO.setmode(GPIO.BCM)
@@ -32,8 +37,7 @@ while True:
     distance = pulse_duration * 17165   #distance = vt/2
     distance = round(distance, 1)
     #print ('Distance:',distance,'cm')
-    if distance is not none:
-        print ( distance, flush=True )
+    print ( distance, flush=True )
     time.sleep(0.25)
 
 
