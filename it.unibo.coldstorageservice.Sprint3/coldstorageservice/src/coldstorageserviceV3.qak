@@ -526,13 +526,6 @@ QActor coldstorageservice context ctxcoldstorageservice{ //Registrata a coldRoom
 	Goto waitclientrequest
 				  
 	
-	State moveRobotHome {
-		
-		forward transporttrolley -m goMoveToHome     : goMoveToHome(0)
-		
-	}
-	Goto waitclientrequest
-	
 	State elabClearColdRoom{
 		println("$name | empty coldRoom") color green
 		printCurrentMessage
