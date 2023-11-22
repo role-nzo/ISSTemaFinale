@@ -32,7 +32,7 @@ class Led ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						//genTimer( actor, state )
 
 						val pythonEnrico = "C://Users//zacen//AppData//Local//Programs//Python//Python311//python "
-						val eseguibileEnrico = "C://Users//zacen//OneDrive//Desktop//ISSTemaFinale//it.unibo.coldstorageservice.Sprint3//coldstorageservice//resources//SonarReceiver.py "
+						val eseguibileEnrico = "C://Users//zacen//OneDrive//Desktop//ISSTemaFinale//it.unibo.coldstorageservice.Sprint3//coldstorageservice//resources//LedDevice.py "
 
 						val testLucaPython =  "/Library/Frameworks/Python.framework/Versions/3.8/bin/python3 "
 						val testLucaSonarSimulator = "//Users//lucadominici//Desktop//IngegneriaSoftware//ProgettoFinale//ISSTemaFinale//it.unibo.coldstorageservice.Sprint3//coldstorageservice//resources//SonarSimulator.py"

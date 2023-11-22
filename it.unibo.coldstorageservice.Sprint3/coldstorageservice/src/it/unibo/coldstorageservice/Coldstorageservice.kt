@@ -163,16 +163,6 @@ class Coldstorageservice ( name: String, scope: CoroutineScope, isconfined: Bool
 					}	 	 
 					 transition( edgeName="goto",targetState="waitclientrequest", cond=doswitch() )
 				}	 
-				state("moveRobotHome") { //this:State
-					action { //it:State
-						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition( edgeName="goto",targetState="waitclientrequest", cond=doswitch() )
-				}	 
 				state("elabClearColdRoom") { //this:State
 					action { //it:State
 						CommUtils.outgreen("$name | empty coldRoom")

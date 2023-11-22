@@ -52,9 +52,9 @@ Dispatch sendmap 	: sendmap(_)
 Dispatch stopevent : stopevent(_)
 Dispatch resumevent : resumevent(_)
 
-Context ctxbasicrobot 		  ip [host="192.168.1.141" port=8020] 
+Context ctxbasicrobot 		  ip [host="192.168.218.29" port=8020] 
 Context ctxcoldstorageservice ip [host="localhost" port=8022]
-Context ctxraspberry 		  ip [host="192.168.1.35" port=8023]
+Context ctxraspberry 		  ip [host="192.168.218.112" port=8023]
 
 ExternalQActor basicrobot context ctxbasicrobot
 ExternalQActor robotposendosimbiotico context ctxbasicrobot
@@ -236,12 +236,14 @@ QActor statusservice context ctxcoldstorageservice {
 	
 	State s0 initial {
 		
+		observeResource transporttrolley
 		[#
 			//CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
-			CoapObserverSupport(myself, "192.168.1.141","8020","ctxbasicrobot","robotpos")
+			CoapObserverSupport(myself, "192.168.218.29","8020","ctxbasicrobot","robotpos")
 		#]
+		delay 500
 		observeResource coldstorageservice
-		observeResource transporttrolley
+		
 		forward transporttrolley -m goMoveToHome : goMoveToHome(0)
 	}
 	Goto observing

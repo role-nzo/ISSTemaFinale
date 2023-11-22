@@ -22,7 +22,7 @@ public class ServiceStatusUseCase implements ServiceStatusUseCaseInterface {
             String ctxqakdest       = "ctxcoldstorageservice";
             String qakdestination 	= "coldstorageservice";
 
-            String addr = "192.168.1.141";
+            String addr = "192.168.218.29";
             String path = ctxqakdest+"/"+qakdestination;  //COAP observable resource => basicrobot
             coapconn    = new CoapConnection(addr+":" + cssPort, path);
 

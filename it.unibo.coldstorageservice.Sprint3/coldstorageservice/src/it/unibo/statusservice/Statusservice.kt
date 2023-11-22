@@ -28,11 +28,12 @@ class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 				return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
+						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","transporttrolley")
 						
 									//CoapObserverSupport(myself, "localhost","8020","ctxbasicrobot","robotposendosimbiotico")	
-									CoapObserverSupport(myself, "192.168.1.141","8020","ctxbasicrobot","robotpos")
+									CoapObserverSupport(myself, "192.168.218.29","8020","ctxbasicrobot","robotpos")
+						delay(500) 
 						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","coldstorageservice")
-						CoapObserverSupport(myself, "localhost","8022","ctxcoldstorageservice","transporttrolley")
 						forward("goMoveToHome", "goMoveToHome(0)" ,"transporttrolley" ) 
 						//genTimer( actor, state )
 					}
@@ -64,7 +65,6 @@ class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 				}	 
 				state("doObserve") { //this:State
 					action { //it:State
-						CommUtils.outblack("print doObserve")
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
 						
@@ -76,7 +76,6 @@ class Statusservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 										if( value.startsWith("robotfree") ) {
 											RobotFree = value.split("(")[1].dropLast(1)
 										} else if( value.startsWith("ticketrejected") ) {
-											println("Status " + RejectedTickets)
 											RejectedTickets++
 										} else if( value.startsWith("weightUpdate") ) {
 											CurrentWeightReal = value.split("(")[1].dropLast(1).toInt()

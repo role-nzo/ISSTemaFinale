@@ -20,9 +20,9 @@ dispatch( sendmap, sendmap(_) ).
 dispatch( stopevent, stopevent(_) ).
 dispatch( resumevent, resumevent(_) ).
 %====================================================================================
-context(ctxbasicrobot, "192.168.1.141",  "TCP", "8020").
+context(ctxbasicrobot, "192.168.218.29",  "TCP", "8020").
 context(ctxcoldstorageservice, "localhost",  "TCP", "8022").
-context(ctxraspberry, "192.168.1.35",  "TCP", "8023").
+context(ctxraspberry, "192.168.218.112",  "TCP", "8023").
  qactor( basicrobot, ctxbasicrobot, "external").
   qactor( robotposendosimbiotico, ctxbasicrobot, "external").
   qactor( led, ctxraspberry, "external").

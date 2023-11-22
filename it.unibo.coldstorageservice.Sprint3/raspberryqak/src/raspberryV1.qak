@@ -5,7 +5,7 @@ Dispatch resumevent : resumevent(_)
 Dispatch ledstatuschange: ledstatuschange(STATUS)
 Dispatch coapUpdate: coapUpdate(RESOURCE, VALUE)
 
-Context ctxcoldstorageservice ip [host="192.168.1.141" port=8022]
+Context ctxcoldstorageservice ip [host="192.168.218.29" port=8022]
 Context ctxraspberry ip [host="localhost" port=8023]
 
 ExternalQActor transporttrolley context ctxcoldstorageservice

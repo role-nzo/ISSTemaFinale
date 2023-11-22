@@ -3,19 +3,22 @@ services:
   coldstorage:
     #image: imgcxtcoldstorage
     #image: imgcxtcoldstorage2
-    image: imgcxtcoldstorage3
+    #image: imgcxtcoldstorage3 funzionante
+    image: imgesamecoldstorage
     ports:
       - 8022:8022/tcp
       - 8022:8022/udp
   serviceaccess:
-    image: imgserviceaccess
+    #image: imgserviceaccess funzionante
+    image: imgesameserviceaccess
     ports:
       - 8080:8080/tcp
       - 8080:8080/udp
     depends_on:
       - coldstorage
   servicestatus:
-    image: imgservicestatus
+    #image: imgservicestatus funzionante
+    image: imgesameservicestatus
     ports:
       - 8081:8081/tcp
       - 8081:8081/udp

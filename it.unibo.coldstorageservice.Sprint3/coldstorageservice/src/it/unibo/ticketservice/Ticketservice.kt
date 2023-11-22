@@ -134,8 +134,6 @@ class Ticketservice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 												   	   
 													ticketList.remove(ticket)
 												   	   
-													println(currentTime - ticket!!.creationTime)
-												   	   
 													if((currentTime - ticket!!.creationTime) < TimeMax) {	
 												   	   	println("ticket valid")	
 								answer("storefood", "storefoodaccepted", "storefoodaccepted(valid)"   )  
